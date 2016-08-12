@@ -53,25 +53,65 @@
   };
   
   /**
+   * Execute an HTTP GET
+   * 
+   * @param {String} url
+   * @param {Object=} options See request() for an explanation of the options
+   * @param {Function} callback
+   */
+  FamilySearch.prototype.get = _req('GET');
+  
+  /**
    * Execute an HTTP POST
    * 
    * @param {String} url
    * @param {Object=} options See request() for an explanation of the options
    * @param {Function} callback
    */
-  FamilySearch.prototype.post = function(url, options, callback){
+  FamilySearch.prototype.post = _req('POST');
+  
+  /**
+   * Execute an HTTP PUT
+   * 
+   * @param {String} url
+   * @param {Object=} options See request() for an explanation of the options
+   * @param {Function} callback
+   */
+  FamilySearch.prototype.put = _req('PUT');
+  
+  /**
+   * Execute an HTTP DELETE
+   * 
+   * @param {String} url
+   * @param {Object=} options See request() for an explanation of the options
+   * @param {Function} callback
+   */
+  FamilySearch.prototype.delete = _req('DELETE');
+  
+  /**
+   * Construct a request wrapper for the specified HTTP method
+   */
+  function _req(method){
     
-    // Allow for options to not be given in which case the callback will be
-    // the second argument
-    if(typeof options === 'function'){
-      callback = options;
-      options = {};
-    }
+    /**
+     * @param {String} url
+     * @param {Object=} options See request() for an explanation of the options
+     * @param {Function} callback
+     */
+    return function(url, options, callback){
     
-    options.method = 'POST';
-    
-    this.request(url, options, callback);
-  };
+      // Allow for options to not be given in which case the callback will be
+      // the second argument
+      if(typeof options === 'function'){
+        callback = options;
+        options = {};
+      }
+      
+      options.method = method;
+      
+      this.request(url, options, callback);
+    };
+  }
   
   /**
    * Execute an HTTP request
