@@ -24,7 +24,7 @@
    * @param {String} options.tokenCookie Name of the cookie that the access token
    * will be saved in.
    */
-  var FamilySearch = function(options){
+  var FamilySearch = exports.FamilySearch = function(options){
     this.appKey = options.appKey;
     this.environment = options.environment || 'sandbox';
     this.redirectUri = options.redirectUri;
@@ -98,6 +98,10 @@
       options = {};
     }
     
+    if(!callback){
+      callback = function(){};
+    }
+    
     if(options.method){
       method = options.method;
     }
@@ -133,7 +137,7 @@
       if(typeof body !== 'string'){
         
         // JSON.stringify() if the content-type is JSON
-        if(headers['Content-Type'] && headers['Content-Type'].indexOf('json')){
+        if(headers['Content-Type'] && headers['Content-Type'].indexOf('json') !== -1){
           body = JSON.stringify(body);
         } 
         
