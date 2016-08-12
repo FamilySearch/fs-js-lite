@@ -87,6 +87,10 @@
    */
   FamilySearch.prototype.request = function(url, options, callback){
     
+    var method = 'GET', 
+        headers = {},
+        body;
+    
     // Allow for options to not be given in which case the callback will be
     // the second argument
     if(typeof options === 'function'){
@@ -94,15 +98,77 @@
       options = {};
     }
     
-    if(!options.method){
-      options.method = 'GET';
+    if(options.method){
+      method = options.method;
     }
     
+    if(options.headers){
+      // Copy the headers
+      headers = JSON.parse(JSON.stringify(options.headers));
+    }
+    
+    body = options.body;
+    
     // Calculate the URL
+    //
+    // For now we just need to know whether the protocol + host were provided
+    // because if we just received a path such as /platform/tree/persons then
+    // we want to automatically prepend the platform host.
+    if(url.indexOf('https://') === -1){
+      url = this.platformHost() + url;
+    }
     
     // Process the body
+    //
+    // Allow for a string or object. If an object is given then stringify it.
+    // Try to guess the appropriate `Content-Type` value if it's missing.
+    if(body && (method === 'POST' || method === 'PUT')){
+      
+      // Try to guess the content type if it's missing
+      if(!headers['Content-Type'] && url.indexOf('/platform/') !== -1){
+        headers['Content-Type'] = 'application/x-fs-v1+json';
+      }
+      
+      // Turn objects into strings
+      if(typeof body !== 'string'){
+        
+        // JSON.stringify() if the content-type is JSON
+        if(headers['Content-Type'] && headers['Content-Type'].indexOf('json')){
+          body = JSON.stringify(body);
+        } 
+        
+        // URL encode
+        else {
+          body = urlEncode(body);
+        }
+        
+      }
+    }
     
     // Create the XMLHttpRequest
+    var req = new XMLHttpRequest();
+    req.open(method, url);
+    
+    // Set headers
+    for(var name in headers){
+      if(headers.hasOwnProperty(name)) {
+        req.setRequestHeader(name, headers[name]);
+      }
+    }
+    
+    // Attach success handler
+    req.onload = function(){
+      // Construct a response object
+      callback(req);
+    };
+    
+    // Attach error handler
+    req.onerror = function(){
+      callback();
+    };
+    
+    // Now we can send the request
+    req.send(body);
     
   };
   
@@ -137,5 +203,23 @@
         return 'https://sandbox.familysearch.org';
     }
   };
+  
+  /**
+   * URL encode an object
+   * 
+   * http://stackoverflow.com/a/1714899
+   * 
+   * @param {Object}
+   * @return {String}
+   */
+  function urlEncode(obj){
+    var str = [];
+    for(var p in obj){
+      if (obj.hasOwnProperty(p)) {
+        str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
+      }
+    }
+    return str.join("&");
+  }
 
 }));
