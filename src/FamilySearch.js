@@ -162,6 +162,11 @@
       url = this.platformHost() + url;
     }
     
+    // Set the Accept header if it's missing on /platform URLs
+    if(!headers['Accept'] && url.indexOf('/platform/') !== -1){
+      headers['Accept'] = 'application/x-fs-v1+json';
+    }
+    
     // Process the body
     //
     // Allow for a string or object. If an object is given then stringify it.
@@ -202,8 +207,30 @@
     
     // Attach success handler
     req.onload = function(){
+      
+      // TODO: handle redirects
+      
+      // TODO: handle throttling
+      
       // Construct a response object
-      callback(req);
+      var res = {
+        statusCode: req.status,
+        statusText: req.statusText,
+        getHeader: function(name){
+          return req.getResponseHeader(name);
+        },
+        body: req.responseText
+      };
+      
+      if(res.getHeader('Content-Type').indexOf('json') !== -1){
+        try {
+          res.data = JSON.parse(res.body);
+        } catch(e) { 
+          // Should we handle this error? how could we?
+        }
+      }
+      
+      callback(res);
     };
     
     // Attach error handler
