@@ -68,7 +68,7 @@ Therefore, the transparent following of redirects is not a problem for us. We
 ___have to___ handle it manually which means we always know when a request was
 redirected and we always know both the original and final URLs.
 
-### Error handling.
+### Error handling
 
 There are two types of errors: network errors and http errors. XMLHttpRequest
 gives no insight into network errors so all the developer needs to know and
