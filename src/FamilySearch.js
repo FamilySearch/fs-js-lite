@@ -209,7 +209,7 @@
     
     // Attach success handler
     req.onload = function(){
-      
+
       // TODO: handle redirects
       
       // TODO: handle throttling
@@ -224,7 +224,8 @@
         body: req.responseText
       };
       
-      if(res.getHeader('Content-Type').indexOf('json') !== -1){
+      var contentType = res.getHeader('Content-Type');
+      if(contentType && contentType.indexOf('json') !== -1){
         try {
           res.data = JSON.parse(res.body);
         } catch(e) { 
@@ -236,7 +237,7 @@
     };
     
     // Attach error handler
-    req.onerror = function(){
+    req.onerror = function(error){
       callback();
     };
     

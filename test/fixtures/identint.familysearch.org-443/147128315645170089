@@ -1,0 +1,27 @@
+POST /cis-web/oauth2/v3/token
+content-type: application/x-www-form-urlencoded
+accept-language: en
+accept: */*
+host: identint.familysearch.org
+accept-encoding: gzip, deflate
+body: grant_type=password&client_id=a02j000000CBv4gAAD&username=sdktester&password=1234sdkpass
+
+HTTP/1.1 200 OK
+server: Apache-Coyote/1.1
+expires: Tue, 03 Jul 2001 06:00:00 GMT
+last-modified: Mon Aug 15 17:45:56 GMT+00:00 2016
+cache-control: no-store, no-cache, must-revalidate, max-age=0, post-check=0, pre-check=0
+pragma: no-cache
+content-type: application/json;charset=ISO-8859-1
+content-language: en
+content-length: 185
+date: Mon, 15 Aug 2016 17:45:55 GMT
+connection: close
+access-control-allow-methods: OPTIONS, HEAD, GET, PUT, POST, DELETE
+access-control-allow-headers: Accept, Accept-Charset, Accept-Encoding, Accept-Language, Accept-Datetime, Authorization, Connection, Content-Length, Content-Md5, Content-Type, Date, Expect, From, Host, If-Match, If-Modified-Since, If-None-Match, If-Range, If-Unmodified-Since, Location, Origin, Range, Referer, SingularityJSHeader, Te, User-Agent, Warning, X-Expect-Override, X-Reason, X-Requested-With, X-FS-Feature-Tag
+access-control-expose-headers: Location, Link, Warning, X-Entity-ID, Content-Location, X-Processing-Time, Retry-After, X-FS-Page-Context, Allow
+access-control-allow-origin: null
+access-control-max-age: 604800
+vary: Origin
+
+{"token":"USYS774AD4E7BE8B14B4CF9DED7F4D24C701_idses-int02.a.fsglobal.net","token_type":"family_search","access_token":"USYS774AD4E7BE8B14B4CF9DED7F4D24C701_idses-int02.a.fsglobal.net"}
