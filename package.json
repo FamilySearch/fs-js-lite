@@ -1,0 +1,23 @@
+{
+  "name": "fs-js-lite",
+  "version": "1.0.0",
+  "description": "Lite JS SDK for the FamilySearch API",
+  "main": "src/FamilySearch.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/york-solutions/fs-js-lite.git"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/york-solutions/fs-js-lite/issues"
+  },
+  "homepage": "https://github.com/york-solutions/fs-js-lite#readme",
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "jsdom": "^9.4.2",
+    "nock": "^8.0.0"
+  }
+}

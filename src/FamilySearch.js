@@ -3,15 +3,17 @@
 (function (root, factory) {
   if (typeof define === 'function' && define.amd) {
     // AMD. Register as an anonymous module.
-    define(['exports'], factory);
-  } else if (typeof exports === 'object' && typeof exports.nodeName !== 'string') {
-    // CommonJS
-    factory(exports);
+    define([], factory);
+  } else if (typeof module === 'object' && module.exports) {
+    // Node. Does not work with strict CommonJS, but
+    // only CommonJS-like environments that support module.exports,
+    // like Node.
+    module.exports = factory();
   } else {
-    // Browser globals
-    factory(root);
+    // Browser globals (root is window)
+    root.FamilySearch = factory();
   }
-}(this, function (exports) {
+}(this, function () {
 
   /**
    * Create an instance of the FamilySearch SDK Client
@@ -24,7 +26,7 @@
    * @param {String} options.tokenCookie Name of the cookie that the access token
    * will be saved in.
    */
-  var FamilySearch = exports.FamilySearch = function(options){
+  var FamilySearch = function(options){
     this.appKey = options.appKey;
     this.environment = options.environment || 'sandbox';
     this.redirectUri = options.redirectUri;
@@ -292,5 +294,7 @@
     }
     return str.join("&");
   }
+  
+  return FamilySearch;
 
 }));

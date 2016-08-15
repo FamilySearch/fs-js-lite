@@ -54,6 +54,14 @@ Data we want:
 * Redirected?
 * Throttled?
 
+Responses are objects with the following properties and methods:
+
+* `statusCode`
+* `statusText`
+* `getHeader()` - maps to [XMLHttpRequest.getResponseHeader()](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/getResponseHeader)
+* `body` - body text
+* `data` - only exists if the `body` is parsable JSON
+
 ### Redirection
 
 The XMLHttpRequest states the redirects must be followed transparently. But that
