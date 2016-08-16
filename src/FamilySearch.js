@@ -25,12 +25,15 @@
    * @param {String} options.redirectUri OAuth2 redirect URI
    * @param {String} options.tokenCookie Name of the cookie that the access token
    * will be saved in.
+   * @param {String} options.maxThrottledRetries Maximum number of a times a 
+   * throttled request should be retried.
    */
   var FamilySearch = function(options){
     this.appKey = options.appKey;
     this.environment = options.environment || 'sandbox';
     this.redirectUri = options.redirectUri;
     this.tokenCookie = options.tokenCookie || 'FS_AUTH_TOKEN';
+    this.maxThrottledRetries = options.maxThrottledRetries || 10;
   };
   
   /**
@@ -147,6 +150,17 @@
       options = {};
     }
     
+    // Since options are passed by reference, we copy the object to prevent
+    // the developer from seeing any modifications which could be especially
+    // problematic if they re-use option objects. But we try not to modify the
+    // object too much because on redirects we want the request options to be
+    // re-processed against the new URL
+    options = JSON.parse(JSON.stringify(options));
+    
+    if(!options._retries){
+      options._retries = 0;
+    }
+    
     if(!callback){
       callback = function(){};
     }
@@ -244,7 +258,9 @@
         redirected: false,
         requestMethod: method,
         requestHeaders: headers,
-        body: req.responseText
+        body: req.responseText,
+        retries: 0,
+        throttled: false
       };
       
       // Catch redirects
@@ -261,7 +277,19 @@
         });
       }
       
-      // TODO: handle throttling
+      if(res.statusCode === 429 && options._retries < client.maxThrottledRetries){
+        var retryAfter = parseInt(res.getHeader('Retry'), 10) * 1000 || 1000;
+        setTimeout(function(){
+          client.request(url, options, function(response){
+            response.throttled = true;
+            response.retries = ++options._retries;
+            setTimeout(function(){
+              callback(response);
+            });
+          });
+        }, retryAfter);
+        return;
+      }
       
       var contentType = res.getHeader('Content-Type');
       if(contentType && contentType.indexOf('json') !== -1){

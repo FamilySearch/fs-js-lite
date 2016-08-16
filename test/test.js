@@ -107,6 +107,23 @@ describe('FamilySearch', function(){
     });
   });
   
+  it('throttled', function(done){
+    this.timeout(1800000);
+    nockBack('throttled.json', function(nockDone){
+      client.get('/platform/throttled?processingTime=1800000', function(response){
+        client.get('/platform/throttled', function(response){
+          nockDone();
+          check(done, function(){
+            assert.isDefined(response);
+            assert.equal(response.statusCode, 200);
+            assert(response.throttled, 'Response not throttled');
+            assert.equal(response.retries, 1);
+          });
+        });
+      });
+    });
+  });
+  
 });
 
 /**

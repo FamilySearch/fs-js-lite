@@ -1,0 +1,56 @@
+[
+    {
+        "scope": "https://sandbox.familysearch.org:443",
+        "method": "GET",
+        "path": "/platform/throttled?processingTime=1800000",
+        "body": "",
+        "status": 200,
+        "response": "",
+        "headers": {
+            "content-type": "application/x-fs-v1+json",
+            "date": "Tue, 16 Aug 2016 21:30:00 GMT",
+            "link": "<https://integration.familysearch.org/cis-web/oauth2/v3/authorization>; rel=\"http://oauth.net/core/2.0/endpoint/authorize\", <https://integration.familysearch.org/cis-web/oauth2/v3/token>; rel=\"http://oauth.net/core/2.0/endpoint/token\"",
+            "server": "Apache-Coyote/1.1",
+            "vary": "Accept, Accept-Language, Accept-Encoding, Expect, Accept-Encoding",
+            "x-processing-time": "168",
+            "content-length": "105",
+            "connection": "Close"
+        }
+    },
+    {
+        "scope": "https://sandbox.familysearch.org:443",
+        "method": "GET",
+        "path": "/platform/throttled",
+        "body": "",
+        "status": 429,
+        "response": "",
+        "headers": {
+            "content-type": "application/x-fs-v1+json",
+            "date": "Tue, 16 Aug 2016 21:30:00 GMT",
+            "link": "<https://integration.familysearch.org/cis-web/oauth2/v3/authorization>; rel=\"http://oauth.net/core/2.0/endpoint/authorize\", <https://integration.familysearch.org/cis-web/oauth2/v3/token>; rel=\"http://oauth.net/core/2.0/endpoint/token\"",
+            "server": "Apache-Coyote/1.1",
+            "vary": "Accept, Accept-Language, Accept-Encoding, Expect, Accept-Encoding",
+            "x-processing-time": "161",
+            "content-length": "105",
+            "connection": "Close"
+        }
+    },
+    {
+        "scope": "https://sandbox.familysearch.org:443",
+        "method": "GET",
+        "path": "/platform/throttled",
+        "body": "",
+        "status": 200,
+        "response": "",
+        "headers": {
+            "content-type": "application/x-fs-v1+json",
+            "date": "Tue, 16 Aug 2016 21:30:00 GMT",
+            "link": "<https://integration.familysearch.org/cis-web/oauth2/v3/authorization>; rel=\"http://oauth.net/core/2.0/endpoint/authorize\", <https://integration.familysearch.org/cis-web/oauth2/v3/token>; rel=\"http://oauth.net/core/2.0/endpoint/token\"",
+            "server": "Apache-Coyote/1.1",
+            "vary": "Accept, Accept-Language, Accept-Encoding, Expect, Accept-Encoding",
+            "x-processing-time": "161",
+            "content-length": "105",
+            "connection": "Close"
+        }
+    }
+]

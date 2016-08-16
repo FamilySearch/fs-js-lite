@@ -49,9 +49,12 @@ Responses are objects with the following properties and methods:
 * `data` - only exists if the `body` is parsable JSON
 * `originalUrl`
 * `effectiveUrl` - Will be different from `originalUrl` when the request is redirected
-* `redirected` - Boolean specifying whether the request was redirected
 * `requestMethod` - HTTP method used on the request
 * `requestHeaders` - HTTP headers set on the request
+* `redirected` - Boolean specifying whether the request was redirected
+* `throttled` - Boolean specifying whether the request was throttled
+* `retries` - Number of times the request was retried. Requests are only retried
+* when they are throttled.
 
 ### Error handling
 
