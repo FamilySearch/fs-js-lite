@@ -1,0 +1,73 @@
+[
+    {
+        "scope": "https://sandbox.familysearch.org:443",
+        "method": "POST",
+        "path": "/platform/tree/persons",
+        "body": {
+            "persons": [
+                {
+                    "living": true,
+                    "gender": {
+                        "type": "http://gedcomx.org/Male"
+                    },
+                    "names": [
+                        {
+                            "type": "http://gedcomx.org/BirthName",
+                            "preferred": true,
+                            "nameForms": [
+                                {
+                                    "fullText": "Jacob",
+                                    "parts": [
+                                        {
+                                            "value": "Jacob",
+                                            "type": "http://gedcomx.org/Given"
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        "status": 201,
+        "response": "",
+        "headers": {
+            "cache-control": "no-cache, no-store, no-transform, must-revalidate, max-age=0",
+            "content-type": "application/x-fs-v1+json",
+            "date": "Tue, 16 Aug 2016 19:02:01 GMT",
+            "link": "<https://sandbox.familysearch.org/platform/tree/ancestry?person=L5ZK-VBP>; rel=\"ancestry\", <https://sandbox.familysearch.org/platform/tree/persons/L5ZK-VBP/child-relationships>; rel=\"child-relationships\", <https://sandbox.familysearch.org/platform/tree/descendancy?person=L5ZK-VBP>; rel=\"descendancy\", <https://sandbox.familysearch.org/platform/tree/persons/L5ZK-VBP/discussion-references>; rel=\"discussion-references\", <https://sandbox.familysearch.org/platform/tree/persons/L5ZK-VBP/matches>; rel=\"matches\", <https://sandbox.familysearch.org/platform/tree/persons/L5ZK-VBP/notes>; rel=\"notes\", <https://sandbox.familysearch.org/platform/tree/persons/L5ZK-VBP/parent-relationships>; rel=\"parent-relationships\", <https://sandbox.familysearch.org/platform/tree/persons-with-relationships?person=L5ZK-VBP>; rel=\"person-with-relationships\", <https://sandbox.familysearch.org/platform/tree/persons/L5ZK-VBP/source-references>; rel=\"source-references\", <https://sandbox.familysearch.org/platform/tree/persons/L5ZK-VBP/spouse-relationships>; rel=\"spouse-relationships\"",
+            "location": "https://sandbox.familysearch.org/platform/tree/persons/L5ZK-VBP",
+            "server": "Apache-Coyote/1.1",
+            "vary": "Accept, Accept-Language, Accept-Encoding, Expect, Accept-Encoding",
+            "x-entity-id": "L5ZK-VBP",
+            "x-processing-time": "170",
+            "x-throttle-millis-left": "1798112",
+            "x-throttle-millis-used": "1888",
+            "x-throttle-window-size": "1800000",
+            "content-length": "0",
+            "connection": "Close"
+        }
+    },
+    {
+        "scope": "https://sandbox.familysearch.org:443",
+        "method": "DELETE",
+        "path": "/platform/tree/persons/L5ZK-VBP",
+        "body": "",
+        "status": 204,
+        "response": "",
+        "headers": {
+            "cache-control": "no-transform, must-revalidate, max-age=0",
+            "content-location": "/tree/persons/L5ZK-VBP",
+            "content-type": "application/x-fs-v1+json",
+            "date": "Tue, 16 Aug 2016 19:02:01 GMT",
+            "server": "Apache-Coyote/1.1",
+            "vary": "Accept, Accept-Language, Accept-Encoding, Expect, Accept-Encoding",
+            "x-processing-time": "167",
+            "x-throttle-millis-left": "1797949",
+            "x-throttle-millis-used": "2051",
+            "x-throttle-window-size": "1800000",
+            "connection": "Close"
+        }
+    }
+]

@@ -5,7 +5,6 @@ var FamilySearch = require('../src/FamilySearch'),
     nockBack = nock.back;
 
 nockBack.fixtures = __dirname + '/responses/';
-nockBack.setMode('record');
 
 describe('FamilySearch', function(){
   
@@ -41,25 +40,105 @@ describe('FamilySearch', function(){
   
   it('get', function(done){
     nockBack('getPerson.json', function(nockDone){
-      client.get('/platform/tree/persons/L5C2-WYC', function(response){
-        nockDone();
-        check(done, function(){
-          assert.isDefined(response);
-          assert.equal(response.statusCode, 200);
-          assert.isDefined(response.data);
-          assert.isDefined(response.data.persons);
+      createPerson(client, function(personId){
+        client.get('/platform/tree/persons/' + personId, function(response){
+          nockDone();
+          check(done, function(){
+            assert.isDefined(response);
+            assert.equal(response.statusCode, 200);
+            assert.isDefined(response.data);
+            assert.isDefined(response.data.persons);
+          });
         });
       });
     });
   });
   
-  it('post');
+  it('post', function(done){
+    this.timeout(10000);
+    nockBack('createPerson.json', function(nockDone){
+      createPerson(client, function(personId){
+        nockDone();
+        check(done, function(){
+          assert.isDefined(personId);
+        });
+      });
+    });
+  });
   
-  it('head');
+  it('head', function(done){
+    nockBack('headPerson.json', function(nockDone){
+      client.head('/platform/tree/persons/L5C2-WYC', function(response){
+        nockDone();
+        check(done, function(){
+          assert.isDefined(response);
+          assert.equal(response.statusCode, 200);
+          assert.isUndefined(response.data);
+        });
+      });
+    });
+  });
   
-  it('delete');
+  it('delete', function(done){
+    nockBack('deletePerson.json', function(nockDone){
+      createPerson(client, function(personId){
+        client.delete('/platform/tree/persons/' + personId, function(response){
+          nockDone();
+          check(done, function(){
+            assert.isDefined(response);
+            assert.equal(response.statusCode, 204);
+            assert.isUndefined(response.data);
+          });
+        });
+      });
+    });
+  });
   
 });
+
+/**
+ * Create a person.
+ * 
+ * @param {FamilySearch} client
+ * @param {Function} callback - is given the new person's ID on success, nothing on error
+ */
+function createPerson(client, callback){
+  client.post('/platform/tree/persons', {
+    body: {
+      "persons": [
+        {
+          "living": true,
+          "gender": {
+            "type": "http://gedcomx.org/Male"
+          },
+          "names": [
+            {
+              "type": "http://gedcomx.org/BirthName",
+              "preferred": true,
+              "nameForms": [
+                {
+                  "fullText": "Jacob",
+                  "parts": [
+                    {
+                      "value": "Jacob",
+                      "type": "http://gedcomx.org/Given"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }, function(response){
+    if(response && response.statusCode === 201){
+      callback(response.getHeader('X-entity-id'));
+    } else {
+      callback();
+    }
+  });
+}
 
 /**
  * Helper method that assists in managing exceptions during async tests

@@ -79,13 +79,13 @@
   FamilySearch.prototype.post = _req('POST');
   
   /**
-   * Execute an HTTP PUT
+   * Execute an HTTP HEAD
    * 
    * @param {String} url
    * @param {Object=} options See request() for an explanation of the options
    * @param {Function} callback
    */
-  FamilySearch.prototype.put = _req('PUT');
+  FamilySearch.prototype.head = _req('HEAD');
   
   /**
    * Execute an HTTP DELETE
