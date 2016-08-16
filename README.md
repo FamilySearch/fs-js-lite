@@ -15,9 +15,6 @@ var fs = new FamilySearch({
   tokenCookie: 'FS_AUTH_TOKEN'
 });
 
-// OAuth via client-side popup
-fs.oauthPopup(function(response){ });
-
 // OAuth redirect
 fs.oauthRedirect();
 
@@ -41,18 +38,6 @@ fs.delete('/platform/tree/persons/PPPP-PPP', function(response){ });
 ```
 
 ### Response objects
-
-Data we want:
-
-* Status code
-* Status text
-* Headers
-* Body text
-* Parsed body when the content type is JSON
-* Requested URL
-* Effective URL
-* Redirected?
-* Throttled?
 
 Responses are objects with the following properties and methods:
 
