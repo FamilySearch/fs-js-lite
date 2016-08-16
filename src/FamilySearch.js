@@ -135,7 +135,8 @@
    */
   FamilySearch.prototype.request = function(url, options, callback){
     
-    var method = 'GET', 
+    var client = this,
+        method = 'GET', 
         headers = {},
         body;
     
@@ -170,14 +171,21 @@
       url = this.platformHost() + url;
     }
     
+    var platformRequest = url.indexOf('/platform/') !== -1;
+    
     // Set the Accept header if it's missing on /platform URLs
-    if(!headers['Accept'] && url.indexOf('/platform/') !== -1){
+    if(!headers['Accept'] && platformRequest){
       headers['Accept'] = 'application/x-fs-v1+json';
     }
     
     // Set the Authorization header if we have an access token
     if(!headers['Authorization'] && this.accessToken){
       headers['Authorization'] = 'Bearer ' + this.accessToken;
+    }
+    
+    // Disable automatic redirects
+    if(!headers['X-Expect-Override'] && platformRequest){
+      headers['X-Expect-Override'] = '200-ok';
     }
     
     // Process the body
@@ -187,7 +195,7 @@
     if(body && (method === 'POST' || method === 'PUT')){
       
       // Try to guess the content type if it's missing
-      if(!headers['Content-Type'] && url.indexOf('/platform/') !== -1){
+      if(!headers['Content-Type'] && platformRequest){
         headers['Content-Type'] = 'application/x-fs-v1+json';
       }
       
@@ -220,10 +228,6 @@
     
     // Attach success handler
     req.onload = function(){
-        
-      // TODO: handle redirects
-      
-      // TODO: handle throttling
       
       // Construct a response object
       var res = {
@@ -235,8 +239,29 @@
         getAllHeaders: function(){
           return req.getAllResponseHeaders();
         },
+        originalUrl: url,
+        effectiveUrl: url,
+        redirected: false,
+        requestMethod: method,
+        requestHeaders: headers,
         body: req.responseText
       };
+      
+      // Catch redirects
+      var location = res.getHeader('Location');
+      if(res.statusCode === 200 && location && location !== url ){
+        return client.request(res.getHeader('Location'), options, function(response){
+          if(response){
+            response.originalUrl = url;
+            response.redirected = true;
+          }
+          setTimeout(function(){
+            callback(response);
+          });
+        });
+      }
+      
+      // TODO: handle throttling
       
       var contentType = res.getHeader('Content-Type');
       if(contentType && contentType.indexOf('json') !== -1){

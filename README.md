@@ -62,20 +62,11 @@ Responses are objects with the following properties and methods:
 * `getAllHeaders()` - maps to [XMLHttpRequest.getAllResponseHeaders()](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/getAllResponseHeaders)
 * `body` - body text
 * `data` - only exists if the `body` is parsable JSON
-
-### Redirection
-
-The XMLHttpRequest states the redirects must be followed transparently. But that
-has previously led to bugs with the API because some browsers don't replay the
-original headers such as `Content-Type` which causes the API respond with the
-default format of XML. So the API allows a [work-around](https://groups.google.com/a/ldsmail.net/d/msg/FSDN/pmeDFTspA4c/aTTHlddbv5QJ)
-by setting the `Expect` or `X-Expect-Override` header to `200-ok`. This tells the API
-to return a 200 with a `Location` header instead of a 3xx response. Thus the
-browser won't autoamtically follow the redirect but the developer can.
-
-Therefore, the transparent following of redirects is not a problem for us. We
-___have to___ handle it manually which means we always know when a request was
-redirected and we always know both the original and final URLs.
+* `originalUrl`
+* `effectiveUrl` - Will be different from `originalUrl` when the request is redirected
+* `redirected` - Boolean specifying whether the request was redirected
+* `requestMethod` - HTTP method used on the request
+* `requestHeaders` - HTTP headers set on the request
 
 ### Error handling
 

@@ -1,0 +1,53 @@
+[
+    {
+        "scope": "https://sandbox.familysearch.org:443",
+        "method": "GET",
+        "path": "/platform/tree/current-person",
+        "body": "",
+        "status": 200,
+        "response": "",
+        "headers": {
+            "cache-control": "no-cache, no-store, no-transform, must-revalidate, max-age=0",
+            "content-type": "application/x-fs-v1+json",
+            "date": "Tue, 16 Aug 2016 20:24:20 GMT",
+            "location": "https://sandbox.familysearch.org/platform/tree/persons/KW7G-28J",
+            "server": "Apache-Coyote/1.1",
+            "vary": "Accept, Accept-Language, Accept-Encoding, Expect, Accept-Encoding",
+            "x-processing-time": "215",
+            "x-throttle-millis-left": "1796525",
+            "x-throttle-millis-used": "3475",
+            "x-throttle-window-size": "1800000",
+            "content-length": "0",
+            "connection": "Close"
+        }
+    },
+    {
+        "scope": "https://sandbox.familysearch.org:443",
+        "method": "GET",
+        "path": "/platform/tree/persons/KW7G-28J",
+        "body": "",
+        "status": 200,
+        "response": [
+            "1f8b0800000000000000",
+            "ed585b6fdb36147ecfaf20d4971693a28b6545f6ba16ebb20669ea24ad0d64403a0cb444db5c740345bb0982fcf751a42ed4c571964441312c4f11499fef3b179e0b6ff700501244d2384a15300697e096adb035ec679fcac9c5c19166b99f14552c0738bae207c531b69226f13a45b535b6ba2268c105ac284dd2b1aea730f2e7f1f5fe028638b8491124de6a3f264b3d09205dc424d4294148cfa9e805ae5e88cf45dfa9052e8c3c945272f34cc085b8f782c12fa5e22d6071a0277d3be0204111edcdbe85f82d6a6adf315d6904312198fd6e85936766d201b0db053e4a3d14f9cc67cfe57e49e26ef81091256a0053146612d1539c729b60ff4ee7d2d9879f7dddbe5fe08022a2428fc567fa178daf5074a7a812f04d2240619204d8e366d4ff66f25479e15a5ba4dac6fc69ebc67518d4d7d93745d7545fd13090f13222096d213e04a0262608e2ef5ccad9f9ecf8ec74aa1efd3e53cfcfa6b39a72980642bb736e2330e1a66f79c45bc16889b4154e69fc6c29a17557044ac75df15638f0d93dea0f3897df4216e9b1cf0bda4cc50dac6e5bbc0ca12ea8369f380890971d783a8d4a56ca29b5d162e2e328ab258c568ac84630ebcb00358c76068f092510d3de4a47217f4bcd7a9920e8c46a770b84e205f4faaba3210a6382bb924308a9b7eaaf412ac46f0fc5dea02584167ac47a879e358f62aa4101b23df8fb8bbb12a04377daabd65df64ee335615927eb63084e7acd3a02aae2b02731613c083d41bc042b46f9578c0fd86777152f3013591b22324a8cd112f95e1c5e731259c167e59c9d1773c96eda905c8d75c71c1903dd1e9be3b27f037fd618067883a36526949235ca1797acf943a4c6299f80a03542c8351dcdb047b6663b035b8373dfd1869631b2e673070e8646d9b2b4e7235e81222f58a7ad0af4aca5b0c448f507312e59dcb57325a504cfd71d2593a188ad98b45461b588c7c5bf5487751484515e6643883e993813cdfdf2496a0125c9c7c221e5a14a05a9630c633f8b2f7ed41c8c5ccb310623d319192d35cbc6b923f82630c88b7b1135110c516d42ae22c4332c13baaeab79437ba8d903f7401b1d204b9b33430f07037b6858de8f15210f62fc7f84dc17211f30a1ab5316149567b310f9c81837c284ed2cd6413063c31417363d3c0133c4321b91271dd6c6d0d60f777038c21b3613d42cb181c11a1530b2fe0f973a5d9348d6ab2137a75e89ced32bffaf2abf2c6c1121c2ca599eddab9d50ca5eecb25cf271ca7c5e1bdeb849b7194dcad90abfafd2155ba034813c3695cf22dd57b15b0efaa7eb709effdeacf6a59780ee033c5259a7f76b7ace5bcf96b745476ade1fffaf1a2f6b8d33c78de7b7ce481640d6132f5aab6c5efca14d3e9feee0951fea4812ff295338da87afd62e5388436d5348f7a10a9adfb2a1f57131f308fea7dac4bad8c55f1c7a51bb6690f64378d9ddbce41797cb3e624bce6a7b8557738f2aadc136cf6279177ed868c29b8fead3436df7bbbad4c93fbd91cf5b765d1e0f749946672fef610a5b4a6464a1e89f15a9fa4815e29bf291130133d688a8df14e0430ae730452a788bdf89bd2927f956c7efc0ebbc0635d9335145a906d6104c514251968f816598b60a2c733cb4dfa8808527b9014c4b50d588d7e7c787e0b1f3c29b9f41d9c530e8f90dd84082e3750a7827b2af344a199cc76bda196cac1b0a9338620ccf16f7f9f6c92f5085c3f87369d35bb59600c8e5bbd2a1b80fb37bfa02f102fb234d72b54ece364dc7b50cc765e366bebfc98073139b0367608c0e6cd7714d77c86752e942371df2aa7637eefe01053140c1261b0000"
+        ],
+        "headers": {
+            "allow": "OPTIONS, HEAD, GET, POST, DELETE",
+            "cache-control": "no-transform, must-revalidate, max-age=0",
+            "content-encoding": "gzip",
+            "content-location": "/tree/persons/KW7G-28J",
+            "content-type": "application/x-fs-v1+json",
+            "date": "Tue, 16 Aug 2016 20:24:20 GMT",
+            "etag": "\"136309748681850000-gzip\"",
+            "last-modified": "Thu, 25 Sep 2014 21:54:28 GMT",
+            "server": "Apache-Coyote/1.1",
+            "vary": "Accept, Accept-Language, Accept-Encoding, Expect, Accept-Encoding",
+            "x-processing-time": "173",
+            "x-throttle-millis-left": "1796360",
+            "x-throttle-millis-used": "3640",
+            "x-throttle-window-size": "1800000",
+            "transfer-encoding": "chunked",
+            "connection": "Close"
+        }
+    }
+]

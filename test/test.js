@@ -21,10 +21,6 @@ describe('FamilySearch', function(){
         }),
         window = document.defaultView;
     global.XMLHttpRequest = window.XMLHttpRequest;
-    done();
-  });
-  
-  it('oauthPassword', function(done){
     nockBack('oauthPassword.json', function(nockDone){
       client.oauthPassword('sdktester', '1234sdkpass', function(response){
         nockDone();
@@ -89,6 +85,23 @@ describe('FamilySearch', function(){
             assert.equal(response.statusCode, 204);
             assert.isUndefined(response.data);
           });
+        });
+      });
+    });
+  });
+  
+  it('redirect', function(done){
+    nockBack('redirect.json', function(nockDone){
+      client.get('/platform/tree/current-person', function(response){
+        nockDone();
+        check(done, function(){
+          assert.isDefined(response);
+          assert.equal(response.statusCode, 200);
+          assert.isDefined(response.data);
+          assert.isArray(response.data.persons);
+          assert(response.redirected);
+          assert.isDefined(response.originalUrl);
+          assert.isDefined(response.effectiveUrl);
         });
       });
     });
