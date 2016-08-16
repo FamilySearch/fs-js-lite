@@ -1,0 +1,27 @@
+[
+    {
+        "scope": "https://sandbox.familysearch.org:443",
+        "method": "GET",
+        "path": "/platform/tree/persons/PPPJ-MYZ",
+        "body": "",
+        "status": 401,
+        "response": [
+            "1f8b0800000000000000",
+            "6d51cb4ec33010bcf72b56399398561c5049cd0115aa4a88a84a0f4038b8c9b68948ec606f0aa5eabfb34ee080e0e2c7ececce787c1c010468adb12e80293cc39101867253a0072ecec76703d2a0736ad783c15aab4d8d4006c0a22a80b6d0a2754647c137db91ca5fc9aa7c68b89ba75012b55321681b559a7017752e44e5281c4705eea3adab4daeeac8d81d53c4304e2449b20cef1f9fae8dc68569dd4cf38135a9b31a0b507c74add10e8105a97360b6de32b0c18e4a63ab4f2ca6998e4b6a6ae97776ebf70649f586427cebaafd2c0b6e0c9bd214a68716b300f2e1ca05c20f12beff0af2525987345ba7b7e16516083f892aaa51ce7d827f9463315499267e9437a638c8b89cc8459a26305fad1e56be8f09135f6e65620d67db80ca734ebcd23bf8278f08569c9dd1fe6dad45e933ffadec515e59cacab892b16b545dcbc4bca3e5e036075822d181ff23164329169527fb4779bfbdcfdef8105dc0ff7a8297d1e90bde8da7c132020000"
+        ],
+        "headers": {
+            "cache-control": "no-cache, no-store, no-transform, must-revalidate, max-age=0",
+            "content-encoding": "gzip",
+            "content-location": "/tree/persons/PPPJ-MYZ",
+            "content-type": "application/x-fs-v1+json",
+            "date": "Tue, 16 Aug 2016 18:24:05 GMT",
+            "link": "<https://integration.familysearch.org/cis-web/oauth2/v3/authorization>; rel=\"http://oauth.net/core/2.0/endpoint/authorize\", <https://integration.familysearch.org/cis-web/oauth2/v3/token>; rel=\"http://oauth.net/core/2.0/endpoint/token\"",
+            "server": "Apache-Coyote/1.1",
+            "vary": "Accept, Accept-Language, Accept-Encoding, Expect, Accept-Encoding",
+            "warning": "400 FamilySearch \"Unable to  read tf person.\"",
+            "x-processing-time": "39",
+            "transfer-encoding": "chunked",
+            "connection": "Close"
+        }
+    }
+]

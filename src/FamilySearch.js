@@ -209,7 +209,7 @@
     
     // Attach success handler
     req.onload = function(){
-
+        
       // TODO: handle redirects
       
       // TODO: handle throttling
@@ -220,6 +220,9 @@
         statusText: req.statusText,
         getHeader: function(name){
           return req.getResponseHeader(name);
+        },
+        getAllHeaders: function(){
+          return req.getAllResponseHeaders();
         },
         body: req.responseText
       };
@@ -234,6 +237,7 @@
       }
       
       callback(res);
+      
     };
     
     // Attach error handler

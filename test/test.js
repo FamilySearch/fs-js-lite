@@ -1,74 +1,63 @@
 var FamilySearch = require('../src/FamilySearch'),
     jsdom = require('jsdom').jsdom,
     assert = require('chai').assert,
-    replay = require('replay');
+    nock = require('nock'),
+    nockBack = nock.back;
 
-replay.fixtures = __dirname + '/fixtures';
+nockBack.fixtures = __dirname + '/responses/';
+nockBack.setMode('record');
 
 describe('FamilySearch', function(){
   
-  var fs;
+  var client;
   
-  beforeEach(function(done){
-    fs = new FamilySearch({
-      // appKey: 'a02j000000JBxOxAAL'
-      appKey: 'a02j000000CBv4gAAD'
+  // Create a new FamilySearch client and a mock browser window
+  before(function(done){
+    client = new FamilySearch({
+      appKey: 'a02j000000JBxOxAAL'
     });
     var document = jsdom(undefined, {
+          url: 'https://sandbox.familysearch.org',
           strictSSL: false
         }),
         window = document.defaultView;
     global.XMLHttpRequest = window.XMLHttpRequest;
-    fs.oauthPassword('sdktester', '1234sdkpass', function(response){
-      console.log('response');
-      if(response){
-        done();
-      } else {
-        done(new Error('unable to authenticate'));
-      }
-    });
-  });
-  
-  /*
-  it('oauthPassword', function(done){
-    fs.oauthPassword('sdktester', '1234sdkpass', function(response){
-      check(done, function(){
-        assert.isDefined(response);
-        assert.equal(response.statusCode, 200);
-        assert.isDefined(response.data);
-        assert.isDefined(response.data.token);
-      });
-    });
-  });
-  */
-  
-  it('get', function(done){
-    console.log('get');
-    /*
-      How will this be done? We have to mock api responses via nock. How will
-      we handle authentication? How much effort will we put into verifying the
-      correct format of the request?
-    */
-    /*
-    fs.get('/platform/tree/persons/L5C2-WYC', function(response){
-      check(done, function(){
-        assert.isDefined(response);
-        assert.equal(response.statusCode, 200);
-        assert.isDefined(response.data);
-        assert.isDefined(response.data.persons);
-      });
-    });
-    */
     done();
   });
   
-  /*
+  it('oauthPassword', function(done){
+    nockBack('oauthPassword.json', function(nockDone){
+      client.oauthPassword('sdktester', '1234sdkpass', function(response){
+        nockDone();
+        check(done, function(){
+          assert.isDefined(response);
+          assert.equal(response.statusCode, 200);
+          assert.isDefined(response.data);
+          assert.isDefined(response.data.token);
+        });
+      });
+    });
+  });
+  
+  it('get', function(done){
+    nockBack('getPerson.json', function(nockDone){
+      client.get('/platform/tree/persons/PPPJ-MYZ', function(response){
+        nockDone();
+        check(done, function(){
+          assert.isDefined(response);
+          assert.equal(response.statusCode, 200);
+          assert.isDefined(response.data);
+          assert.isDefined(response.data.persons);
+        });
+      });
+    });
+  });
+  
   it('post');
   
   it('head');
   
   it('delete');
-  */
   
 });
 
