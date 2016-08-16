@@ -41,6 +41,7 @@
    * @param {Function} callback
    */
   FamilySearch.prototype.oauthPassword = function(username, password, callback){
+    var client = this;
     this.post(this.identHost() + '/cis-web/oauth2/v3/token', {
       body: {
         grant_type: 'password',
@@ -51,7 +52,12 @@
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded'
       }
-    }, callback);
+    }, function(response){
+      if(response && response.data && response.data.access_token){
+        client.accessToken = response.data.access_token;
+      }
+      callback(response);
+    });
   };
   
   /**
@@ -167,6 +173,11 @@
     // Set the Accept header if it's missing on /platform URLs
     if(!headers['Accept'] && url.indexOf('/platform/') !== -1){
       headers['Accept'] = 'application/x-fs-v1+json';
+    }
+    
+    // Set the Authorization header if we have an access token
+    if(!headers['Authorization'] && this.accessToken){
+      headers['Authorization'] = 'Bearer ' + this.accessToken;
     }
     
     // Process the body

@@ -41,7 +41,7 @@ describe('FamilySearch', function(){
   
   it('get', function(done){
     nockBack('getPerson.json', function(nockDone){
-      client.get('/platform/tree/persons/PPPJ-MYZ', function(response){
+      client.get('/platform/tree/persons/L5C2-WYC', function(response){
         nockDone();
         check(done, function(){
           assert.isDefined(response);
