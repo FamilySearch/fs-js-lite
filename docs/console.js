@@ -5,7 +5,8 @@ var client = new FamilySearch({
     $url = document.getElementById('url'),
     $method = document.getElementById('method'),
     $output = document.getElementById('output'),
-    $requestBody = document.getElementById('request-body');
+    $requestBody = document.getElementById('request-body'),
+    $authStatus = document.getElementById('auth-status');
 
 // Setup event listeners
 
@@ -24,6 +25,15 @@ $method.addEventListener('change', function(){
   } else {
     $requestBody.style.display = 'none';
   }
+});
+
+document.getElementById('login-btn').addEventListener('click', function(){
+  client.oauthRedirect();
+});
+
+document.getElementById('logout-btn').addEventListener('click', function(){
+  client.deleteAccessToken();
+  window.location.reload();
 });
 
 // Handle an OAuth2 response if we're in that state. Otherwise we initialize the
@@ -58,6 +68,12 @@ function makeRequest(){
       output('Network error. Try again.');
     } else {
       displayResponse(response);
+      
+      if(response.statusCode === 401){
+        $authStatus.classList.remove('loggedin');
+      } else {
+        $authStatus.classList.add('loggedin');
+      }
     }
   });
 }

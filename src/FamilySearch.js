@@ -159,6 +159,16 @@
   };
   
   /**
+   * Delete the access token
+   */
+  FamilySearch.prototype.deleteAccessToken = function(){
+    this.accessToken = undefined;
+    if(this.saveAccessToken){
+      cookies.removeItem(this.tokenCookie);
+    }
+  };
+  
+  /**
    * Execute an HTTP GET
    * 
    * @param {String} url

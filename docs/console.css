@@ -10,6 +10,12 @@ h1 small {
   color: #999;
 }
 
+textarea {
+  width: 100%;
+  height: 100px;
+  box-sizing: border-box;
+}
+
 button, select {
   height: 30px;
 }
@@ -26,6 +32,35 @@ button:hover {
   background-color: #025aa5;
 }
 
+.container {
+  max-width: 1000px;
+  margin: auto;
+}
+
+#header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#auth-status {
+  // float: right;
+}
+
+#login-btn {
+  display: block;
+}
+#logout-btn {
+  display: none;
+}
+
+#auth-status.loggedin #login-btn {
+  display: none;
+}
+#auth-status.loggedin #logout-btn {
+  display: block;
+}
+
 #url-bar {
   display: flex;
   margin: 1em 0;
@@ -37,17 +72,6 @@ button:hover {
   border: 1px solid #ccc;
   font-size: inherit;
   margin: 0 .5em;
-}
-
-.container {
-  max-width: 1000px;
-  margin: auto;
-}
-
-textarea {
-  width: 100%;
-  height: 100px;
-  box-sizing: border-box;
 }
 
 #request-body {
