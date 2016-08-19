@@ -54,7 +54,7 @@ Responses are objects with the following properties and methods:
 * `redirected` - Boolean specifying whether the request was redirected
 * `throttled` - Boolean specifying whether the request was throttled
 * `retries` - Number of times the request was retried. Requests are only retried
-* when they are throttled.
+  when they are throttled.
 
 ### Error handling
 
