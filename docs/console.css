@@ -44,6 +44,16 @@ button:hover {
   margin: auto;
 }
 
+textarea {
+  width: 100%;
+  height: 100px;
+  box-sizing: border-box;
+}
+
+#request-body {
+  display: none;
+}
+
 /* Output and syntax highlighting */
 
 pre {

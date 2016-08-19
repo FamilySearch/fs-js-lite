@@ -3,7 +3,8 @@ var client = new FamilySearch({
     }),
     $url = document.getElementById('url'),
     $method = document.getElementById('method'),
-    $output = document.getElementById('output');
+    $output = document.getElementById('output'),
+    $requestBody = document.getElementById('request-body');
 
 // Setup event listeners
 
@@ -16,6 +17,14 @@ $url.addEventListener('keypress', function(e){
   }
 });
 
+$method.addEventListener('change', function(){
+  if($method.value === 'POST'){
+    $requestBody.style.display = 'block';
+  } else {
+    $requestBody.style.display = 'none';
+  }
+});
+
 // Initialize with a request on load
 makeRequest();
 
@@ -24,7 +33,13 @@ makeRequest();
  */
 function makeRequest(){
   output('Sending the request...');
-  client.request($url.value, $method.value, function(response){
+  var options = {
+    method: $method.value,
+  };
+  if(options.method === 'POST'){
+    options.body = $requestBody.value;
+  }
+  client.request($url.value, options, function(response){
     if(!response){
       output('Network error. Try again.');
     } else {
