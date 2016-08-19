@@ -1,8 +1,8 @@
+[![Build Status](https://travis-ci.org/york-solutions/fs-js-lite.svg?branch=master)](https://travis-ci.org/york-solutions/fs-js-lite)
+
 # FamilySearch Lite JavaScript SDK
 
 Lite JS SDK for the [FamilySearch API](https://familysearch.org/developers/)
-
-__This library is in the early stages of brainstorming__
 
 ## Usage
 
