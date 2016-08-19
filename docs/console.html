@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>Hello World</title>
+    <title>FamilySearch API Explorer</title>
     <link rel="stylesheet" type="text/css" href="console.css">
   </head>
   <body>
@@ -48,6 +48,25 @@
       
       <h2>Response</h2>
       <pre id="output"></pre>
+      
+      <h2>Pro Tips</h2>
+      
+      <ul id="pro-tips">
+        
+        <li>Login with a sandbox account. Visit the <a href="https://familysearch.org/developers/">FamilySearch Developers</a>
+        website to learn about how to get one.</li>
+        
+        <li>Links in the response body are clickable and will automatically
+        populate the URL when clicked.</li>
+        
+        <li>XMLHttpRequest hides some information. View the full request and 
+        response in the developer console of your browser.</li>
+        
+        <li>If you get a 406 Not Acceptable response it means the Accept header
+        was set to a value that the current endpoint does not support so try
+        changing the Accept header value.</li>
+        
+      </ul>
     </div>
     
     <script src="../src/FamilySearch.js"></script>

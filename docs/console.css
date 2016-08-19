@@ -91,6 +91,10 @@ input {
   display: none;
 }
 
+#pro-tips li {
+  margin: 1em 0;
+}
+
 /* Output and syntax highlighting */
 
 pre {
