@@ -3,9 +3,9 @@
   <head>
     <meta charset="utf-8">
     <title>Hello World</title>
+    <link rel="stylesheet" type="text/css" href="console.css">
   </head>
   <body>
-    
     <div class="container">
       
       <h1>API Explorer <small>- FamilySearch Lite JavaScript SDK</small></h1>
@@ -21,117 +21,11 @@
         <button id="load-button">Load</button>
       </div>
       
+      <h2>Response</h2>
       <pre id="output"></pre>
     </div>
     
-    <style>
-      
-      body {
-        /* Use system fonts https://www.smashingmagazine.com/2015/11/using-system-ui-fonts-practical-guide/ */
-        font-family: -apple-system, BlinkMacSystemFont, 
-          "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", 
-          "Fira Sans", "Droid Sans", "Helvetica Neue", 
-          sans-serif;
-      }
-      
-      h1 small {
-        color: #999;
-      }
-      
-      button, select {
-        height: 30px;
-      }
-      
-      button {
-        background-color: #0275d8;
-        border: 1px solid #0275DA;
-        cursor: pointer;
-        color: white;
-        font-size: inherit;
-      }
-      
-      button:hover {
-        background-color: #025aa5;
-      }
-      
-      #url-bar {
-        display: flex;
-        margin: 1em 0;
-      }
-      
-      #url {
-        flex: 100%;
-        padding: 5px;
-        border: 1px solid #ccc;
-        font-size: inherit;
-        margin: 0 .5em;
-      }
-      
-      .container {
-        max-width: 1000px;
-        margin: auto;
-      }
-      
-      /* Output and syntax highlighting */
-      
-      pre {
-        border: 1px solid #ccc;
-        background-color: #eee;
-        padding: 5px;
-      }
-      
-      .string {
-        color: #080;
-      }
-      .boolean {
-        color: #008;
-      }
-      .number {
-        color: #800;
-      }
-    </style>
     <script src="../src/FamilySearch.js"></script>
-    <script>
-      
-      var obj = {a:1, 'b':'foo', c:[false,'false',null, 'null', {d:{e:1.3e5,f:'1.3e5'}}]};
-      document.getElementById('output').innerHTML = prettyPrint(obj);
-      
-      /**
-       * Pretty print a JSON object
-       * 
-       * @param {Object} obj
-       * @return {String} html string
-       */
-      function prettyPrint(obj){
-        return syntaxHighlight(JSON.stringify(obj, null, 4));
-      }
-      
-      /**
-       * Parse a JSON string and wrap data in spans to enable syntax highlighting.
-       * 
-       * http://stackoverflow.com/a/7220510
-       * 
-       * @param {String} JSON string
-       * @returns {String}
-       */
-      function syntaxHighlight(json) {
-          json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-          return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
-              var cls = 'number';
-              if (/^"/.test(match)) {
-                  if (/:$/.test(match)) {
-                      cls = 'key';
-                  } else {
-                      cls = 'string';
-                  }
-              } else if (/true|false/.test(match)) {
-                  cls = 'boolean';
-              } else if (/null/.test(match)) {
-                  cls = 'null';
-              }
-              return '<span class="' + cls + '">' + match + '</span>';
-          });
-      }
-    </script>
+    <script src="console.js"></script>
   </body>
 </html>
