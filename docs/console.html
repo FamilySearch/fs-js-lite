@@ -8,16 +8,11 @@
   <body>
     <div class="container">
       
-      <div id="header">
-        <h1>API Explorer <small>- FamilySearch Lite JavaScript SDK</small></h1>
-        <div id="auth-status">
-          <button id="login-btn">Login</button>
-          <button id="logout-btn">Logout</button>
-        </div>
-      </div>
+      <h1>API Explorer <small>- FamilySearch Lite JavaScript SDK</small></h1>
       
       <h2>Request</h2>
-      <div id="url-bar">
+      
+      <div class="url-row">
         <select id="method">
           <option>GET</option>
           <option>POST</option>
@@ -27,6 +22,28 @@
         <input id="url" type="text" value="/platform/users/current">
         <button id="load-button">Load</button>
       </div>
+      
+      <div id="headers">
+      
+        <div class="header-row">
+          <span class="label">Accept:</span>
+          <select id="accept">
+            <option>application/x-fs-v1+json</option>
+            <option>application/x-gedcomx-atom+json</option>
+          </select>
+        </div>
+        
+        <div class="header-row">
+          <span class="label">Authorization:</span>
+          <input id="access-token-display" disabled/>
+          <div id="auth-status">
+            <button id="login-btn">Login</button>
+            <button id="logout-btn">Logout</button>
+          </div>
+        </div>
+      
+      </div>
+      
       <textarea id="request-body" placeholder="Request Body"></textarea>
       
       <h2>Response</h2>

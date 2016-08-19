@@ -6,7 +6,8 @@ var client = new FamilySearch({
     $method = document.getElementById('method'),
     $output = document.getElementById('output'),
     $requestBody = document.getElementById('request-body'),
-    $authStatus = document.getElementById('auth-status');
+    $authStatus = document.getElementById('auth-status'),
+    $tokenDisplay = document.getElementById('access-token-display');
 
 // Setup event listeners
 
@@ -59,6 +60,9 @@ function makeRequest(){
   output('Sending the request...');
   var options = {
     method: $method.value,
+    headers: {
+      Accept: document.getElementById('accept').value
+    }
   };
   if(options.method === 'POST'){
     options.body = $requestBody.value;
@@ -71,8 +75,11 @@ function makeRequest(){
       
       if(response.statusCode === 401){
         $authStatus.classList.remove('loggedin');
+        $tokenDisplay.value = '';
+        
       } else {
         $authStatus.classList.add('loggedin');
+        $tokenDisplay.value = 'Bearer ' + client.getAccessToken();
       }
     }
   });

@@ -159,6 +159,15 @@
   };
   
   /**
+   * Get the access token if one is currently set
+   * 
+   * @return {String} access token
+   */
+  FamilySearch.prototype.getAccessToken = function(){
+    return this.accessToken;
+  };
+  
+  /**
    * Delete the access token
    */
   FamilySearch.prototype.deleteAccessToken = function(){

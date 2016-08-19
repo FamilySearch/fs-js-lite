@@ -32,6 +32,12 @@ button:hover {
   background-color: #025aa5;
 }
 
+input {
+  padding: 5px;
+  border: 1px solid #ccc;
+  font-size: inherit;
+}
+
 .container {
   max-width: 1000px;
   margin: auto;
@@ -41,10 +47,6 @@ button:hover {
   display: flex;
   justify-content: space-between;
   align-items: center;
-}
-
-#auth-status {
-  // float: right;
 }
 
 #login-btn {
@@ -61,16 +63,27 @@ button:hover {
   display: block;
 }
 
-#url-bar {
+.url-row {
   display: flex;
   margin: 1em 0;
 }
 
+.header-row {
+  display: flex;
+  margin: 1em 0;
+}
+
+.header-row .label {
+  width: 120px;
+  flex-shrink: 0;
+}
+
+.header-row input {
+  flex: 100%;
+}
+
 #url {
   flex: 100%;
-  padding: 5px;
-  border: 1px solid #ccc;
-  font-size: inherit;
   margin: 0 .5em;
 }
 
