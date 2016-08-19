@@ -12,15 +12,23 @@ describe('FamilySearch', function(){
   
   // Create a new FamilySearch client and a mock browser window
   before(function(done){
-    client = new FamilySearch({
-      appKey: 'a02j000000JBxOxAAL'
-    });
+    
+    // Setup the mock window
     var document = jsdom(undefined, {
           url: 'https://sandbox.familysearch.org',
           strictSSL: false
         }),
         window = document.defaultView;
     global.XMLHttpRequest = window.XMLHttpRequest;
+    global.window = window;
+    global.document = window.document;
+    
+    // Setup the client
+    client = new FamilySearch({
+      appKey: 'a02j000000JBxOxAAL'
+    });
+    
+    // Login
     nockBack('oauthPassword.json', function(nockDone){
       client.oauthPassword('sdktester', '1234sdkpass', function(response){
         nockDone();

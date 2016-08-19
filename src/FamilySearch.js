@@ -23,17 +23,37 @@
    * or sandbox. Defaults to sandbox.
    * @param {String} options.appKey Application Key
    * @param {String} options.redirectUri OAuth2 redirect URI
+   * @param {String} options.saveAccessToken Save the access token to a cookie
+   * and automatically load it from that cookie. Defaults to true.
    * @param {String} options.tokenCookie Name of the cookie that the access token
-   * will be saved in.
+   * will be saved in. Defaults to 'FS_AUTH_TOKEN'.
    * @param {String} options.maxThrottledRetries Maximum number of a times a 
-   * throttled request should be retried.
+   * throttled request should be retried. Defaults to 10.
    */
   var FamilySearch = function(options){
     this.appKey = options.appKey;
     this.environment = options.environment || 'sandbox';
     this.redirectUri = options.redirectUri;
+    this.saveAccessToken = options.saveAccessToken || true;
     this.tokenCookie = options.tokenCookie || 'FS_AUTH_TOKEN';
     this.maxThrottledRetries = options.maxThrottledRetries || 10;
+    
+    // Figure out initial authentication state
+    if(this.saveAccessToken){
+      
+      // If an access token was provided, save it.
+      if(options.accessToken){
+        this.setAccessToken(options.accessToken);
+      }
+      
+      // If we don't have an access token, try loading one.
+      else {
+        var token = cookies.getItem(this.tokenCookie);
+        if(token){
+          this.accessToken = token;
+        }
+      }
+    }
   };
   
   /**
@@ -75,14 +95,7 @@
           'Content-Type': 'application/x-www-form-urlencoded'
         }
       }, function(response){
-        if(response && response.statusCode === 200){
-          client.accessToken = response.access_token;
-        }
-        if(callback){
-          setTimeout(function(){
-            callback(response);
-          });
-        }
+        client.processOauthResponse(response, callback);
       });
       
       return true;
@@ -112,11 +125,37 @@
         'Content-Type': 'application/x-www-form-urlencoded'
       }
     }, function(response){
-      if(response && response.data && response.data.access_token){
-        client.accessToken = response.data.access_token;
-      }
-      callback(response);
+      client.processOauthResponse(response, callback);
     });
+  };
+  
+  /**
+   * Process an OAuth2 access_token response
+   */
+  FamilySearch.prototype.processOauthResponse = function(response, callback){
+    if(response && response.statusCode === 200 && response.data){
+      this.setAccessToken(response.data.access_token);
+    }
+    if(callback){
+      setTimeout(function(){
+        callback(response);
+      });
+    }
+  };
+  
+  /**
+   * Set the access token. The token is also saved to a cookie if that behavior
+   * is enabled.
+   * 
+   * @param {String} accessToken
+   */
+  FamilySearch.prototype.setAccessToken = function(accessToken){
+    this.accessToken = accessToken;
+    if(this.saveAccessToken){
+      // Expire in 24 hours because tokens never last longer than that, though
+      // they can expire before that after 1 hour of inactivity.
+      cookies.setItem(this.tokenCookie, accessToken, 86400);
+    }
   };
   
   /**
@@ -429,6 +468,69 @@
     var match = RegExp('[?&]' + name + '=([^&]*)').exec(window.location.search);
     return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
   }
+  
+  /*\
+  |*|
+  |*|  :: cookies.js ::
+  |*|
+  |*|  A complete cookies reader/writer framework with full unicode support.
+  |*|
+  |*|  Revision #1 - September 4, 2014
+  |*|
+  |*|  https://developer.mozilla.org/en-US/docs/Web/API/document.cookie
+  |*|  https://developer.mozilla.org/User:fusionchess
+  |*|
+  |*|  This framework is released under the GNU Public License, version 3 or later.
+  |*|  http://www.gnu.org/licenses/gpl-3.0-standalone.html
+  |*|
+  |*|  Syntaxes:
+  |*|
+  |*|  * docCookies.setItem(name, value[, end[, path[, domain[, secure]]]])
+  |*|  * docCookies.getItem(name)
+  |*|  * docCookies.removeItem(name[, path[, domain]])
+  |*|  * docCookies.hasItem(name)
+  |*|  * docCookies.keys()
+  |*|
+  \*/
+  var cookies = {
+    getItem: function (sKey) {
+      if (!sKey) { return null; }
+      return decodeURIComponent(document.cookie.replace(new RegExp("(?:(?:^|.*;)\\s*" + encodeURIComponent(sKey).replace(/[\-\.\+\*]/g, "\\$&") + "\\s*\\=\\s*([^;]*).*$)|^.*$"), "$1")) || null;
+    },
+    setItem: function (sKey, sValue, vEnd, sPath, sDomain, bSecure) {
+      if (!sKey || /^(?:expires|max\-age|path|domain|secure)$/i.test(sKey)) { return false; }
+      var sExpires = "";
+      if (vEnd) {
+        switch (vEnd.constructor) {
+          case Number:
+            sExpires = vEnd === Infinity ? "; expires=Fri, 31 Dec 9999 23:59:59 GMT" : "; max-age=" + vEnd;
+            break;
+          case String:
+            sExpires = "; expires=" + vEnd;
+            break;
+          case Date:
+            sExpires = "; expires=" + vEnd.toUTCString();
+            break;
+        }
+      }
+      document.cookie = encodeURIComponent(sKey) + "=" + encodeURIComponent(sValue) + sExpires + (sDomain ? "; domain=" + sDomain : "") + (sPath ? "; path=" + sPath : "") + (bSecure ? "; secure" : "");
+      return true;
+    },
+    removeItem: function (sKey, sPath, sDomain) {
+      if (!this.hasItem(sKey)) { return false; }
+      document.cookie = encodeURIComponent(sKey) + "=; expires=Thu, 01 Jan 1970 00:00:00 GMT" + (sDomain ? "; domain=" + sDomain : "") + (sPath ? "; path=" + sPath : "");
+      return true;
+    },
+    hasItem: function (sKey) {
+      if (!sKey) { return false; }
+      return (new RegExp("(?:^|;\\s*)" + encodeURIComponent(sKey).replace(/[\-\.\+\*]/g, "\\$&") + "\\s*\\=")).test(document.cookie);
+    },
+    keys: function () {
+      var aKeys = document.cookie.replace(/((?:^|\s*;)[^\=]+)(?=;|$)|^\s*|\s*(?:\=[^;]*)?(?:\1|$)/g, "").split(/\s*(?:\=[^;]*)?;\s*/);
+      for (var nLen = aKeys.length, nIdx = 0; nIdx < nLen; nIdx++) { aKeys[nIdx] = decodeURIComponent(aKeys[nIdx]); }
+      return aKeys;
+    }
+  };
   
   return FamilySearch;
 
