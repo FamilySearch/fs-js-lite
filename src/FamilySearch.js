@@ -37,6 +37,62 @@
   };
   
   /**
+   * Start the OAuth2 redirect flow by redirecting the user to FamilySearch.org
+   */
+  FamilySearch.prototype.oauthRedirect = function(){
+    window.location.href = this.identHost() + '/cis-web/oauth2/v3/authorization' +
+      '?response_type=code&client_id=' + this.appKey + '&redirect_uri=' + this.redirectUri;
+  };
+  
+  /**
+   * Handle an OAuth2 redirect response by extracting the code from the query
+   * and exchanging it for an access token. This also automatically saves the
+   * token in a cookie when that behavior is enabled.
+   * 
+   * @param {Function} callback that receives the access token response
+   * @return {Boolean} true if a code was detected; false otherwise. This does
+   * not indicate whether an access token was successfully requested, just
+   * whether a code was found in the query param and a request was sent to
+   * exchange the code for a token.
+   */
+  FamilySearch.prototype.oauthResponse = function(callback){
+    
+    var client = this;
+    
+    // Extract the code from the query
+    var code = getParameterByName('code');
+    
+    if(code){
+    
+      // Exchange the code for the access token
+      this.post(this.identHost() + '/cis-web/oauth2/v3/token', {
+        body: {
+          grant_type: 'authorization_code',
+          code: code,
+          client_id: this.appKey
+        },
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }
+      }, function(response){
+        if(response && response.statusCode === 200){
+          client.accessToken = response.access_token;
+        }
+        if(callback){
+          setTimeout(function(){
+            callback(response);
+          });
+        }
+      });
+      
+      return true;
+      
+    }
+    
+    return false;
+  };
+  
+  /**
    * OAuth2 password authentication
    * 
    * @param {String} username
@@ -362,6 +418,16 @@
       }
     }
     return str.join("&");
+  }
+  
+  /**
+   * Get a query parameter by name
+   * 
+   * http://stackoverflow.com/a/5158301
+   */
+  function getParameterByName(name) {
+    var match = RegExp('[?&]' + name + '=([^&]*)').exec(window.location.search);
+    return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
   }
   
   return FamilySearch;

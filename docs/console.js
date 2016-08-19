@@ -1,5 +1,6 @@
 var client = new FamilySearch({
-      appKey: 'a02j000000JBxOxAAL'
+      appKey: 'a02j000000JBxOxAAL',
+      redirectUri: window.location.href
     }),
     $url = document.getElementById('url'),
     $method = document.getElementById('method'),
@@ -25,8 +26,21 @@ $method.addEventListener('change', function(){
   }
 });
 
-// Initialize with a request on load
-makeRequest();
+// Handle an OAuth2 response if we're in that state. Otherwise we initialize the
+// app with a request on load.
+var oauthResponseState = client.oauthResponse(function(response){
+  if(response){
+    displayResponse(response);
+    
+    // On success, reload the page to remove the code from the url
+    if(response.statusCode === 200){
+      window.location = window.location.pathname;
+    }
+  }
+});
+if(!oauthResponseState){
+  makeRequest();
+}
 
 /**
  * Send a request to the API and display the response
