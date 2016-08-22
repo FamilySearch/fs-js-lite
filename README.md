@@ -156,7 +156,7 @@ fs.get('/platform/tree/persons/PPPP-PPP', function(response){
     alert('Looking good');
   }
     
-})
+});
 ```
 
 ### Redirects
