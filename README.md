@@ -62,14 +62,37 @@ fs.oauthPassword(username, password, function(response){ });
 // GET
 fs.get('/platform/tree/current-person', function(response){ });
 
+// The SDK defaults the Accept and Content-Type headers to application/x-fs-v1+json
+// for all /platform/ URLs. But that doesn't work for some endpoints which use
+// the atom data format so you'll need to set the headers yourself.
+fs.get('/platform/tree/persons/PPPP-PPP/matches?collection=records', {
+  headers: {
+    Accept: 'application/x-gedcomx-atom+json'
+  }
+}, function(response){ });
+
 // POST
-fs.post('/platform/tree/persons', function(response){ })
+fs.post('/platform/tree/persons', {
+  body: { persons: [ personData ] }
+}, function(response){ });
 
 // HEAD
 fs.head('/platform/tree/persons/PPPP-PPP', function(response){ });
 
 // DELETE
 fs.delete('/platform/tree/persons/PPPP-PPP', function(response){ });
+
+// Underneath the covers, `get()`, `post()`, `head()`, and `delete()` call the
+// `request()` method which has the same method signature.
+fs.request('/platform/tree/persons/PPPP-PPP', {
+  method: 'POST',
+  body: { persons: [ personData ] }
+}, function(response){ });
+
+// The options object is optional. When options are not include, the SDK will
+// automatically detect that the callback is the second parameter.
+// The `method` option defaults to 'GET'.
+fs.request('/platform/tree/persons/PPPP-PPP', function(response){ });
 
 // Set the access token. This will also save it in a cookie if that behavior
 // is enabled.
