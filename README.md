@@ -3,8 +3,7 @@
 # FamilySearch Lite JavaScript SDK
 
 Lite JavaScript SDK for the [FamilySearch API](https://familysearch.org/developers/).
-This SDK is designed for use in a web browser and uses XMLHttpRequest. It includes
-a UMD wrapper to support being loaded in AMD environments (RequireJS) and Node.
+This SDK is designed for use in a web browser and uses XMLHttpRequest. 
 
 __Warning__: this SDK requires hard-coding the API endpoint URLs. That is
 considered bad practive when using the API. In most cases, FamilySearch does not
@@ -12,6 +11,9 @@ consider URL changes as breaking changes. Read more about
 [dealing with change](https://familysearch.org/developers/docs/guides/evolution).
 
 ## Usage
+
+The SDK includes a UMD wrapper to support being loaded in AMD environments (RequireJS)
+and Node as well as being loaded as a browser global.
 
 ```js
 // Create a client instance. All available options are shown here for the sake
@@ -160,3 +162,12 @@ headers which tell how long to wait until retrying the request. Response objects
 include the `retries` property which is an integer specifying how many times the
 request was throttled and a `throttled` property which is `true` when the request
 has been throttled.
+
+## Testing
+
+The SDK is designed for being used in a browser environment therefore we use
+[jsdom](https://github.com/tmpvar/jsdom) for automated testing with a headless 
+browser environment. [Nock](https://github.com/node-nock/nock) is used to record
+and playback requests so that we don't need to rely on the API being available
+for tests, tests are faster, and we don't need to populate the API with data for
+testing.
