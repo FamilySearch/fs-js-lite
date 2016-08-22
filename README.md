@@ -6,7 +6,7 @@ Lite JavaScript SDK for the [FamilySearch API](https://familysearch.org/develope
 This SDK is designed for use in a web browser and uses XMLHttpRequest. 
 
 __Warning__: this SDK requires hard-coding the API endpoint URLs. That is
-considered bad practive when using the API. In most cases, FamilySearch does not
+considered bad practice when using the API. In most cases, FamilySearch does not
 consider URL changes as breaking changes. Read more about 
 [dealing with change](https://familysearch.org/developers/docs/guides/evolution).
 
