@@ -3,7 +3,8 @@
 # FamilySearch Lite JavaScript SDK
 
 Lite JavaScript SDK for the [FamilySearch API](https://familysearch.org/developers/).
-This SDK is designed for use in a web browser and uses XMLHttpRequest.
+This SDK is designed for use in a web browser and uses XMLHttpRequest. It includes
+a UMD wrapper to support being loaded in AMD environments (RequireJS) and Node.
 
 __Warning__: this SDK requires hard-coding the API endpoint URLs. That is
 considered bad practive when using the API. In most cases, FamilySearch does not
