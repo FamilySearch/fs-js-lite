@@ -67,6 +67,16 @@ fs.head('/platform/tree/persons/PPPP-PPP', function(response){ });
 
 // DELETE
 fs.delete('/platform/tree/persons/PPPP-PPP', function(response){ });
+
+// Set the access token. This will also save it in a cookie if that behavior
+// is enabled.
+fs.setAccessToken(accessToken);
+
+// Get the access token.
+fs.getAccessToken();
+
+// Delete the access token.
+fs.deleteAccessToken();
 ```
 
 ### Response objects
