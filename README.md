@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/york-solutions/fs-js-lite.svg?branch=master)](https://travis-ci.org/york-solutions/fs-js-lite)
+[![Build Status](https://travis-ci.org/FamilySearch/fs-js-lite.svg?branch=master)](https://travis-ci.org/FamilySearch/fs-js-lite)
 
 # FamilySearch Lite JavaScript SDK
 
