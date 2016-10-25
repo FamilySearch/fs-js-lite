@@ -18,17 +18,19 @@
   /**
    * Create an instance of the FamilySearch SDK Client
    * 
-   * @param {Object} options
-   * @param {String} options.environment Reference environment: production, beta,
+   * @param {Object} [options]
+   * @param {String} [options.environment] Reference environment: production, beta,
    * or sandbox. Defaults to sandbox.
-   * @param {String} options.appKey Application Key
-   * @param {String} options.redirectUri OAuth2 redirect URI
-   * @param {String} options.saveAccessToken Save the access token to a cookie
+   * @param {String} [options.appKey] Application Key
+   * @param {String} [options.redirectUri] OAuth2 redirect URI
+   * @param {String} [options.saveAccessToken] Save the access token to a cookie
    * and automatically load it from that cookie. Defaults to true.
-   * @param {String} options.tokenCookie Name of the cookie that the access token
+   * @param {String} [options.tokenCookie] Name of the cookie that the access token
    * will be saved in. Defaults to 'FS_AUTH_TOKEN'.
-   * @param {String} options.maxThrottledRetries Maximum number of a times a 
+   * @param {String} [options.maxThrottledRetries] Maximum number of a times a 
    * throttled request should be retried. Defaults to 10.
+   * @param {Object} [options.gedcomx] Reference to the gedcomx-js library used for
+   * deserialization. Optional.
    */
   var FamilySearch = function(options){
     this.appKey = options.appKey;
@@ -37,6 +39,7 @@
     this.saveAccessToken = options.saveAccessToken || true;
     this.tokenCookie = options.tokenCookie || 'FS_AUTH_TOKEN';
     this.maxThrottledRetries = options.maxThrottledRetries || 10;
+    this.gedcomx = options.gedcomx;
     
     // Figure out initial authentication state
     if(this.saveAccessToken){
@@ -409,6 +412,19 @@
       if(contentType && contentType.indexOf('json') !== -1){
         try {
           res.data = JSON.parse(res.body);
+          
+          // Create gedcomx-js objects if appropriate
+          if(client.gedcomx){
+            
+            // GedcomX
+            
+            // Atom
+            
+            // Error
+            
+            // What format do OAuth responses use?
+          }
+          
         } catch(e) { 
           // Should we handle this error? how could we?
         }

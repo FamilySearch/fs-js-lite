@@ -8,128 +8,190 @@ nockBack.fixtures = __dirname + '/responses/';
 
 describe('FamilySearch', function(){
   
-  var client;
+  describe('json', function(){
   
-  // Create a new FamilySearch client and a mock browser window
-  before(function(done){
+    var client;
     
-    // Setup the mock window
-    var document = jsdom(undefined, {
-          url: 'https://sandbox.familysearch.org',
-          strictSSL: false
-        }),
-        window = document.defaultView;
-    global.XMLHttpRequest = window.XMLHttpRequest;
-    global.window = window;
-    global.document = window.document;
-    
-    // Setup the client
-    client = new FamilySearch({
-      appKey: 'a02j000000JBxOxAAL'
-    });
-    
-    // Login
-    nockBack('oauthPassword.json', function(nockDone){
-      client.oauthPassword('sdktester', '1234sdkpass', function(response){
-        nockDone();
-        check(done, function(){
-          assert.isDefined(response);
-          assert.equal(response.statusCode, 200);
-          assert.isDefined(response.data);
-          assert.isDefined(response.data.token);
-        });
+    // Create a new FamilySearch client and a mock browser window
+    before(function(done){
+      
+      // Setup the mock window
+      var document = jsdom(undefined, {
+            url: 'https://sandbox.familysearch.org',
+            strictSSL: false
+          }),
+          window = document.defaultView;
+      global.XMLHttpRequest = window.XMLHttpRequest;
+      global.window = window;
+      global.document = window.document;
+      
+      // Setup the client
+      client = new FamilySearch({
+        appKey: 'a02j000000JBxOxAAL'
       });
-    });
-  });
-  
-  it('get', function(done){
-    nockBack('getPerson.json', function(nockDone){
-      createPerson(client, function(personId){
-        client.get('/platform/tree/persons/' + personId, function(response){
+      
+      // Login
+      nockBack('oauthPassword.json', function(nockDone){
+        client.oauthPassword('sdktester', '1234sdkpass', function(response){
           nockDone();
           check(done, function(){
             assert.isDefined(response);
             assert.equal(response.statusCode, 200);
             assert.isDefined(response.data);
-            assert.isDefined(response.data.persons);
+            assert.isDefined(response.data.token);
           });
         });
       });
     });
-  });
-  
-  it('post', function(done){
-    this.timeout(10000);
-    nockBack('createPerson.json', function(nockDone){
-      createPerson(client, function(personId){
-        nockDone();
-        check(done, function(){
-          assert.isDefined(personId);
+    
+    it('get', function(done){
+      nockBack('getPerson.json', function(nockDone){
+        createPerson(client, function(personId){
+          client.get('/platform/tree/persons/' + personId, function(response){
+            nockDone();
+            check(done, function(){
+              assert.isDefined(response);
+              assert.equal(response.statusCode, 200);
+              assert.isDefined(response.data);
+              assert.isDefined(response.data.persons);
+            });
+          });
         });
       });
     });
-  });
-  
-  it('head', function(done){
-    nockBack('headPerson.json', function(nockDone){
-      client.head('/platform/tree/persons/L5C2-WYC', function(response){
-        nockDone();
-        check(done, function(){
-          assert.isDefined(response);
-          assert.equal(response.statusCode, 200);
-          assert.isUndefined(response.data);
+    
+    it('post', function(done){
+      this.timeout(10000);
+      nockBack('createPerson.json', function(nockDone){
+        createPerson(client, function(personId){
+          nockDone();
+          check(done, function(){
+            assert.isDefined(personId);
+          });
         });
       });
     });
-  });
-  
-  it('delete', function(done){
-    nockBack('deletePerson.json', function(nockDone){
-      createPerson(client, function(personId){
-        client.delete('/platform/tree/persons/' + personId, function(response){
+    
+    it('head', function(done){
+      nockBack('headPerson.json', function(nockDone){
+        client.head('/platform/tree/persons/L5C2-WYC', function(response){
           nockDone();
           check(done, function(){
             assert.isDefined(response);
-            assert.equal(response.statusCode, 204);
+            assert.equal(response.statusCode, 200);
             assert.isUndefined(response.data);
           });
         });
       });
     });
-  });
-  
-  it('redirect', function(done){
-    nockBack('redirect.json', function(nockDone){
-      client.get('/platform/tree/current-person', function(response){
-        nockDone();
-        check(done, function(){
-          assert.isDefined(response);
-          assert.equal(response.statusCode, 200);
-          assert.isDefined(response.data);
-          assert.isArray(response.data.persons);
-          assert(response.redirected);
-          assert.isDefined(response.originalUrl);
-          assert.isDefined(response.effectiveUrl);
-        });
-      });
-    });
-  });
-  
-  it('throttled', function(done){
-    this.timeout(1800000);
-    nockBack('throttled.json', function(nockDone){
-      client.get('/platform/throttled?processingTime=1800000', function(response){
-        client.get('/platform/throttled', function(response){
-          nockDone();
-          check(done, function(){
-            assert.isDefined(response);
-            assert.equal(response.statusCode, 200);
-            assert(response.throttled, 'Response not throttled');
-            assert.equal(response.retries, 1);
+    
+    it('delete', function(done){
+      nockBack('deletePerson.json', function(nockDone){
+        createPerson(client, function(personId){
+          client.delete('/platform/tree/persons/' + personId, function(response){
+            nockDone();
+            check(done, function(){
+              assert.isDefined(response);
+              assert.equal(response.statusCode, 204);
+              assert.isUndefined(response.data);
+            });
           });
         });
       });
     });
+    
+    it('redirect', function(done){
+      nockBack('redirect.json', function(nockDone){
+        client.get('/platform/tree/current-person', function(response){
+          nockDone();
+          check(done, function(){
+            assert.isDefined(response);
+            assert.equal(response.statusCode, 200);
+            assert.isDefined(response.data);
+            assert.isArray(response.data.persons);
+            assert(response.redirected);
+            assert.isDefined(response.originalUrl);
+            assert.isDefined(response.effectiveUrl);
+          });
+        });
+      });
+    });
+    
+    it('throttled', function(done){
+      this.timeout(1800000);
+      nockBack('throttled.json', function(nockDone){
+        client.get('/platform/throttled?processingTime=1800000', function(response){
+          client.get('/platform/throttled', function(response){
+            nockDone();
+            check(done, function(){
+              assert.isDefined(response);
+              assert.equal(response.statusCode, 200);
+              assert(response.throttled, 'Response not throttled');
+              assert.equal(response.retries, 1);
+            });
+          });
+        });
+      });
+    });
+    
+  });
+  
+  describe('gedcomx-js', function(){
+  
+    var client;
+    
+    // Create a new FamilySearch client and a mock browser window
+    before(function(done){
+      
+      // Setup the mock window
+      var document = jsdom(undefined, {
+            url: 'https://sandbox.familysearch.org',
+            strictSSL: false
+          }),
+          window = document.defaultView;
+      global.XMLHttpRequest = window.XMLHttpRequest;
+      global.window = window;
+      global.document = window.document;
+      
+      var gedcomx = require('gedcomx-js');
+      require('gedcomx-fs-js')(gedcomx);
+      
+      // Setup the client
+      client = new FamilySearch({
+        appKey: 'a02j000000JBxOxAAL',
+        gedcomx: gedcomx
+      });
+      
+      // Login
+      nockBack('oauthPassword.json', function(nockDone){
+        client.oauthPassword('sdktester', '1234sdkpass', function(response){
+          nockDone();
+          check(done, function(){
+            assert.isDefined(response);
+            assert.equal(response.statusCode, 200);
+            assert.isDefined(response.data);
+            assert.isDefined(response.data.token);
+          });
+        });
+      });
+    });
+    
+    it('get', function(done){
+      nockBack('getPerson.json', function(nockDone){
+        createPerson(client, function(personId){
+          client.get('/platform/tree/persons/' + personId, function(response){
+            nockDone();
+            check(done, function(){
+              assert.isDefined(response);
+              assert.equal(response.statusCode, 200);
+              assert.isDefined(response.data);
+              assert.isDefined(response.data.persons);
+            });
+          });
+        });
+      });
+    });
+    
   });
   
 });
