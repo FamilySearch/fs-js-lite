@@ -12,14 +12,14 @@
             "content-length": "0",
             "content-location": "/tree/persons/L5C2-WYC",
             "content-type": "application/x-fs-v1+json",
-            "date": "Tue, 16 Aug 2016 19:02:00 GMT",
+            "date": "Mon, 31 Oct 2016 20:29:17 GMT",
             "etag": "\"136900632758820000-gzip\"",
             "last-modified": "Tue, 09 Aug 2016 19:21:15 GMT",
             "server": "Apache-Coyote/1.1",
             "vary": "Accept, Accept-Language, Accept-Encoding, Expect, Accept-Encoding",
-            "x-processing-time": "172",
-            "x-throttle-millis-left": "1798275",
-            "x-throttle-millis-used": "1725",
+            "x-processing-time": "170",
+            "x-throttle-millis-left": "1795835",
+            "x-throttle-millis-used": "4165",
             "x-throttle-window-size": "1800000",
             "connection": "Close"
         }

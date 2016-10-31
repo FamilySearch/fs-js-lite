@@ -416,33 +416,21 @@
           // Create gedcomx-js objects if appropriate
           if(client.gedcomx){
             
-            /*
-            We want to detect the data type so that we know which class to
-            instantiate. Unfortunately it's not so easy:
-            https://github.com/FamilySearch/fs-js-lite/issues/1#issuecomment-256173955
-            
-            We could use the content type if it's not application/json but we
-            would still need to examine the contents in the case where the type
-            is application/json. Show we might as well just plan on examining
-            the contents.
-            
-            Should I put the OAuth responses in an object? I don't have a model
-            for them. I'd have to create one.
-            */
-            
             // Atom
             if(res.data.entries){
-              
+              res.gedcomx = new client.gedcomx.AtomFeed(res.data);
             }
             
-            else if(res.deta.access_token){
+            // OAuth responses
+            else if(res.data.access_token){
               // TODO: What format do OAuth responses use?
             }
             
             // GedcomX
-            
             // Error
-            
+            else {
+              res.gedcomx = new client.gedcomx(res.data);
+            }
           }
           
         } catch(e) { 

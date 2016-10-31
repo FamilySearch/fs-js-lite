@@ -2,7 +2,10 @@ var FamilySearch = require('../src/FamilySearch'),
     jsdom = require('jsdom').jsdom,
     assert = require('chai').assert,
     nock = require('nock'),
-    nockBack = nock.back;
+    nockBack = nock.back,
+    gedcomx = require('gedcomx-js');
+    
+require('gedcomx-fs-js')(gedcomx);
 
 nockBack.fixtures = __dirname + '/responses/';
 
@@ -153,9 +156,6 @@ describe('FamilySearch', function(){
       global.window = window;
       global.document = window.document;
       
-      var gedcomx = require('gedcomx-js');
-      require('gedcomx-fs-js')(gedcomx);
-      
       // Setup the client
       client = new FamilySearch({
         appKey: 'a02j000000JBxOxAAL',
@@ -186,7 +186,49 @@ describe('FamilySearch', function(){
               assert.equal(response.statusCode, 200);
               assert.isDefined(response.data);
               assert.isDefined(response.data.persons);
+              assert.isDefined(response.gedcomx);
+              assert.equal(response.gedcomx.getPersons().length, 1);
             });
+          });
+        });
+      });
+    });
+    
+    it('create person with object', function(done){
+      nockBack('createPersonWithObject.json', function(nockDone){
+        client.post('/platform/tree/persons', {
+          body: gedcomx({
+            "persons": [
+              {
+                "living": true,
+                "gender": {
+                  "type": "http://gedcomx.org/Male"
+                },
+                "names": [
+                  {
+                    "type": "http://gedcomx.org/BirthName",
+                    "preferred": true,
+                    "nameForms": [
+                      {
+                        "fullText": "Jacob",
+                        "parts": [
+                          {
+                            "value": "Jacob",
+                            "type": "http://gedcomx.org/Given"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          })
+        }, function(response){
+          nockDone();
+          check(done, function(){
+            assert.equal(response.statusCode, 201);
+            assert.isDefined(response.getHeader('X-entity-id'));
           });
         });
       });
