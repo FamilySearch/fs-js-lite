@@ -1,6 +1,6 @@
 {
   "name": "fs-js-lite",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Lite JS SDK for the FamilySearch API",
   "main": "src/FamilySearch.js",
   "scripts": {
