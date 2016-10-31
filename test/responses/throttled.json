@@ -1,6 +1,6 @@
 [
     {
-        "scope": "https://sandbox.familysearch.org:443",
+        "scope": "https://integration.familysearch.org:443",
         "method": "GET",
         "path": "/platform/throttled?processingTime=1800000",
         "body": "",
@@ -18,7 +18,7 @@
         }
     },
     {
-        "scope": "https://sandbox.familysearch.org:443",
+        "scope": "https://integration.familysearch.org:443",
         "method": "GET",
         "path": "/platform/throttled",
         "body": "",
@@ -36,7 +36,7 @@
         }
     },
     {
-        "scope": "https://sandbox.familysearch.org:443",
+        "scope": "https://integration.familysearch.org:443",
         "method": "GET",
         "path": "/platform/throttled",
         "body": "",

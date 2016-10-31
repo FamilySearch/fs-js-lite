@@ -1,0 +1,52 @@
+[
+    {
+        "scope": "https://integration.familysearch.org:443",
+        "method": "POST",
+        "path": "/platform/tree/persons",
+        "body": {
+            "persons": [
+                {
+                    "gender": {
+                        "type": "http://gedcomx.org/Male"
+                    },
+                    "names": [
+                        {
+                            "type": "http://gedcomx.org/BirthName",
+                            "nameForms": [
+                                {
+                                    "fullText": "Jacob",
+                                    "parts": [
+                                        {
+                                            "value": "Jacob",
+                                            "type": "http://gedcomx.org/Given"
+                                        }
+                                    ]
+                                }
+                            ],
+                            "preferred": true
+                        }
+                    ],
+                    "living": true
+                }
+            ]
+        },
+        "status": 201,
+        "response": "",
+        "headers": {
+            "cache-control": "no-cache, no-store, no-transform, must-revalidate, max-age=0",
+            "content-type": "application/x-fs-v1+json",
+            "date": "Mon, 31 Oct 2016 20:40:46 GMT",
+            "link": "<https://integration.familysearch.org/platform/tree/ancestry?person=L58X-ZYG>; rel=\"ancestry\", <https://integration.familysearch.org/platform/tree/persons/L58X-ZYG/child-relationships>; rel=\"child-relationships\", <https://integration.familysearch.org/platform/tree/descendancy?person=L58X-ZYG>; rel=\"descendancy\", <https://integration.familysearch.org/platform/tree/persons/L58X-ZYG/discussion-references>; rel=\"discussion-references\", <https://integration.familysearch.org/platform/tree/persons/L58X-ZYG/matches>; rel=\"matches\", <https://integration.familysearch.org/platform/tree/persons/L58X-ZYG/notes>; rel=\"notes\", <https://integration.familysearch.org/platform/tree/persons/L58X-ZYG/parent-relationships>; rel=\"parent-relationships\", <https://integration.familysearch.org/platform/tree/persons-with-relationships?person=L58X-ZYG>; rel=\"person-with-relationships\", <https://integration.familysearch.org/platform/tree/persons>; rel=\"persons\", <https://integration.familysearch.org/platform/tree/persons/L58X-ZYG/source-references>; rel=\"source-references\", <https://integration.familysearch.org/platform/tree/persons/L58X-ZYG/spouse-relationships>; rel=\"spouse-relationships\"",
+            "location": "https://integration.familysearch.org/platform/tree/persons/L58X-ZYG",
+            "server": "Apache-Coyote/1.1",
+            "vary": "Accept, Accept-Language, Accept-Encoding, Expect, Accept-Encoding",
+            "x-entity-id": "L58X-ZYG",
+            "x-processing-time": "170",
+            "x-throttle-millis-left": "1799833",
+            "x-throttle-millis-used": "167",
+            "x-throttle-window-size": "1800000",
+            "content-length": "0",
+            "connection": "Close"
+        }
+    }
+]
