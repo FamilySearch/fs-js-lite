@@ -1,6 +1,6 @@
 [
     {
-        "scope": "https://sandbox.familysearch.org:443",
+        "scope": "https://integration.familysearch.org:443",
         "method": "GET",
         "path": "/platform/tree/current-person",
         "body": "",
@@ -10,7 +10,7 @@
             "cache-control": "no-cache, no-store, no-transform, must-revalidate, max-age=0",
             "content-type": "application/x-fs-v1+json",
             "date": "Tue, 16 Aug 2016 20:24:20 GMT",
-            "location": "https://sandbox.familysearch.org/platform/tree/persons/KW7G-28J",
+            "location": "https://integration.familysearch.org/platform/tree/persons/KW7G-28J",
             "server": "Apache-Coyote/1.1",
             "vary": "Accept, Accept-Language, Accept-Encoding, Expect, Accept-Encoding",
             "x-processing-time": "215",
@@ -22,7 +22,7 @@
         }
     },
     {
-        "scope": "https://sandbox.familysearch.org:443",
+        "scope": "https://integration.familysearch.org:443",
         "method": "GET",
         "path": "/platform/tree/persons/KW7G-28J",
         "body": "",

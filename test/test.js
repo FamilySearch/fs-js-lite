@@ -15,7 +15,7 @@ describe('FamilySearch', function(){
     
     // Setup the mock window
     var document = jsdom(undefined, {
-          url: 'https://sandbox.familysearch.org',
+          url: 'https://integration.familysearch.org',
           strictSSL: false
         }),
         window = document.defaultView;

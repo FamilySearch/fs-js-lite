@@ -1,6 +1,6 @@
 [
     {
-        "scope": "https://sandbox.familysearch.org:443",
+        "scope": "https://integration.familysearch.org:443",
         "method": "POST",
         "path": "/platform/tree/persons",
         "body": {
@@ -36,8 +36,8 @@
             "cache-control": "no-cache, no-store, no-transform, must-revalidate, max-age=0",
             "content-type": "application/x-fs-v1+json",
             "date": "Tue, 16 Aug 2016 19:01:59 GMT",
-            "link": "<https://sandbox.familysearch.org/platform/tree/ancestry?person=L5ZK-VTK>; rel=\"ancestry\", <https://sandbox.familysearch.org/platform/tree/persons/L5ZK-VTK/child-relationships>; rel=\"child-relationships\", <https://sandbox.familysearch.org/platform/tree/descendancy?person=L5ZK-VTK>; rel=\"descendancy\", <https://sandbox.familysearch.org/platform/tree/persons/L5ZK-VTK/discussion-references>; rel=\"discussion-references\", <https://sandbox.familysearch.org/platform/tree/persons/L5ZK-VTK/matches>; rel=\"matches\", <https://sandbox.familysearch.org/platform/tree/persons/L5ZK-VTK/notes>; rel=\"notes\", <https://sandbox.familysearch.org/platform/tree/persons/L5ZK-VTK/parent-relationships>; rel=\"parent-relationships\", <https://sandbox.familysearch.org/platform/tree/persons-with-relationships?person=L5ZK-VTK>; rel=\"person-with-relationships\", <https://sandbox.familysearch.org/platform/tree/persons/L5ZK-VTK/source-references>; rel=\"source-references\", <https://sandbox.familysearch.org/platform/tree/persons/L5ZK-VTK/spouse-relationships>; rel=\"spouse-relationships\"",
-            "location": "https://sandbox.familysearch.org/platform/tree/persons/L5ZK-VTK",
+            "link": "<https://integration.familysearch.org/platform/tree/ancestry?person=L5ZK-VTK>; rel=\"ancestry\", <https://integration.familysearch.org/platform/tree/persons/L5ZK-VTK/child-relationships>; rel=\"child-relationships\", <https://integration.familysearch.org/platform/tree/descendancy?person=L5ZK-VTK>; rel=\"descendancy\", <https://integration.familysearch.org/platform/tree/persons/L5ZK-VTK/discussion-references>; rel=\"discussion-references\", <https://integration.familysearch.org/platform/tree/persons/L5ZK-VTK/matches>; rel=\"matches\", <https://integration.familysearch.org/platform/tree/persons/L5ZK-VTK/notes>; rel=\"notes\", <https://integration.familysearch.org/platform/tree/persons/L5ZK-VTK/parent-relationships>; rel=\"parent-relationships\", <https://integration.familysearch.org/platform/tree/persons-with-relationships?person=L5ZK-VTK>; rel=\"person-with-relationships\", <https://integration.familysearch.org/platform/tree/persons/L5ZK-VTK/source-references>; rel=\"source-references\", <https://integration.familysearch.org/platform/tree/persons/L5ZK-VTK/spouse-relationships>; rel=\"spouse-relationships\"",
+            "location": "https://integration.familysearch.org/platform/tree/persons/L5ZK-VTK",
             "server": "Apache-Coyote/1.1",
             "vary": "Accept, Accept-Language, Accept-Encoding, Expect, Accept-Encoding",
             "x-entity-id": "L5ZK-VTK",

@@ -20,7 +20,7 @@
    * 
    * @param {Object} options
    * @param {String} options.environment Reference environment: production, beta,
-   * or sandbox. Defaults to sandbox.
+   * or integration. Defaults to integration.
    * @param {String} options.appKey Application Key
    * @param {String} options.redirectUri OAuth2 redirect URI
    * @param {String} options.saveAccessToken Save the access token to a cookie
@@ -32,7 +32,7 @@
    */
   var FamilySearch = function(options){
     this.appKey = options.appKey;
-    this.environment = options.environment || 'sandbox';
+    this.environment = options.environment || 'integration';
     this.redirectUri = options.redirectUri;
     this.saveAccessToken = options.saveAccessToken || true;
     this.tokenCookie = options.tokenCookie || 'FS_AUTH_TOKEN';
@@ -440,7 +440,7 @@
       case 'beta':
         return 'https://identbeta.familysearch.org';
       default:
-        return 'https://identint.familysearch.org';
+        return 'https://integration.familysearch.org';
     }
   };
   
@@ -456,7 +456,7 @@
       case 'beta':
         return 'https://beta.familysearch.org';
       default:
-        return 'https://sandbox.familysearch.org';
+        return 'https://integration.familysearch.org';
     }
   };
   

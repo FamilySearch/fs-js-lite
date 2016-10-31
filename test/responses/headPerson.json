@@ -1,6 +1,6 @@
 [
     {
-        "scope": "https://sandbox.familysearch.org:443",
+        "scope": "https://integration.familysearch.org:443",
         "method": "HEAD",
         "path": "/platform/tree/persons/L5C2-WYC",
         "body": "",
