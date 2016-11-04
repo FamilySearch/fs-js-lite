@@ -1,11 +1,15 @@
 {
   "name": "fs-js-lite",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Lite JS SDK for the FamilySearch API",
   "main": "src/FamilySearch.js",
   "scripts": {
     "test": "mocha",
-    "test:record": "NOCK_BACK_MODE=record npm test"
+    "test:record": "NOCK_BACK_MODE=record npm test",
+    "prepublish": "npm run build",
+    "build": "mkdir -p dist && npm run build:full && npm run build:min",
+    "build:full": "webpack --output-library FamilySearch src/FamilySearch.js dist/FamilySearch.js",
+    "build:min": "webpack --output-library FamilySearch --optimize-minimize src/FamilySearch.js dist/FamilySearch.min.js"
   },
   "repository": {
     "type": "git",
@@ -20,6 +24,14 @@
     "chai": "^3.5.0",
     "jsdom": "^9.4.2",
     "mocha": "^3.0.2",
-    "nock": "8.0.0"
-  }
+    "nock": "8.0.0",
+    "webpack": "^1.13.3"
+  },
+  "dependencies": {
+    "doc-cookies": "^1.0.2"
+  },
+  "files": [
+    "dist",
+    "src"
+  ]
 }
