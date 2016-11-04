@@ -13,13 +13,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/york-solutions/fs-js-lite.git"
+    "url": "git+https://github.com/FamilySearch/fs-js-lite.git"
   },
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/york-solutions/fs-js-lite/issues"
+    "url": "https://github.com/FamilySearch/fs-js-lite/issues"
   },
-  "homepage": "https://github.com/york-solutions/fs-js-lite#readme",
+  "homepage": "https://github.com/FamilySearch/fs-js-lite#readme",
   "devDependencies": {
     "chai": "^3.5.0",
     "jsdom": "^9.4.2",
