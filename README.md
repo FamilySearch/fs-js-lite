@@ -13,6 +13,21 @@ considered bad practice when using the API. In most cases, FamilySearch does not
 consider URL changes as breaking changes. Read more about 
 [dealing with change](https://familysearch.org/developers/docs/guides/evolution).
 
+## Install
+
+The SDK is currently designed to only work in the browser. If you have a build
+process that doesn't use bower then you may install from npm
+
+```
+npm install --save fs-js-lite
+```
+
+Or you may use the CDN
+
+```html
+<script src="https://unpkg.com/fs-js-lite@latest/dist/FamilySearch.min.js"></script>
+```
+
 ## Usage
 
 The SDK includes a UMD wrapper to support being loaded in AMD environments (RequireJS)
