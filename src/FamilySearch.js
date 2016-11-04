@@ -252,7 +252,8 @@
    */
   FamilySearch.prototype.request = function(originalUrl, originalOptions, callback){
     
-    var finalOptions;
+    var client = this,
+        finalOptions;
     
     // Allow for options to not be given in which case the callback will be
     // the second argument
@@ -279,7 +280,9 @@
     }
     
     // Attach response handler
-    req.onload = this._responseHandler(req, finalOptions, callback);
+    req.onload = function(){
+      client._processResponse(req, finalOptions, callback);
+    };
     
     // Attach error handler
     req.onerror = function(error){
@@ -289,38 +292,6 @@
     // Now we can send the request
     req.send(finalOptions.body);
     
-  };
-  
-  /**
-   * Get the ident host name for OAuth
-   * 
-   * @return string
-   */
-  FamilySearch.prototype.identHost = function(){
-    switch (this.environment) {
-      case 'production':
-        return 'https://ident.familysearch.org';
-      case 'beta':
-        return 'https://identbeta.familysearch.org';
-      default:
-        return 'https://integration.familysearch.org';
-    }
-  };
-  
-  /**
-   * Get the host name for the platform API
-   * 
-   * @return string
-   */
-  FamilySearch.prototype.platformHost = function(){
-    switch (this.environment) {
-      case 'production':
-        return 'https://familysearch.org';
-      case 'beta':
-        return 'https://beta.familysearch.org';
-      default:
-        return 'https://integration.familysearch.org';
-    }
   };
   
   /**
@@ -420,76 +391,117 @@
    * 
    * @return {Function}
    */
-  FamilySearch.prototype._responseHandler = function(req, options, callback){
+  FamilySearch.prototype._processResponse = function(req, options, callback){
       
     var client = this;
+      
+    // Construct a response object
+    var res = createResponse(req, options);
     
-    return function(){
-      
-      // Construct a response object
-      var res = {
-        statusCode: req.status,
-        statusText: req.statusText,
-        getHeader: function(name){
-          return req.getResponseHeader(name);
-        },
-        getAllHeaders: function(){
-          return req.getAllResponseHeaders();
-        },
-        originalUrl: options.url,
-        effectiveUrl: options.url,
-        redirected: false,
-        requestMethod: options.method,
-        requestHeaders: options.headers,
-        body: req.responseText,
-        retries: 0,
-        throttled: false
-      };
-      
-      // Catch redirects
-      var location = res.getHeader('Location');
-      if(res.statusCode === 200 && location && location !== options.url ){
-        setTimeout(function(){
-          client.request(res.getHeader('Location'), options, function(response){
-            if(response){
-              response.originalUrl = options.url;
-              response.redirected = true;
-            }
-            setTimeout(function(){
-              callback(response);
-            });
+    // Catch redirects
+    var location = res.getHeader('Location');
+    if(res.statusCode === 200 && location && location !== options.url ){
+      setTimeout(function(){
+        client.request(res.getHeader('Location'), options, function(response){
+          if(response){
+            response.originalUrl = options.url;
+            response.redirected = true;
+          }
+          setTimeout(function(){
+            callback(response);
           });
         });
-        return;
-      }
-      
-      if(res.statusCode === 429 && options.retries < client.maxThrottledRetries){
-        var retryAfter = parseInt(res.getHeader('Retry'), 10) * 1000 || 1000;
-        setTimeout(function(){
-          client.request(options.url, options, function(response){
-            response.throttled = true;
-            response.retries = ++options.retries;
-            setTimeout(function(){
-              callback(response);
-            });
+      });
+      return;
+    }
+    
+    if(res.statusCode === 429 && options.retries < client.maxThrottledRetries){
+      var retryAfter = parseInt(res.getHeader('Retry'), 10) * 1000 || 1000;
+      setTimeout(function(){
+        client.request(options.url, options, function(response){
+          response.throttled = true;
+          response.retries = ++options.retries;
+          setTimeout(function(){
+            callback(response);
           });
-        }, retryAfter);
-        return;
+        });
+      }, retryAfter);
+      return;
+    }
+    
+    var contentType = res.getHeader('Content-Type');
+    if(contentType && contentType.indexOf('json') !== -1){
+      try {
+        res.data = JSON.parse(res.body);
+      } catch(e) { 
+        // Should we handle this error? how could we?
       }
+    }
+    
+    callback(res);
       
-      var contentType = res.getHeader('Content-Type');
-      if(contentType && contentType.indexOf('json') !== -1){
-        try {
-          res.data = JSON.parse(res.body);
-        } catch(e) { 
-          // Should we handle this error? how could we?
-        }
-      }
-      
-      callback(res);
-      
-    };
   };
+  
+  /**
+   * Get the ident host name for OAuth
+   * 
+   * @return string
+   */
+  FamilySearch.prototype.identHost = function(){
+    switch (this.environment) {
+      case 'production':
+        return 'https://ident.familysearch.org';
+      case 'beta':
+        return 'https://identbeta.familysearch.org';
+      default:
+        return 'https://integration.familysearch.org';
+    }
+  };
+  
+  /**
+   * Get the host name for the platform API
+   * 
+   * @return string
+   */
+  FamilySearch.prototype.platformHost = function(){
+    switch (this.environment) {
+      case 'production':
+        return 'https://familysearch.org';
+      case 'beta':
+        return 'https://beta.familysearch.org';
+      default:
+        return 'https://integration.familysearch.org';
+    }
+  };
+  
+  /**
+   * Create a response object
+   * 
+   * @param {XMLHttpRequest} req
+   * @param {Object} options {url, method, headers, body,  retries}
+   * 
+   * @return {Object} response
+   */
+  function createResponse(req, options){
+    return {
+      statusCode: req.status,
+      statusText: req.statusText,
+      getHeader: function(name){
+        return req.getResponseHeader(name);
+      },
+      getAllHeaders: function(){
+        return req.getAllResponseHeaders();
+      },
+      originalUrl: options.url,
+      effectiveUrl: options.url,
+      redirected: false,
+      requestMethod: options.method,
+      requestHeaders: options.headers,
+      body: req.responseText,
+      retries: 0,
+      throttled: false
+    };
+  }
   
   /**
    * URL encode an object
