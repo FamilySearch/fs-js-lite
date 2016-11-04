@@ -250,45 +250,104 @@
    * set the `Content-Type` header to `application/x-fs-v1+json` if it's missing.
    * @param {Function} callback
    */
-  FamilySearch.prototype.request = function(url, options, callback){
+  FamilySearch.prototype.request = function(originalUrl, originalOptions, callback){
     
-    var client = this,
-        method = 'GET', 
-        headers = {},
-        body;
+    var finalOptions;
     
     // Allow for options to not be given in which case the callback will be
     // the second argument
     if(typeof options === 'function'){
-      callback = options;
-      options = {};
-    }
-    
-    // Since options are passed by reference, we copy the object to prevent
-    // the developer from seeing any modifications which could be especially
-    // problematic if they re-use option objects. But we try not to modify the
-    // object too much because on redirects we want the request options to be
-    // re-processed against the new URL
-    options = JSON.parse(JSON.stringify(options));
-    
-    if(!options._retries){
-      options._retries = 0;
+      callback = originalOptions;
+      originalOptions = {};
     }
     
     if(!callback){
       callback = function(){};
     }
     
-    if(options.method){
-      method = options.method;
+    finalOptions = this._prepareRequestOptions(originalUrl, originalOptions);
+    
+    // Create the XMLHttpRequest
+    var req = new XMLHttpRequest();
+    req.open(finalOptions.method, finalOptions.url);
+    
+    // Set headers
+    for(var name in finalOptions.headers){
+      if(finalOptions.headers.hasOwnProperty(name)) {
+        req.setRequestHeader(name, finalOptions.headers[name]);
+      }
     }
     
-    if(options.headers){
+    // Attach response handler
+    req.onload = this._responseHandler(req, finalOptions, callback);
+    
+    // Attach error handler
+    req.onerror = function(error){
+      callback();
+    };
+    
+    // Now we can send the request
+    req.send(finalOptions.body);
+    
+  };
+  
+  /**
+   * Get the ident host name for OAuth
+   * 
+   * @return string
+   */
+  FamilySearch.prototype.identHost = function(){
+    switch (this.environment) {
+      case 'production':
+        return 'https://ident.familysearch.org';
+      case 'beta':
+        return 'https://identbeta.familysearch.org';
+      default:
+        return 'https://integration.familysearch.org';
+    }
+  };
+  
+  /**
+   * Get the host name for the platform API
+   * 
+   * @return string
+   */
+  FamilySearch.prototype.platformHost = function(){
+    switch (this.environment) {
+      case 'production':
+        return 'https://familysearch.org';
+      case 'beta':
+        return 'https://beta.familysearch.org';
+      default:
+        return 'https://integration.familysearch.org';
+    }
+  };
+  
+  /**
+   * Process request options to set defaults and prepare for creating the
+   * XMLHttpRequest
+   */
+  FamilySearch.prototype._prepareRequestOptions = function(url, originalOptions){
+    
+    var method = 'GET',
+        headers = {},
+        body,
+        retries = 0;
+        
+    if(originalOptions.retries){
+      retries = originalOptions.retries;
+    }
+    
+    if(originalOptions.method){
+      method = originalOptions.method;
+    }
+    
+    if(originalOptions.headers){
       // Copy the headers
-      headers = JSON.parse(JSON.stringify(options.headers));
+      headers = JSON.parse(JSON.stringify(originalOptions.headers));
     }
     
-    body = options.body;
+    body = originalOptions.body;
     
     // Calculate the URL
     //
@@ -343,19 +402,29 @@
       }
     }
     
-    // Create the XMLHttpRequest
-    var req = new XMLHttpRequest();
-    req.open(method, url);
+    return {
+      url: url,
+      method: method,
+      headers: headers,
+      body: body,
+      retries: retries
+    };
+  };
+  
+  /**
+   * Handle a response
+   * 
+   * @param {XMLHttpRequest} req
+   * @param {Object} options {url, method, headers, body, retries}
+   * @param {Function} callback(res)
+   * 
+   * @return {Function}
+   */
+  FamilySearch.prototype._responseHandler = function(req, options, callback){
+      
+    var client = this;
     
-    // Set headers
-    for(var name in headers){
-      if(headers.hasOwnProperty(name)) {
-        req.setRequestHeader(name, headers[name]);
-      }
-    }
-    
-    // Attach success handler
-    req.onload = function(){
+    return function(){
       
       // Construct a response object
       var res = {
@@ -367,11 +436,11 @@
         getAllHeaders: function(){
           return req.getAllResponseHeaders();
         },
-        originalUrl: url,
-        effectiveUrl: url,
+        originalUrl: options.url,
+        effectiveUrl: options.url,
         redirected: false,
-        requestMethod: method,
-        requestHeaders: headers,
+        requestMethod: options.method,
+        requestHeaders: options.headers,
         body: req.responseText,
         retries: 0,
         throttled: false
@@ -379,24 +448,27 @@
       
       // Catch redirects
       var location = res.getHeader('Location');
-      if(res.statusCode === 200 && location && location !== url ){
-        return client.request(res.getHeader('Location'), options, function(response){
-          if(response){
-            response.originalUrl = url;
-            response.redirected = true;
-          }
-          setTimeout(function(){
-            callback(response);
+      if(res.statusCode === 200 && location && location !== options.url ){
+        setTimeout(function(){
+          client.request(res.getHeader('Location'), options, function(response){
+            if(response){
+              response.originalUrl = options.url;
+              response.redirected = true;
+            }
+            setTimeout(function(){
+              callback(response);
+            });
           });
         });
+        return;
       }
       
-      if(res.statusCode === 429 && options._retries < client.maxThrottledRetries){
+      if(res.statusCode === 429 && options.retries < client.maxThrottledRetries){
         var retryAfter = parseInt(res.getHeader('Retry'), 10) * 1000 || 1000;
         setTimeout(function(){
-          client.request(url, options, function(response){
+          client.request(options.url, options, function(response){
             response.throttled = true;
-            response.retries = ++options._retries;
+            response.retries = ++options.retries;
             setTimeout(function(){
               callback(response);
             });
@@ -417,47 +489,6 @@
       callback(res);
       
     };
-    
-    // Attach error handler
-    req.onerror = function(error){
-      callback();
-    };
-    
-    // Now we can send the request
-    req.send(body);
-    
-  };
-  
-  /**
-   * Get the ident host name for OAuth
-   * 
-   * @return string
-   */
-  FamilySearch.prototype.identHost = function(){
-    switch (this.environment) {
-      case 'production':
-        return 'https://ident.familysearch.org';
-      case 'beta':
-        return 'https://identbeta.familysearch.org';
-      default:
-        return 'https://integration.familysearch.org';
-    }
-  };
-  
-  /**
-   * Get the host name for the platform API
-   * 
-   * @return string
-   */
-  FamilySearch.prototype.platformHost = function(){
-    switch (this.environment) {
-      case 'production':
-        return 'https://familysearch.org';
-      case 'beta':
-        return 'https://beta.familysearch.org';
-      default:
-        return 'https://integration.familysearch.org';
-    }
   };
   
   /**
