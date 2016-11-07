@@ -70,7 +70,7 @@ fs.oauthRedirect();
 // true is returned it means a code was found and a request was sent to exchange
 // the code for an access token. You still must use a callback to check the response
 // of that request and verify whether an access token was recieved.
-fs.oauthRedirectResponse(function(response){ });
+fs.oauthResponse(function(response){ });
 
 // OAuth password flow. Access tokens will be automatically saved in a cookie
 // if that behavior is enabled. The OAuth password flow is disabled by default
