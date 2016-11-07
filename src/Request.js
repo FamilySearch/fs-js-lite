@@ -13,11 +13,20 @@ var Request = function(url, options){
   this.retries = options.retries || 0;
 };
 
-Request.prototype.prepare = function(){
+Request.prototype.prepare = function(client){
   
   if(this.headers){
     // Copy the headers
     this.headers = JSON.parse(JSON.stringify(this.headers));
+  }
+  
+  // Calculate the URL
+  //
+  // For now we just need to know whether the protocol + host were provided
+  // because if we just received a path such as /platform/tree/persons then
+  // we want to automatically prepend the platform host.
+  if(this.url.indexOf('https://') === -1){
+    this.url = client.platformHost() + this.url;
   }
   
   var platformRequest = this.url.indexOf('/platform/') !== -1;
@@ -28,8 +37,8 @@ Request.prototype.prepare = function(){
   }
   
   // Set the Authorization header if we have an access token
-  if(!this.headers['Authorization'] && this.accessToken){
-    this.headers['Authorization'] = 'Bearer ' + this.accessToken;
+  if(!this.headers['Authorization'] && client.accessToken){
+    this.headers['Authorization'] = 'Bearer ' + client.accessToken;
   }
   
   // Disable automatic redirects

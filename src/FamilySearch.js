@@ -254,17 +254,8 @@ FamilySearch.prototype.request = function(url, options, callback){
     callback = function(){};
   }
   
-  // Calculate the URL
-  //
-  // For now we just need to know whether the protocol + host were provided
-  // because if we just received a path such as /platform/tree/persons then
-  // we want to automatically prepend the platform host.
-  if(url.indexOf('https://') === -1){
-    url = this.platformHost() + url;
-  }
-  
   request = new Request(url, options);
-  request.prepare();
+  request.prepare(this);
   
   XHR(request, function(response){
     client._processResponse(request, response, callback);
