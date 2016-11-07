@@ -1,4 +1,5 @@
-var cookies = require('doc-cookies');
+var cookies = require('doc-cookies'),
+    XHR = require('./XHR');
 
 /**
  * Create an instance of the FamilySearch SDK Client
@@ -253,29 +254,9 @@ FamilySearch.prototype.request = function(originalUrl, originalOptions, callback
   
   finalOptions = this._prepareRequestOptions(originalUrl, originalOptions);
   
-  // Create the XMLHttpRequest
-  var req = new XMLHttpRequest();
-  req.open(finalOptions.method, finalOptions.url);
-  
-  // Set headers
-  for(var name in finalOptions.headers){
-    if(finalOptions.headers.hasOwnProperty(name)) {
-      req.setRequestHeader(name, finalOptions.headers[name]);
-    }
-  }
-  
-  // Attach response handler
-  req.onload = function(){
-    client._processResponse(req, finalOptions, callback);
-  };
-  
-  // Attach error handler
-  req.onerror = function(error){
-    callback();
-  };
-  
-  // Now we can send the request
-  req.send(finalOptions.body);
+  XHR(finalOptions, function(res){
+    client._processResponse(res, finalOptions, callback);
+  });
   
 };
 
@@ -370,19 +351,16 @@ FamilySearch.prototype._prepareRequestOptions = function(url, originalOptions){
 /**
  * Handle a response
  * 
- * @param {XMLHttpRequest} req
+ * @param {Object} res
  * @param {Object} options {url, method, headers, body, retries}
  * @param {Function} callback(res)
  * 
  * @return {Function}
  */
-FamilySearch.prototype._processResponse = function(req, options, callback){
+FamilySearch.prototype._processResponse = function(res, options, callback){
     
   var client = this;
     
-  // Construct a response object
-  var res = createResponse(req, options);
-  
   // Catch redirects
   var location = res.getHeader('Location');
   if(res.statusCode === 200 && location && location !== options.url ){
@@ -458,35 +436,6 @@ FamilySearch.prototype.platformHost = function(){
       return 'https://integration.familysearch.org';
   }
 };
-
-/**
- * Create a response object
- * 
- * @param {XMLHttpRequest} req
- * @param {Object} options {url, method, headers, body,  retries}
- * 
- * @return {Object} response
- */
-function createResponse(req, options){
-  return {
-    statusCode: req.status,
-    statusText: req.statusText,
-    getHeader: function(name){
-      return req.getResponseHeader(name);
-    },
-    getAllHeaders: function(){
-      return req.getAllResponseHeaders();
-    },
-    originalUrl: options.url,
-    effectiveUrl: options.url,
-    redirected: false,
-    requestMethod: options.method,
-    requestHeaders: options.headers,
-    body: req.responseText,
-    retries: 0,
-    throttled: false
-  };
-}
 
 /**
  * URL encode an object
