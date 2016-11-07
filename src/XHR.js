@@ -1,61 +1,61 @@
 /**
  * XMLHttpRequest wrapper
  * 
- * @param {Object} options {url, method, headers, body, retries}
+ * @param {Object} request {url, method, headers, body, retries}
  * @param {Function} callback function(response)
  */
-module.exports = function(options, callback){
+module.exports = function(request, callback){
   
   // Create the XMLHttpRequest
-  var req = new XMLHttpRequest();
-  req.open(options.method, options.url);
+  var xhr = new XMLHttpRequest();
+  xhr.open(request.method, request.url);
   
   // Set headers
-  for(var name in options.headers){
-    if(options.headers.hasOwnProperty(name)) {
-      req.setRequestHeader(name, options.headers[name]);
+  for(var name in request.headers){
+    if(request.headers.hasOwnProperty(name)) {
+      xhr.setRequestHeader(name, request.headers[name]);
     }
   }
   
   // Attach response handler
-  req.onload = function(){
-    processResponse(req, options, callback);
+  xhr.onload = function(){
+    createResponse(xhr, request, callback);
   };
   
   // Attach error handler
-  req.onerror = function(error){
+  xhr.onerror = function(error){
     callback();
   };
   
   // Now we can send the request
-  req.send(options.body);
+  xhr.send(request.body);
   
 };
 
 /**
  * Convert an XHR response to a standard response object
  * 
- * @param {XMLHttpRequest} req
- * @param {Object} options {url, method, headers, retries}
+ * @param {XMLHttpRequest} xhr
+ * @param {Object} request {url, method, headers, retries}
  * @param {Function} callback function(response)
  */
-function processResponse(req, options, callback){
+function createResponse(xhr, request, callback){
   setTimeout(function(){
     callback({
-      statusCode: req.status,
-      statusText: req.statusText,
+      statusCode: xhr.status,
+      statusText: xhr.statusText,
       getHeader: function(name){
-        return req.getResponseHeader(name);
+        return xhr.getResponseHeader(name);
       },
       getAllHeaders: function(){
-        return req.getAllResponseHeaders();
+        return xhr.getAllResponseHeaders();
       },
-      originalUrl: options.url,
-      effectiveUrl: options.url,
+      originalUrl: request.url,
+      effectiveUrl: request.url,
       redirected: false,
-      requestMethod: options.method,
-      requestHeaders: options.headers,
-      body: req.responseText,
+      requestMethod: request.method,
+      requestHeaders: request.headers,
+      body: xhr.responseText,
       retries: 0,
       throttled: false
     });

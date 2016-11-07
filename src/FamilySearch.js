@@ -1,5 +1,7 @@
 var cookies = require('doc-cookies'),
-    XHR = require('./XHR');
+    Request = require('./Request'),
+    XHR = require('./XHR'),
+    utils = require('./utils');
 
 /**
  * Create an instance of the FamilySearch SDK Client
@@ -66,7 +68,7 @@ FamilySearch.prototype.oauthResponse = function(callback){
   var client = this;
   
   // Extract the code from the query
-  var code = getParameterByName('code');
+  var code = utils.getParameterByName('code');
   
   if(code){
   
@@ -236,55 +238,21 @@ function _req(method){
  * set the `Content-Type` header to `application/x-fs-v1+json` if it's missing.
  * @param {Function} callback
  */
-FamilySearch.prototype.request = function(originalUrl, originalOptions, callback){
+FamilySearch.prototype.request = function(url, options, callback){
   
   var client = this,
-      finalOptions;
+      request;
   
   // Allow for options to not be given in which case the callback will be
   // the second argument
   if(typeof options === 'function'){
-    callback = originalOptions;
-    originalOptions = {};
+    callback = options;
+    options = {};
   }
   
   if(!callback){
     callback = function(){};
   }
-  
-  finalOptions = this._prepareRequestOptions(originalUrl, originalOptions);
-  
-  XHR(finalOptions, function(res){
-    client._processResponse(res, finalOptions, callback);
-  });
-  
-};
-
-/**
- * Process request options to set defaults and prepare for creating the
- * XMLHttpRequest
- */
-FamilySearch.prototype._prepareRequestOptions = function(url, originalOptions){
-  
-  var method = 'GET',
-      headers = {},
-      body,
-      retries = 0;
-      
-  if(originalOptions.retries){
-    retries = originalOptions.retries;
-  }
-  
-  if(originalOptions.method){
-    method = originalOptions.method;
-  }
-  
-  if(originalOptions.headers){
-    // Copy the headers
-    headers = JSON.parse(JSON.stringify(originalOptions.headers));
-  }
-  
-  body = originalOptions.body;
   
   // Calculate the URL
   //
@@ -295,79 +263,35 @@ FamilySearch.prototype._prepareRequestOptions = function(url, originalOptions){
     url = this.platformHost() + url;
   }
   
-  var platformRequest = url.indexOf('/platform/') !== -1;
+  request = new Request(url, options);
+  request.prepare();
   
-  // Set the Accept header if it's missing on /platform URLs
-  if(!headers['Accept'] && platformRequest){
-    headers['Accept'] = 'application/x-fs-v1+json';
-  }
+  XHR(request, function(response){
+    client._processResponse(request, response, callback);
+  });
   
-  // Set the Authorization header if we have an access token
-  if(!headers['Authorization'] && this.accessToken){
-    headers['Authorization'] = 'Bearer ' + this.accessToken;
-  }
-  
-  // Disable automatic redirects
-  if(!headers['X-Expect-Override'] && platformRequest){
-    headers['X-Expect-Override'] = '200-ok';
-  }
-  
-  // Process the body
-  //
-  // Allow for a string or object. If an object is given then stringify it.
-  // Try to guess the appropriate `Content-Type` value if it's missing.
-  if(body && (method === 'POST' || method === 'PUT')){
-    
-    // Try to guess the content type if it's missing
-    if(!headers['Content-Type'] && platformRequest){
-      headers['Content-Type'] = 'application/x-fs-v1+json';
-    }
-    
-    // Turn objects into strings
-    if(typeof body !== 'string'){
-      
-      // JSON.stringify() if the content-type is JSON
-      if(headers['Content-Type'] && headers['Content-Type'].indexOf('json') !== -1){
-        body = JSON.stringify(body);
-      } 
-      
-      // URL encode
-      else {
-        body = urlEncode(body);
-      }
-      
-    }
-  }
-  
-  return {
-    url: url,
-    method: method,
-    headers: headers,
-    body: body,
-    retries: retries
-  };
 };
 
 /**
- * Handle a response
+ * Handle redirects, throttling, and JSON parsing
  * 
- * @param {Object} res
- * @param {Object} options {url, method, headers, body, retries}
- * @param {Function} callback(res)
+ * @param {Object} request
+ * @param {Object} response
+ * @param {Function} callback(response)
  * 
  * @return {Function}
  */
-FamilySearch.prototype._processResponse = function(res, options, callback){
+FamilySearch.prototype._processResponse = function(request, response, callback){
     
   var client = this;
     
   // Catch redirects
-  var location = res.getHeader('Location');
-  if(res.statusCode === 200 && location && location !== options.url ){
+  var location = response.getHeader('Location');
+  if(response.statusCode === 200 && location && location !== request.url ){
     setTimeout(function(){
-      client.request(res.getHeader('Location'), options, function(response){
+      client.request(response.getHeader('Location'), request, function(response){
         if(response){
-          response.originalUrl = options.url;
+          response.originalUrl = request.url;
           response.redirected = true;
         }
         setTimeout(function(){
@@ -378,12 +302,12 @@ FamilySearch.prototype._processResponse = function(res, options, callback){
     return;
   }
   
-  if(res.statusCode === 429 && options.retries < client.maxThrottledRetries){
-    var retryAfter = parseInt(res.getHeader('Retry'), 10) * 1000 || 1000;
+  if(response.statusCode === 429 && request.retries < client.maxThrottledRetries){
+    var retryAfter = parseInt(response.getHeader('Retry'), 10) * 1000 || 1000;
     setTimeout(function(){
-      client.request(options.url, options, function(response){
+      client.request(request.url, request, function(response){
         response.throttled = true;
-        response.retries = ++options.retries;
+        response.retries = ++request.retries;
         setTimeout(function(){
           callback(response);
         });
@@ -392,16 +316,16 @@ FamilySearch.prototype._processResponse = function(res, options, callback){
     return;
   }
   
-  var contentType = res.getHeader('Content-Type');
+  var contentType = response.getHeader('Content-Type');
   if(contentType && contentType.indexOf('json') !== -1){
     try {
-      res.data = JSON.parse(res.body);
+      response.data = JSON.parse(response.body);
     } catch(e) { 
       // Should we handle this error? how could we?
     }
   }
   
-  callback(res);
+  callback(response);
     
 };
 
@@ -436,33 +360,5 @@ FamilySearch.prototype.platformHost = function(){
       return 'https://integration.familysearch.org';
   }
 };
-
-/**
- * URL encode an object
- * 
- * http://stackoverflow.com/a/1714899
- * 
- * @param {Object}
- * @return {String}
- */
-function urlEncode(obj){
-  var str = [];
-  for(var p in obj){
-    if (obj.hasOwnProperty(p)) {
-      str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
-    }
-  }
-  return str.join("&");
-}
-
-/**
- * Get a query parameter by name
- * 
- * http://stackoverflow.com/a/5158301
- */
-function getParameterByName(name) {
-  var match = RegExp('[?&]' + name + '=([^&]*)').exec(window.location.search);
-  return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
-}
 
 module.exports = FamilySearch;
