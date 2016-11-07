@@ -253,8 +253,7 @@ FamilySearch.prototype.request = function(url, options, callback){
     options = {};
   }
   
-  var request = new Request(this, url, options, callback);
-  request.execute(callback);
+  this._execute(new Request(this, url, options, callback), callback);
 };
 
 /**
@@ -262,7 +261,7 @@ FamilySearch.prototype.request = function(url, options, callback){
  * 
  * @param {Object} request
  */
-FamilySearch.prototype._executeRequest = function(request, callback){
+FamilySearch.prototype._execute = function(request, callback){
   var client = this;
   XHR(request, function(response){
     client._runResponseMiddleware(request, response, callback);

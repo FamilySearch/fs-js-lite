@@ -4,7 +4,7 @@ module.exports = function(client, request, response, next){
     setTimeout(function(){
       var originalUrl = request.url;
       request.url = response.getHeader('Location');
-      request.execute(function(response){
+      client._execute(request, function(response){
         if(response){
           response.originalUrl = originalUrl;
           response.redirected = true;

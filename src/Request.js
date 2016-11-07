@@ -81,8 +81,4 @@ Request.prototype._prepare = function(){
   
 };
 
-Request.prototype.execute = function(callback){
-  this.client._executeRequest(this, callback);
-};
-
 module.exports = Request;

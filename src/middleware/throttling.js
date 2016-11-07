@@ -8,7 +8,7 @@ module.exports = function(client, request, response, next){
     // until we retry the request
     var retryAfter = parseInt(response.getHeader('Retry'), 10) * 1000 || 1000;
     setTimeout(function(){
-      request.execute(function(response){
+      client._execute(request, function(response){
         response.throttled = true;
         response.retries = ++request.retries;
         setTimeout(function(){
