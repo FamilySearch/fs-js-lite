@@ -211,5 +211,4 @@ The SDK is designed for being used in a browser environment therefore we use
 [jsdom](https://github.com/tmpvar/jsdom) for automated testing with a headless 
 browser environment. [Nock](https://github.com/node-nock/nock) is used to record
 and playback requests so that we don't need to rely on the API being available
-for tests, tests are faster, and we don't need to populate the API with data for
-testing.
+for tests.
