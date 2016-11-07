@@ -5,16 +5,21 @@ var utils = require('./utils');
  * 
  * @param {Object} options {url, method, headers, body, retries}
  */
-var Request = function(url, options){
+var Request = function(client, url, options, callback){
+  this.client = client;
   this.url = url;
   this.method = options.method || 'GET';
   this.headers = options.headers || {};
   this.body = options.body;
   this.retries = options.retries || 0;
-  this.callback = options.callback || function(){};
+  this.callback = callback || function(){};
+  this._prepare();
 };
 
-Request.prototype.prepare = function(client){
+/**
+ * Process the options into a workable format for XHR.
+ */
+Request.prototype._prepare = function(){
   
   if(this.headers){
     // Copy the headers
@@ -27,7 +32,7 @@ Request.prototype.prepare = function(client){
   // because if we just received a path such as /platform/tree/persons then
   // we want to automatically prepend the platform host.
   if(this.url.indexOf('https://') === -1){
-    this.url = client.platformHost() + this.url;
+    this.url = this.client.platformHost() + this.url;
   }
   
   var platformRequest = this.url.indexOf('/platform/') !== -1;
@@ -38,8 +43,8 @@ Request.prototype.prepare = function(client){
   }
   
   // Set the Authorization header if we have an access token
-  if(!this.headers['Authorization'] && client.accessToken){
-    this.headers['Authorization'] = 'Bearer ' + client.accessToken;
+  if(!this.headers['Authorization'] && this.client.accessToken){
+    this.headers['Authorization'] = 'Bearer ' + this.client.accessToken;
   }
   
   // Disable automatic redirects
@@ -74,6 +79,10 @@ Request.prototype.prepare = function(client){
     }
   }
   
+};
+
+Request.prototype.execute = function(callback){
+  this.client._executeRequest(this, callback);
 };
 
 module.exports = Request;

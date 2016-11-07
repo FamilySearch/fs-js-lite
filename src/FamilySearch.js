@@ -246,9 +246,6 @@ function _req(method){
  */
 FamilySearch.prototype.request = function(url, options, callback){
   
-  var client = this,
-      request;
-  
   // Allow for options to not be given in which case the callback will be
   // the second argument
   if(typeof options === 'function'){
@@ -256,15 +253,20 @@ FamilySearch.prototype.request = function(url, options, callback){
     options = {};
   }
   
-  options.callback = callback;
-  
-  request = new Request(url, options);
-  request.prepare(this);
-  
+  var request = new Request(this, url, options, callback);
+  request.execute(callback);
+};
+
+/**
+ * Execute a request
+ * 
+ * @param {Object} request
+ */
+FamilySearch.prototype._executeRequest = function(request, callback){
+  var client = this;
   XHR(request, function(response){
-    client._responseMiddleware(request, response, callback);
+    client._runResponseMiddleware(request, response, callback);
   });
-  
 };
 
 /**
@@ -274,7 +276,7 @@ FamilySearch.prototype.request = function(url, options, callback){
  * @param {Object} response
  * @param {Function} callback(response)
  */
-FamilySearch.prototype._responseMiddleware = function(request, response, callback){
+FamilySearch.prototype._runResponseMiddleware = function(request, response, callback){
   var client = this,
       middleware = this.middleware.response;
   
