@@ -11,6 +11,7 @@ var Request = function(url, options){
   this.headers = options.headers || {};
   this.body = options.body;
   this.retries = options.retries || 0;
+  this.callback = options.callback || function(){};
 };
 
 Request.prototype.prepare = function(client){

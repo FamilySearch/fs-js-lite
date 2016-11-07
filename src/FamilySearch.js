@@ -1,7 +1,8 @@
 var cookies = require('doc-cookies'),
     Request = require('./Request'),
     XHR = require('./XHR'),
-    utils = require('./utils');
+    utils = require('./utils'),
+    middleware = require('./middleware');
 
 /**
  * Create an instance of the FamilySearch SDK Client
@@ -25,6 +26,11 @@ var FamilySearch = function(options){
   this.saveAccessToken = options.saveAccessToken || true;
   this.tokenCookie = options.tokenCookie || 'FS_AUTH_TOKEN';
   this.maxThrottledRetries = options.maxThrottledRetries || 10;
+  
+  this.middleware = {
+    request: [],
+    response: [middleware.redirect, middleware.throttling, middleware.json]
+  };
   
   // Figure out initial authentication state
   if(this.saveAccessToken){
@@ -250,74 +256,48 @@ FamilySearch.prototype.request = function(url, options, callback){
     options = {};
   }
   
-  if(!callback){
-    callback = function(){};
-  }
+  options.callback = callback;
   
   request = new Request(url, options);
   request.prepare(this);
   
   XHR(request, function(response){
-    client._processResponse(request, response, callback);
+    client._responseMiddleware(request, response, callback);
   });
   
 };
 
 /**
- * Handle redirects, throttling, and JSON parsing
+ * Run response middleware
  * 
  * @param {Object} request
  * @param {Object} response
  * @param {Function} callback(response)
- * 
- * @return {Function}
  */
-FamilySearch.prototype._processResponse = function(request, response, callback){
-    
-  var client = this;
-    
-  // Catch redirects
-  var location = response.getHeader('Location');
-  if(response.statusCode === 200 && location && location !== request.url ){
-    setTimeout(function(){
-      client.request(response.getHeader('Location'), request, function(response){
-        if(response){
-          response.originalUrl = request.url;
-          response.redirected = true;
+FamilySearch.prototype._responseMiddleware = function(request, response, callback){
+  var client = this,
+      middleware = this.middleware.response;
+  
+  function callMiddleware(i){
+    if(i === middleware.length){
+      callback(response);
+    } else {
+      middleware[i](client, request, response, function(cancel){
+        
+        // Cancel response middleware by passing anything to the next function.
+        // Canceling middleware is useful when middleware issues a new request,
+        // such as throttling. We just drop this middleware chain when it's
+        // canceled because the new request will run it's own middleware.
+        if(typeof cancel === 'undefined'){
+          setTimeout(function(){
+            callMiddleware(++i);
+          });
         }
-        setTimeout(function(){
-          callback(response);
-        });
       });
-    });
-    return;
-  }
-  
-  if(response.statusCode === 429 && request.retries < client.maxThrottledRetries){
-    var retryAfter = parseInt(response.getHeader('Retry'), 10) * 1000 || 1000;
-    setTimeout(function(){
-      client.request(request.url, request, function(response){
-        response.throttled = true;
-        response.retries = ++request.retries;
-        setTimeout(function(){
-          callback(response);
-        });
-      });
-    }, retryAfter);
-    return;
-  }
-  
-  var contentType = response.getHeader('Content-Type');
-  if(contentType && contentType.indexOf('json') !== -1){
-    try {
-      response.data = JSON.parse(response.body);
-    } catch(e) { 
-      // Should we handle this error? how could we?
     }
   }
   
-  callback(response);
-    
+  callMiddleware(0);
 };
 
 /**
