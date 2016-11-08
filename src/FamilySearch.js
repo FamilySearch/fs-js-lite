@@ -2,7 +2,8 @@ var cookies = require('doc-cookies'),
     Request = require('./Request'),
     XHR = require('./XHR'),
     utils = require('./utils'),
-    middleware = require('./middleware');
+    requestMiddleware = require('./middleware/request'),
+    responseMiddleware = require('./middleware/response');
 
 /**
  * Create an instance of the FamilySearch SDK Client
@@ -28,8 +29,18 @@ var FamilySearch = function(options){
   this.maxThrottledRetries = options.maxThrottledRetries || 10;
   
   this.middleware = {
-    request: [],
-    response: [middleware.redirect, middleware.throttling, middleware.json]
+    request: [
+      requestMiddleware.url,
+      requestMiddleware.defaultAcceptHeader,
+      requestMiddleware.authorizationHeader, 
+      requestMiddleware.disableAutomaticRedirects, 
+      requestMiddleware.body
+    ],
+    response: [
+      responseMiddleware.redirect, 
+      responseMiddleware.throttling, 
+      responseMiddleware.json
+    ]
   };
   
   // Figure out initial authentication state
@@ -253,7 +264,7 @@ FamilySearch.prototype.request = function(url, options, callback){
     options = {};
   }
   
-  this._execute(new Request(this, url, options, callback), callback);
+  this._execute(new Request(url, options, callback), callback);
 };
 
 /**
@@ -263,9 +274,65 @@ FamilySearch.prototype.request = function(url, options, callback){
  */
 FamilySearch.prototype._execute = function(request, callback){
   var client = this;
-  XHR(request, function(response){
-    client._runResponseMiddleware(request, response, callback);
+  
+  // First we run request middleware
+  client._runRequestMiddleware(request, function(response){
+    
+    // If request middleware returns a response then we're done and return the
+    // response to the user. This may happen with caching middleware.
+    if(response){
+      setTimeout(function(){
+        callback(response);
+      });
+    } 
+    
+    // If we didn't receive a response from the request middleware then we
+    // proceed with executing the actual request.
+    else {
+      XHR(request, function(response){
+        
+        // Run response middleware.
+        client._runResponseMiddleware(request, response, callback);
+      });
+    }
   });
+};
+
+/**
+ * Run request middleware
+ * 
+ * @param {Object} request
+ * @param {Function} callback(response)
+ */
+FamilySearch.prototype._runRequestMiddleware = function(request, callback){
+  var client = this,
+      middleware = this.middleware.request;
+  
+  function callMiddleware(i){
+    if(i === middleware.length){
+      callback();
+    } else {
+      middleware[i](client, request, function(response){
+        
+        // Cancel request middleware by passing anything to the next function.
+        // Canceling request middleware is useful for caching that will return
+        // a cached response instead of issuing a new one.
+        if(typeof response === 'undefined'){
+          setTimeout(function(){
+            callMiddleware(++i);
+          });
+        }
+        
+        else {
+          setTimeout(function(){
+            callback(response);
+          });
+        }
+      });
+    }
+  }
+  
+  callMiddleware(0);
 };
 
 /**
