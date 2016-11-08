@@ -292,7 +292,11 @@ FamilySearch.prototype._execute = function(request, callback){
       XHR(request, function(response){
         
         // Run response middleware.
-        client._runResponseMiddleware(request, response, callback);
+        client._runResponseMiddleware(request, response, function(){
+          setTimeout(function(){
+            callback(response);
+          });
+        });
       });
     }
   });
@@ -305,34 +309,10 @@ FamilySearch.prototype._execute = function(request, callback){
  * @param {Function} callback(response)
  */
 FamilySearch.prototype._runRequestMiddleware = function(request, callback){
-  var client = this,
-      middleware = this.middleware.request;
-  
-  function callMiddleware(i){
-    if(i === middleware.length){
-      callback();
-    } else {
-      middleware[i](client, request, function(response){
-        
-        // Cancel request middleware by passing anything to the next function.
-        // Canceling request middleware is useful for caching that will return
-        // a cached response instead of issuing a new one.
-        if(typeof response === 'undefined'){
-          setTimeout(function(){
-            callMiddleware(++i);
-          });
-        }
-        
-        else {
-          setTimeout(function(){
-            callback(response);
-          });
-        }
-      });
-    }
-  }
-  
-  callMiddleware(0);
+  var client = this;
+  utils.asyncEach(this.middleware.request, function(middleware, next){
+    middleware(client, request, next);
+  }, callback);
 };
 
 /**
@@ -343,29 +323,19 @@ FamilySearch.prototype._runRequestMiddleware = function(request, callback){
  * @param {Function} callback(response)
  */
 FamilySearch.prototype._runResponseMiddleware = function(request, response, callback){
-  var client = this,
-      middleware = this.middleware.response;
-  
-  function callMiddleware(i){
-    if(i === middleware.length){
-      callback(response);
-    } else {
-      middleware[i](client, request, response, function(cancel){
-        
-        // Cancel response middleware by passing anything to the next function.
-        // Canceling middleware is useful when middleware issues a new request,
-        // such as throttling. We just drop this middleware chain when it's
-        // canceled because the new request will run it's own middleware.
-        if(typeof cancel === 'undefined'){
-          setTimeout(function(){
-            callMiddleware(++i);
-          });
-        }
-      });
+  var client = this;
+  utils.asyncEach(this.middleware.response, function(middleware, next){
+    middleware(client, request, response, next);
+  }, function(newResponse){
+    
+    // Cancel response middleware by passing anything to the next function.
+    // Canceling middleware is useful when middleware issues a new request,
+    // such as throttling. We just drop this middleware chain when it's
+    // canceled because the new request will run it's own middleware.
+    if(typeof newResponse === 'undefined'){
+      setTimeout(callback);
     }
-  }
-  
-  callMiddleware(0);
+  });
 };
 
 /**
