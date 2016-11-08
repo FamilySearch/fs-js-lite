@@ -9,15 +9,15 @@ module.exports = function(client, request, next){
   if(request.body && (request.method === 'POST' || request.method === 'PUT')){
     
     // Try to guess the content type if it's missing
-    if(!request.headers['Content-Type'] && request.isPlatform()){
-      request.headers['Content-Type'] = 'application/x-fs-v1+json';
+    if(!request.hasHeader('Content-Type') && request.isPlatform()){
+      request.setHeader('Content-Type', 'application/x-fs-v1+json');
     }
     
     // Turn objects into strings
-    if(typeof body !== 'string'){
+    if(typeof request.body !== 'string'){
       
       // JSON.stringify() if the content-type is JSON
-      if(request.headers['Content-Type'] && request.headers['Content-Type'].indexOf('json') !== -1){
+      if(request.hasHeader('Content-Type') && request.getHeader('Content-Type').indexOf('json') !== -1){
         request.body = JSON.stringify(request.body);
       } 
       

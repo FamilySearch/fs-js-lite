@@ -15,6 +15,37 @@ var Request = function(url, options, callback){
 };
 
 /**
+ * Does this request have the specified header?
+ * 
+ * @param {String} header
+ * @return {Boolean}
+ */
+Request.prototype.hasHeader = function(header){
+  return typeof this.headers[header] !== 'undefined';
+};
+
+/**
+ * Set a header on the request
+ * 
+ * @param {String} header
+ * @param {String} value
+ */
+Request.prototype.setHeader = function(header, value){
+  this.headers[header] = value;
+  return this;
+};
+
+/**
+ * Get a header's value
+ * 
+ * @param {String} header
+ * @return {String} value
+ */
+Request.prototype.getHeader = function(header){
+  return this.headers[header];
+};
+
+/**
  * Return true if this request is for an API in the /platform/ directory
  * 
  * @return {Boolean}
