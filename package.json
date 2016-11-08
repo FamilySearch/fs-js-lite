@@ -22,6 +22,8 @@
   "homepage": "https://github.com/FamilySearch/fs-js-lite#readme",
   "devDependencies": {
     "chai": "^3.5.0",
+    "gedcomx-fs-js": "^1.1.0",
+    "gedcomx-js": "^2.5.0",
     "jsdom": "^9.4.2",
     "mocha": "^3.0.2",
     "nock": "8.0.0",

@@ -154,7 +154,7 @@ behaviors. It is the developer's job to interpret and respond to HTTP errors.
 XMLHttpRequest gives no insight into network errors. All the developer needs to 
 know and can know is that there was a network error and no response is available.
 Since no response is available the callback is called with no agruments. Therefore
-detecting networks is done by checking for an empty response parameter.
+detecting network errors is done by checking for an empty response parameter.
 
 ```js
 fs.get('/platform/tree/persons/PPPP-PPP', function(response){
