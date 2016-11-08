@@ -46,6 +46,15 @@ Request.prototype.getHeader = function(header){
 };
 
 /**
+ * Get all the headers
+ * 
+ * @return {Object} headers
+ */
+Request.prototype.getHeaders = function(){
+  return this.headers;
+};
+
+/**
  * Return true if this request is for an API in the /platform/ directory
  * 
  * @return {Boolean}

@@ -11,20 +11,24 @@ module.exports = function(request, callback){
   xhr.open(request.method, request.url);
   
   // Set headers
-  for(var name in request.headers){
-    if(request.headers.hasOwnProperty(name)) {
-      xhr.setRequestHeader(name, request.headers[name]);
+  var headers = request.getHeaders();
+  for(var name in headers){
+    if(headers.hasOwnProperty(name)) {
+      xhr.setRequestHeader(name, headers[name]);
     }
   }
   
   // Attach response handler
   xhr.onload = function(){
-    createResponse(xhr, request, callback);
+    var response = createResponse(xhr, request);
+    setTimeout(function(){
+      callback(response);
+    });
   };
   
   // Attach error handler
   xhr.onerror = function(error){
-    callback();
+    setTimeout(callback);
   };
   
   // Now we can send the request
@@ -37,27 +41,25 @@ module.exports = function(request, callback){
  * 
  * @param {XMLHttpRequest} xhr
  * @param {Object} request {url, method, headers, retries}
- * @param {Function} callback function(response)
+ * @return {Object} response
  */
-function createResponse(xhr, request, callback){
-  setTimeout(function(){
-    callback({
-      statusCode: xhr.status,
-      statusText: xhr.statusText,
-      getHeader: function(name){
-        return xhr.getResponseHeader(name);
-      },
-      getAllHeaders: function(){
-        return xhr.getAllResponseHeaders();
-      },
-      originalUrl: request.url,
-      effectiveUrl: request.url,
-      redirected: false,
-      requestMethod: request.method,
-      requestHeaders: request.headers,
-      body: xhr.responseText,
-      retries: 0,
-      throttled: false
-    });
-  });
+function createResponse(xhr, request){
+  return {
+    statusCode: xhr.status,
+    statusText: xhr.statusText,
+    getHeader: function(name){
+      return xhr.getResponseHeader(name);
+    },
+    getAllHeaders: function(){
+      return xhr.getAllResponseHeaders();
+    },
+    originalUrl: request.url,
+    effectiveUrl: request.url,
+    redirected: false,
+    requestMethod: request.method,
+    requestHeaders: request.headers,
+    body: xhr.responseText,
+    retries: 0,
+    throttled: false
+  };
 }
