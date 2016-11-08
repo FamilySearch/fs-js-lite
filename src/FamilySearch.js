@@ -188,20 +188,7 @@ FamilySearch.prototype.deleteAccessToken = function(){
 };
 
 /**
- * Request middleware is a function that is applied to each request the SDK issues.
- * 
- * Request middleware has the the signature `(client, request, next)`.
- * `client` is the instance of the FamilySearch sdk that the request is associated
- * with.
- * `request` is an object that has {url, method, headers, body}.
- * `next` is a method that must be called when the middleware is done. It may be
- * called synchronously or asynchronously. If any value is passed to `next` when
- * it's called then the request middleware chain is canceled and the request callback
- * will be passed the same value. This should only be done in the case of caching
- * middleware that is returning a response.
- * 
- * Request middleware is executed for every request in the order that it was
- * added. The SDK sets up some request middleware by default.
+ * Add request middleware
  * 
  * @param {Function} middleware
  * @return {FamilySearch} client
@@ -212,26 +199,7 @@ FamilySearch.prototype.addRequestMiddleware = function(middleware){
 };
 
 /**
- * Response middlware is a function applied to each response from the API.
- * 
- * Response middleware has the signature `(clienet, request, response, next)`.
- * `client` is the instance of the FamilySearch sdk that the request is associated
- * with.
- * `request` is an object that has {url, method, headers, body}.
- * `response` is a response object.
- * `next` is a method that must be called when the middleware is done. It may be
- * called synchronously or asynchronously. If any value is passed to `next` when
- * it's called then the response middleware chain is canceled but unlike request
- * middleware the request callback is not called. Cancelling is done when a new
- * request must be issued, such as middleware that handles redirects or throttling.
- * In this case the subsequent request will have it's own middleware chain which
- * must be completed this the current middleware chain is canceled.
- * 
- * Response middleware is executed for every response in the order that it was 
- * added. The SDK sets up some response middleware by default.
- * 
- * In the case of a network error the response will not exist. All response
- * middleware must account for this condition.
+ * Add response middleware
  * 
  * @param {Function} middleware
  * @return {FamilySearch} client

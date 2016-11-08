@@ -184,7 +184,7 @@ The [XMLHttpRequest](https://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#infra
 spec states that redirects should be transparently followed. But that leads to
 problems with the FamilySearch API because some browsers won't repeat all of the
 same options on the second request. For example, if you request JSON from
-`/platform/tree/current-person` by setting the `Accept` header to `application/s-fs-v1+json`,
+`/platform/tree/current-person` by setting the `Accept` header to `application/x-fs-v1+json`,
 the API will responsd with a 303 redirect to the actual person URL, such as 
 `/platform/tree/persons/PPPP-PPP`. Then browser then will send a second request 
 to the new URL but some browsers will not copy the `Accept` header from the first
@@ -204,6 +204,60 @@ headers which tell how long to wait until retrying the request. Response objects
 include the `retries` property which is an integer specifying how many times the
 request was throttled and a `throttled` property which is `true` when the request
 has been throttled.
+
+## Middleware
+
+The SDK allows for customizing the request and response processing via middleware.
+Middleware can be used to support caching, logging, and other features.
+
+### Request Middleware
+
+Request middleware is applied to every request the API makes. Request middleware 
+is a function with the signature `(client, request, next)`.
+
+* `client` is the instance of the FamilySearch sdk that the request is associated
+with.
+* `request` is an object that has {url, method, headers, body}.
+* `next` is a method that must be called when the middleware is done. It may be
+called synchronously or asynchronously. If any value is passed to `next` when
+it's called then the request middleware chain is canceled and the request callback
+will be passed the same value. This should only be done in the case of caching
+middleware that is returning a response.
+
+Request middleware is applied in the order that it was added.
+The SDK sets up some request middleware by default.
+
+### Response Middleware
+
+Request middleware is applied to every response received from the API. Response 
+middleware is a function with the signature `(client, request, response, next)`.
+
+* `client` is the instance of the FamilySearch sdk that the request is associated
+* with.
+* `request` is an object that has {url, method, headers, body}.
+* `response` is a response object.
+* `next` is a method that must be called when the middleware is done. It may be
+called synchronously or asynchronously. If any value is passed to `next` when
+it's called then the response middleware chain is canceled but unlike request
+middleware the request callback is not called. Cancelling is done when a new
+request must be issued, such as middleware that handles redirects or throttling.
+In this case the subsequent request will have it's own middleware chain which
+must be completed this the current middleware chain is canceled.
+
+Response middleware is applied in the order that it was added. 
+The SDK sets up some response middleware by default.
+
+In the case of a network error the response will not exist. All response
+middleware must account for this condition.
+
+### Default Middlware
+
+Some request and response middleware is configured by default for processing
+request bodies, handling throttling, and other default functionality.
+
+At the moment there is no official way to modify the default middleware. Visit
+[issue 6](https://github.com/FamilySearch/fs-js-lite/issues/6) to voice your
+support for this functionality and express your opinion on how it should be done.
 
 ## Testing
 
