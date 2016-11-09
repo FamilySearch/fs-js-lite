@@ -9,7 +9,9 @@
     "prepublish": "npm run build",
     "build": "mkdir -p dist && npm run build:full && npm run build:min",
     "build:full": "webpack --output-library FamilySearch src/FamilySearch.js dist/FamilySearch.js",
-    "build:min": "webpack --output-library FamilySearch --optimize-minimize src/FamilySearch.js dist/FamilySearch.min.js"
+    "build:min": "webpack --output-library FamilySearch --optimize-minimize src/FamilySearch.js dist/FamilySearch.min.js",
+    "coverage": "istanbul cover _mocha",
+    "coveralls": "istanbul cover --report lcovonly _mocha && cat ./coverage/lcov.info | coveralls && rm -rf ./coverage"
   },
   "repository": {
     "type": "git",
@@ -22,8 +24,10 @@
   "homepage": "https://github.com/FamilySearch/fs-js-lite#readme",
   "devDependencies": {
     "chai": "^3.5.0",
+    "coveralls": "^2.11.14",
     "gedcomx-fs-js": "^1.1.0",
     "gedcomx-js": "^2.5.0",
+    "istanbul": "^0.4.5",
     "jsdom": "^9.4.2",
     "mocha": "^3.0.2",
     "nock": "8.0.0",

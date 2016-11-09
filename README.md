@@ -1,5 +1,6 @@
 [![npm](https://img.shields.io/npm/v/fs-js-lite.svg?maxAge=2592000)](https://www.npmjs.com/package/fs-js-lite)
 [![Build Status](https://travis-ci.org/FamilySearch/fs-js-lite.svg?branch=master)](https://travis-ci.org/FamilySearch/fs-js-lite)
+[![Coverage Status](https://coveralls.io/repos/github/FamilySearch/fs-js-lite/badge.svg?branch=master)](https://coveralls.io/github/FamilySearch/fs-js-lite?branch=master)
 
 # FamilySearch Lite JavaScript SDK
 
