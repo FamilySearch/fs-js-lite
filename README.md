@@ -212,6 +212,12 @@ Middleware can be used to support caching, logging, and other features.
 
 ### Request Middleware
 
+```js
+client.addRequestMiddlware(function(client, request, next){
+  
+});
+```
+
 Request middleware is applied to every request the API makes. Request middleware 
 is a function with the signature `(client, request, next)`.
 
@@ -228,6 +234,12 @@ Request middleware is applied in the order that it was added.
 The SDK sets up some request middleware by default.
 
 ### Response Middleware
+
+```js
+client.addResponseMiddlware(function(client, request, response, next){
+  
+});
+```
 
 Request middleware is applied to every response received from the API. Response 
 middleware is a function with the signature `(client, request, response, next)`.
