@@ -123,6 +123,25 @@ fs.getAccessToken();
 
 // Delete the access token.
 fs.deleteAccessToken();
+
+// MIDDLEWARE
+//
+// The SDK also supports middleware for modifying requests and responses. 
+// You can read a detailed description about middleware is below in the readme.
+
+// Add request middleware to log all requests
+fs.addRequestMiddlware(function(client, request, next){
+  console.log(request.method + ' ' + request.url);
+  next();
+});
+
+// Add response middleware to log all responses
+fs.addResponseMiddlware(function(client, request, response, next){
+  if(response){
+    console.log(response.originalUrl + ' ' + response.statusText);
+  }
+  next();
+});
 ```
 
 ### Response objects
@@ -206,6 +225,39 @@ include the `retries` property which is an integer specifying how many times the
 request was throttled and a `throttled` property which is `true` when the request
 has been throttled.
 
+### Objects Instead of Plain JSON
+
+If you would prefer having response bodies deserialized with an object model
+instead of traversing plain JSON objects then you can register response middleware
+to use [gedcomx-fs-js](https://github.com/rootsdev/gedcomx-fs-js).
+
+```js
+// First you need to setup gedcomx-js and gedcomx-fs-js. See those libraries
+// for instructions. Here we will assume they are available in the current
+// scope as `GedcomX`.
+
+// Then we register the middleware. When a response has a body, the body is 
+// deserialized into an object model provided by gedcomx-js and made available
+// on the request via the `gedcomx` attribute.
+fs.addResponseMiddlware(function(client, request, response, next){
+  if(response.data){
+    if(response.data.entries){
+      response.gedcomx = GedcomX.AtomFeed(response.data);
+    }
+    else if(response.data.access_token){
+      response.gedcomx = GedcomX.OAuth2(response.data);
+    }
+    else if(response.data.errors) {
+      response.gedcomx = GedcomX.Errors(response.data);
+    }
+    else {
+      response.gedcomx = GedcomX(response.data);
+    }
+  }
+  next();
+});
+```
+
 ## Middleware
 
 The SDK allows for customizing the request and response processing via middleware.
@@ -214,7 +266,7 @@ Middleware can be used to support caching, logging, and other features.
 ### Request Middleware
 
 ```js
-client.addRequestMiddlware(function(client, request, next){
+fs.addRequestMiddlware(function(client, request, next){
   
 });
 ```
@@ -237,7 +289,7 @@ The SDK sets up some request middleware by default.
 ### Response Middleware
 
 ```js
-client.addResponseMiddlware(function(client, request, response, next){
+fs.addResponseMiddlware(function(client, request, response, next){
   
 });
 ```
