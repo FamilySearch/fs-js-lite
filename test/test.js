@@ -11,10 +11,8 @@ nockBack.fixtures = __dirname + '/responses/';
 
 describe('FamilySearch', function(){
   
-  var client;
-    
   // Create a new FamilySearch client and a mock browser window
-  before(function(done){
+  before(function(){
     
     // Setup the mock window
     var document = jsdom(undefined, {
@@ -25,27 +23,32 @@ describe('FamilySearch', function(){
     global.XMLHttpRequest = window.XMLHttpRequest;
     global.window = window;
     global.document = window.document;
-    
-    // Setup the client
-    client = new FamilySearch({
-      appKey: 'a02j000000JBxOxAAL'
-    });
-    
-    // Login
-    nockBack('oauthPassword.json', function(nockDone){
-      client.oauthPassword('sdktester', '1234sdkpass', function(response){
-        nockDone();
-        check(done, function(){
-          assert.isDefined(response);
-          assert.equal(response.statusCode, 200);
-          assert.isDefined(response.data);
-          assert.isDefined(response.data.token);
-        });
-      });
-    });
   });
   
   describe('basic', function(){
+  
+    var client;
+  
+    before(function(done){
+      authenticatedClient(function(c){
+        client = c;
+        done();
+      });
+    });
+  
+    it('password', function(done){
+      nockBack('oauthPassword.json', function(nockDone){
+        client.oauthPassword('sdktester', '1234sdkpass', function(response){
+          nockDone();
+          check(done, function(){
+            assert.isDefined(response);
+            assert.equal(response.statusCode, 200);
+            assert.isDefined(response.data);
+            assert.isDefined(response.data.token);
+          });
+        });
+      });
+    });
   
     it('get', function(done){
       nockBack('getPerson.json', function(nockDone){
@@ -141,8 +144,14 @@ describe('FamilySearch', function(){
   
   describe('gedcomx middleware', function(){
     
-    before(function(){
-      client.addResponseMiddleware(gedcomxMiddleware);
+    var client;
+    
+    before(function(done){
+      authenticatedClient(function(c){
+        c.addResponseMiddleware(gedcomxMiddleware);
+        client = c;
+        done();
+      });
     });
     
     it('oauth response', function(done){
@@ -217,7 +226,61 @@ describe('FamilySearch', function(){
     
   });
   
+  describe('pending modifications', function(){
+    
+    it('headers are added to the request', function(done){
+      authenticatedClient({
+        pendingModifications: ['mod1','mod2']
+      }, function(client){
+        client.addRequestMiddleware(function(client, request, next){
+          assert.equal(request.headers['X-FS-Feature-Tag'], 'mod1,mod2');
+          done();
+          next(true);
+        });
+        client.get('/foo', function(){});
+      });
+    });
+    
+  });
+  
 });
+
+/**
+ * Create an API client
+ * 
+ * @param {Object} options
+ * @return {FamilySearch} client
+ */
+function apiClient(options){
+  var defaults = {
+    appKey: 'a02j000000JBxOxAAL'
+  };
+  if(options){
+    for(var o in options){
+      defaults[o] = options[o];
+    }
+  }
+  return new FamilySearch(defaults);
+}
+
+/**
+ * Create an authenticate an API client
+ * 
+ * @param {Function} callback function(client)
+ */
+function authenticatedClient(options, callback){
+  if(typeof options === 'function'){
+    callback = options;
+    options = null;
+  }
+  nockBack('oauthPassword.json', function(nockDone){
+    var client = apiClient(options);
+    client.oauthPassword('sdktester', '1234sdkpass', function(response){
+      nockDone();
+      callback(client);
+    });
+  });
+}
 
 /**
  * Create a person.

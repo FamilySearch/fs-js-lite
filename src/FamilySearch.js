@@ -19,6 +19,8 @@ var cookies = require('doc-cookies'),
  * will be saved in. Defaults to 'FS_AUTH_TOKEN'.
  * @param {String} options.maxThrottledRetries Maximum number of a times a 
  * throttled request should be retried. Defaults to 10.
+ * @param {Array} options.pendingModifications List of pending modifications
+ * that should be activated.
  */
 var FamilySearch = function(options){
   this.appKey = options.appKey;
@@ -42,6 +44,10 @@ var FamilySearch = function(options){
       responseMiddleware.json
     ]
   };
+  
+  if(Array.isArray(options.pendingModifications) && options.pendingModifications.length > 0){
+    this.addRequestMiddleware(requestMiddleware.pendingModifications(options.pendingModifications));
+  }
   
   // Figure out initial authentication state
   if(this.saveAccessToken){

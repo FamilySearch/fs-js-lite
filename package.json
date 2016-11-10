@@ -6,7 +6,7 @@
   "scripts": {
     "test": "mocha",
     "test:record": "NOCK_BACK_MODE=record npm test",
-    "prepublish": "npm run build",
+    "prepublish": "npm test && npm run build",
     "build": "mkdir -p dist && npm run build:full && npm run build:min",
     "build:full": "webpack --output-library FamilySearch src/FamilySearch.js dist/FamilySearch.js",
     "build:min": "webpack --output-library FamilySearch --optimize-minimize src/FamilySearch.js dist/FamilySearch.min.js",
