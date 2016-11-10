@@ -17,18 +17,31 @@ consider URL changes as breaking changes. Read more about
 
 ## Install
 
-The SDK is currently designed to only work in the browser. If you have a build
-process that doesn't use bower then you may install from npm
+Download or include the SDK directly from the CDN
+
+```html
+<script src="https://unpkg.com/fs-js-lite@latest/dist/FamilySearch.min.js"></script>
+```
+
+You may install the SDK via npm if you have a build process using webpack,
+browserify, or any related tools.
 
 ```
 npm install --save fs-js-lite
 ```
 
-Or you may use the CDN
+#### Node.js Support
 
-```html
-<script src="https://unpkg.com/fs-js-lite@latest/dist/FamilySearch.min.js"></script>
+The SDK doesn't have built-in support for being run in node.js but it can be 
+used with a [shim for XMLHttpRequest](https://www.npmjs.com/package/xmlhttprequest).
+
+```js
+global.XMLHttpRequest = require('xmlhttprequest').XMLHttpRequest;
 ```
+
+Be sure to set `saveAccessToken` to `false` in the options so that the SDK doesn't
+attempt to use cookies. You'll have to manually set the access token via
+`fs.setAccessToken(accessToken);`.
 
 ## Usage
 
