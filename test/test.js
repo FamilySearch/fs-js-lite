@@ -2,48 +2,51 @@ var FamilySearch = require('../src/FamilySearch'),
     jsdom = require('jsdom').jsdom,
     assert = require('chai').assert,
     nock = require('nock'),
-    nockBack = nock.back;
+    nockBack = nock.back,
+    GedcomX = require('gedcomx-js');
+
+GedcomX.addExtensions(require('gedcomx-fs-js'));
 
 nockBack.fixtures = __dirname + '/responses/';
 
 describe('FamilySearch', function(){
   
-  describe('basic', function(){
-  
-    var client;
+  var client;
     
-    // Create a new FamilySearch client and a mock browser window
-    before(function(done){
-      
-      // Setup the mock window
-      var document = jsdom(undefined, {
-            url: 'https://integration.familysearch.org',
-            strictSSL: false
-          }),
-          window = document.defaultView;
-      global.XMLHttpRequest = window.XMLHttpRequest;
-      global.window = window;
-      global.document = window.document;
-      
-      // Setup the client
-      client = new FamilySearch({
-        appKey: 'a02j000000JBxOxAAL'
-      });
-      
-      // Login
-      nockBack('oauthPassword.json', function(nockDone){
-        client.oauthPassword('sdktester', '1234sdkpass', function(response){
-          nockDone();
-          check(done, function(){
-            assert.isDefined(response);
-            assert.equal(response.statusCode, 200);
-            assert.isDefined(response.data);
-            assert.isDefined(response.data.token);
-          });
+  // Create a new FamilySearch client and a mock browser window
+  before(function(done){
+    
+    // Setup the mock window
+    var document = jsdom(undefined, {
+          url: 'https://integration.familysearch.org',
+          strictSSL: false
+        }),
+        window = document.defaultView;
+    global.XMLHttpRequest = window.XMLHttpRequest;
+    global.window = window;
+    global.document = window.document;
+    
+    // Setup the client
+    client = new FamilySearch({
+      appKey: 'a02j000000JBxOxAAL'
+    });
+    
+    // Login
+    nockBack('oauthPassword.json', function(nockDone){
+      client.oauthPassword('sdktester', '1234sdkpass', function(response){
+        nockDone();
+        check(done, function(){
+          assert.isDefined(response);
+          assert.equal(response.statusCode, 200);
+          assert.isDefined(response.data);
+          assert.isDefined(response.data.token);
         });
       });
     });
-    
+  });
+  
+  describe('basic', function(){
+  
     it('get', function(done){
       nockBack('getPerson.json', function(nockDone){
         createPerson(client, function(personId){
@@ -138,49 +141,11 @@ describe('FamilySearch', function(){
   
   describe('gedcomx middleware', function(){
     
-    var gedcomx = require('gedcomx-js');
-    require('gedcomx-fs-js')(gedcomx);
+    before(function(){
+      client.addResponseMiddleware(gedcomxMiddleware);
+    });
     
-    var client;
-    
-    // Create a new FamilySearch client and a mock browser window
-    before(function(done){
-      
-      // Setup the mock window
-      var document = jsdom(undefined, {
-            url: 'https://integration.familysearch.org',
-            strictSSL: false
-          }),
-          window = document.defaultView;
-      global.XMLHttpRequest = window.XMLHttpRequest;
-      global.window = window;
-      global.document = window.document;
-      
-      // Setup the client
-      client = new FamilySearch({
-        appKey: 'a02j000000JBxOxAAL',
-        gedcomx: gedcomx
-      });
-      
-      client.addResponseMiddleware(function(client, request, response, next){
-        if(response.data){
-          if(response.data.entries){
-            response.gedcomx = gedcomx.AtomFeed(response.data);
-          }
-          else if(response.data.access_token){
-            response.gedcomx = gedcomx.OAuth2(response.data);
-          }
-          else if(response.data.errors) {
-            response.gedcomx = gedcomx.Errors(response.data);
-          }
-          else {
-            response.gedcomx = gedcomx(response.data);
-          }
-        }
-        next();
-      });
-      
-      // Login
+    it('oauth response', function(done){
       nockBack('oauthPassword.json', function(nockDone){
         client.oauthPassword('sdktester', '1234sdkpass', function(response){
           nockDone();
@@ -296,6 +261,27 @@ function createPerson(client, callback){
       callback();
     }
   });
+}
+
+/**
+ * Middleware that uses gedcomx-js for deserialization into objects
+ */
+function gedcomxMiddleware(client, request, response, next){
+  if(response.data){
+    if(response.data.entries){
+      response.gedcomx = GedcomX.AtomFeed(response.data);
+    }
+    else if(response.data.access_token){
+      response.gedcomx = GedcomX.OAuth2(response.data);
+    }
+    else if(response.data.errors) {
+      response.gedcomx = GedcomX.Errors(response.data);
+    }
+    else {
+      response.gedcomx = GedcomX(response.data);
+    }
+  }
+  next();
 }
 
 /**
