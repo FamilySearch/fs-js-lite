@@ -11,20 +11,6 @@ nockBack.fixtures = __dirname + '/responses/';
 
 describe('FamilySearch', function(){
   
-  // Create a new FamilySearch client and a mock browser window
-  before(function(){
-    
-    // Setup the mock window
-    var document = jsdom(undefined, {
-          url: 'https://integration.familysearch.org',
-          strictSSL: false
-        }),
-        window = document.defaultView;
-    global.XMLHttpRequest = window.XMLHttpRequest;
-    global.window = window;
-    global.document = window.document;
-  });
-  
   describe('basic', function(){
   
     var client;
@@ -253,7 +239,8 @@ describe('FamilySearch', function(){
  */
 function apiClient(options){
   var defaults = {
-    appKey: 'a02j000000JBxOxAAL'
+    appKey: 'a02j000000JBxOxAAL',
+    saveAccessToken: false
   };
   if(options){
     for(var o in options){

@@ -26,7 +26,7 @@ var FamilySearch = function(options){
   this.appKey = options.appKey;
   this.environment = options.environment || 'integration';
   this.redirectUri = options.redirectUri;
-  this.saveAccessToken = options.saveAccessToken || true;
+  this.saveAccessToken = typeof options.saveAccessToken === 'undefined' ? true : options.saveAccessToken;
   this.tokenCookie = options.tokenCookie || 'FS_AUTH_TOKEN';
   this.maxThrottledRetries = options.maxThrottledRetries || 10;
   
@@ -51,7 +51,7 @@ var FamilySearch = function(options){
   
   // Figure out initial authentication state
   if(this.saveAccessToken){
-    
+    console.log(this.saveAccessToken);
     // If an access token was provided, save it.
     if(options.accessToken){
       this.setAccessToken(options.accessToken);

@@ -34,10 +34,12 @@
     "jsdom": "^9.4.2",
     "mocha": "^3.0.2",
     "nock": "8.0.0",
+    "nock-vcr-recorder-mocha": "^0.3.2",
     "webpack": "^1.13.3"
   },
   "dependencies": {
-    "doc-cookies": "^1.0.2"
+    "doc-cookies": "^1.0.2",
+    "request": "^2.78.0"
   },
   "files": [
     "dist",
