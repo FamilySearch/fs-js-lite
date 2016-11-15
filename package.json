@@ -3,6 +3,9 @@
   "version": "1.3.0",
   "description": "Lite JS SDK for the FamilySearch API",
   "main": "src/FamilySearch.js",
+  "browser": {
+    "./src/nodeHandler.js": "./src/xhrHandler.js"
+  },
   "scripts": {
     "test": "mocha",
     "test:record": "NOCK_BACK_MODE=record npm test",

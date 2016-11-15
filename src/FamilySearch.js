@@ -1,6 +1,6 @@
 var cookies = require('doc-cookies'),
     Request = require('./Request'),
-    XHR = require('./XHR'),
+    requestHandler = require('./nodeHandler'),
     utils = require('./utils'),
     requestMiddleware = require('./middleware/request'),
     responseMiddleware = require('./middleware/response');
@@ -322,7 +322,7 @@ FamilySearch.prototype._execute = function(request, callback){
     // If we didn't receive a response from the request middleware then we
     // proceed with executing the actual request.
     else {
-      XHR(request, function(response){
+      requestHandler(request, function(response){
         
         // Run response middleware.
         client._runResponseMiddleware(request, response, function(){

@@ -1,5 +1,5 @@
 /**
- * XMLHttpRequest wrapper
+ * XMLHttpRequest wrapper used for making requests in the browser
  * 
  * @param {Object} request {url, method, headers, body, retries}
  * @param {Function} callback function(response)
