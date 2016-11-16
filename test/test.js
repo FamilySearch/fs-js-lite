@@ -103,6 +103,7 @@ describe('FamilySearch', function(){
             assert(response.redirected);
             assert.isDefined(response.originalUrl);
             assert.isDefined(response.effectiveUrl);
+            assert(response.originalUrl !== response.effectiveUrl);
           });
         });
       });

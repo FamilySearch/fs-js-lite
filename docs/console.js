@@ -39,7 +39,7 @@ document.getElementById('logout-btn').addEventListener('click', function(){
 
 // Handle an OAuth2 response if we're in that state. Otherwise we initialize the
 // app with a request on load.
-var oauthResponseState = client.oauthResponse(function(response){
+var oauthResponseState = client.oauthResponse(function(error, response){
   if(response){
     displayResponse(response);
     
@@ -67,8 +67,8 @@ function makeRequest(){
   if(options.method === 'POST'){
     options.body = $requestBody.value;
   }
-  client.request($url.value, options, function(response){
-    if(!response){
+  client.request($url.value, options, function(error, response){
+    if(error){
       output('Network error. Try again.');
     } else {
       displayResponse(response);
@@ -95,9 +95,10 @@ function displayResponse(response){
   // Gather and display HTTP response data
   var lines = [
     response.statusCode + ' ' + response.statusText,
-    response.getAllHeaders()
+    headersToString(response.headers)
   ];
   if(response.data){
+    lines.push('');
     lines.push(prettyPrint(response.data));
   }
   output(lines.join('\n'));
@@ -111,6 +112,20 @@ function displayResponse(response){
       window.scrollTo(0, 0);
     });
   });
+}
+
+/**
+ * Convert a headers map into a multi-line string
+ * 
+ * @param {Object} headers
+ * @return {String}
+ */
+function headersToString(headers){
+  var lines = [];
+  for(var name in headers){
+    lines.push(name + ': ' + headers[name]);
+  }
+  return lines.join('\n');
 }
 
 /**

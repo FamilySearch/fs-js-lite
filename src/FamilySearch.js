@@ -51,7 +51,7 @@ var FamilySearch = function(options){
   
   // Figure out initial authentication state
   if(this.saveAccessToken){
-    console.log(this.saveAccessToken);
+    
     // If an access token was provided, save it.
     if(options.accessToken){
       this.setAccessToken(options.accessToken);
