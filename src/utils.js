@@ -31,30 +31,19 @@ module.exports = {
   /**
    * Iterate over data asynchronously in series.
    * 
-   * iterator is passed (item, next). Pass anything to the next method to
-   * cancel iteration. Whatever is passed to next will be passed to the finished
-   * callback method. The finished callback is called with nothing if iteration
-   * completes normally.
-   * 
    * @param {Array} list
    * @param {Function} iterator function(item, next)
-   * @param {Function} finished function(cancel)
+   * @param {Function} finished function()
    */
   asyncEach: function(data, iterator, callback){
     function nextCall(i){
     	if(i === data.length){
       	setTimeout(callback);
       } else {
-      	iterator(data[i], function(cancel){
-        	if(typeof cancel === 'undefined'){
-          	setTimeout(function(){
-            	nextCall(++i);
-            });
-          } else {
-          	setTimeout(function(){
-            	callback(cancel);
-            });
-          }
+      	iterator(data[i], function(){
+        	setTimeout(function(){
+          	nextCall(++i);
+          });
         });
       }
     }

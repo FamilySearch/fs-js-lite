@@ -287,11 +287,11 @@ is a function with the signature `(client, request, next)`.
 * `client` is the instance of the FamilySearch sdk that the request is associated
 with.
 * `request` is an object that has {url, method, headers, body}.
-* `next` is a method that must be called when the middleware is done. It may be
-called synchronously or asynchronously. If any value is passed to `next` when
-it's called then the request middleware chain is canceled and the request callback
-will be passed the same value. This should only be done in the case of caching
-middleware that is returning a response.
+* `next` is a method that must be called when the middleware is done. Its
+signature is `function(error, response)`. In most cases nothing will be returned.
+When an error is returned the middleware chain will be canceled and the error
+will be returned to the request callback. A response may be returned by the
+middleware to enable caching. In this case the response is immediately returned.
 
 Request middleware is applied in the order that it was added.
 The SDK sets up some request middleware by default.
@@ -304,16 +304,16 @@ fs.addResponseMiddlware(function(client, request, response, next){
 });
 ```
 
-Request middleware is applied to every response received from the API. Response 
+Response middleware is applied to every response received from the API. Response 
 middleware is a function with the signature `(client, request, response, next)`.
 
 * `client` is the instance of the FamilySearch sdk that the request is associated
 * with.
 * `request` is an object that has {url, method, headers, body}.
 * `response` is a response object.
-* `next` is a method that must be called when the middleware is done. It may be
-called synchronously or asynchronously. If any value is passed to `next` when
-it's called then the response middleware chain is canceled but unlike request
+* `next` is a method that must be called when the middleware is done. Its
+signature is `function(error, cancel)`. When `cancel` has any truthy value
+the response middleware chain is canceled but unlike request
 middleware the request callback is not called. Cancelling is done when a new
 request must be issued, such as middleware that handles redirects or throttling.
 In this case the subsequent request will have it's own middleware chain which
@@ -321,9 +321,6 @@ must be completed this the current middleware chain is canceled.
 
 Response middleware is applied in the order that it was added. 
 The SDK sets up some response middleware by default.
-
-In the case of a network error the response will not exist. All response
-middleware must account for this condition.
 
 ### Default Middlware
 

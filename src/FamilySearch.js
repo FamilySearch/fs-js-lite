@@ -309,13 +309,19 @@ FamilySearch.prototype._execute = function(request, callback){
   var client = this;
   
   // First we run request middleware
-  client._runRequestMiddleware(request, function(middlewareResponse){
+  client._runRequestMiddleware(request, function(error, middlewareResponse){
     
     // If request middleware returns a response then we're done and return the
     // response to the user. This may happen with caching middleware.
-    if(middlewareResponse){
+    if(error || middlewareResponse){
+      
+      // Always force undefined instead of allowing null or undefined
+      if(error === null){
+        error = undefined;
+      }
+      
       setTimeout(function(){
-        callback(null, middlewareResponse);
+        callback(error, middlewareResponse);
       });
     } 
     
@@ -336,7 +342,7 @@ FamilySearch.prototype._execute = function(request, callback){
         // Run response middleware.
         client._runResponseMiddleware(request, response, function(){
           setTimeout(function(){
-            callback(null, response);
+            callback(undefined, response);
           });
         });
       });
@@ -348,12 +354,18 @@ FamilySearch.prototype._execute = function(request, callback){
  * Run request middleware
  * 
  * @param {Object} request
- * @param {Function} callback(response)
+ * @param {Function} callback(error, response)
  */
 FamilySearch.prototype._runRequestMiddleware = function(request, callback){
   var client = this;
   utils.asyncEach(this.middleware.request, function(middleware, next){
-    middleware(client, request, next);
+    middleware(client, request, function(error, newResponse){
+      if(error || newResponse){
+        callback(error, newResponse);
+      } else {
+        next();
+      }
+    });
   }, callback);
 };
 
@@ -362,22 +374,19 @@ FamilySearch.prototype._runRequestMiddleware = function(request, callback){
  * 
  * @param {Object} request
  * @param {Object} response
- * @param {Function} callback(response)
+ * @param {Function} callback(error)
  */
 FamilySearch.prototype._runResponseMiddleware = function(request, response, callback){
   var client = this;
   utils.asyncEach(this.middleware.response, function(middleware, next){
-    middleware(client, request, response, next);
-  }, function(newResponse){
-    
-    // Cancel response middleware by passing anything to the next function.
-    // Canceling middleware is useful when middleware issues a new request,
-    // such as throttling. We just drop this middleware chain when it's
-    // canceled because the new request will run it's own middleware.
-    if(typeof newResponse === 'undefined'){
-      setTimeout(callback);
-    }
-  });
+    middleware(client, request, response, function(error, cancel){
+      if(error){
+        callback(error);
+      } else if(typeof cancel === 'undefined') {
+        next();
+      }
+    });
+  }, callback);
 };
 
 /**

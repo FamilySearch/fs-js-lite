@@ -127,7 +127,53 @@ describe('FamilySearch', function(){
     
   });
   
-  describe('gedcomx middleware', function(){
+  describe('request middleware', function(){
+    
+    it('raises an error', function(done){
+      authenticatedClient(function(client){
+        client.addRequestMiddleware(function(client, request, next){
+          next(new Error());
+        });
+        client.get('/anything', function(error, response){
+          check(done, function(){
+            assert.isDefined(error);
+            assert.isUndefined(response);
+          });
+        });
+      });
+    });
+    
+    it('returns a new response', function(done){
+      authenticatedClient(function(client){
+        client.addRequestMiddleware(function(client, request, next){
+          next(null, {
+            statusCode: 200,
+            statusText: 'OK',
+            getHeader: function(name){},
+            getAllHeaders: function(){
+              return {};
+            },
+            originalUrl: '/url',
+            effectiveUrl: '/url',
+            redirected: false,
+            requestMethod: 'GET',
+            requestHeaders: {},
+            retries: 0,
+            throttled: false
+          });
+        });
+        client.get('/anything', function(error, response){
+          check(done, function(){
+            assert.isUndefined(error);
+            assert.isDefined(response);
+          });
+        });
+      });
+    });
+    
+  });
+  
+  describe('response middleware', function(){
     
     var client;
     

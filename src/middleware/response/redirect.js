@@ -1,22 +1,18 @@
 module.exports = function(client, request, response, next){
-  if(response){
-    var location = response.getHeader('Location');
-    if(response.statusCode === 200 && location && location !== request.url ){
+  var location = response.getHeader('Location');
+  if(response.statusCode === 200 && location && location !== request.url ){
+    var originalUrl = request.url;
+    request.url = response.getHeader('Location');
+    client._execute(request, function(error, response){
+      if(response){
+        response.originalUrl = originalUrl;
+        response.redirected = true;
+      }
       setTimeout(function(){
-        var originalUrl = request.url;
-        request.url = response.getHeader('Location');
-        client._execute(request, function(error, response){
-          if(response){
-            response.originalUrl = originalUrl;
-            response.redirected = true;
-          }
-          setTimeout(function(){
-            request.callback(error, response);
-          });
-        });
+        request.callback(error, response);
       });
-      return next(true);
-    }
+    });
+    return next(undefined, true);
   }
   next();
 };
