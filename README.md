@@ -163,8 +163,7 @@ Responses are objects with the following properties and methods:
 
 * `statusCode` - Integer
 * `statusText` - String
-* `getHeader()` - Maps to [XMLHttpRequest.getResponseHeader()](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/getResponseHeader)
-* `getAllHeaders()` - Maps to [XMLHttpRequest.getAllResponseHeaders()](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/getAllResponseHeaders)
+* `headers` - Map of the response headers. Header names are lowercased.
 * `body` - Response body text, if it exists
 * `data` - Object; only exists if the `body` is parsable JSON
 * `originalUrl` - String

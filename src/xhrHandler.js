@@ -4,6 +4,9 @@
  * @param {Object} request {url, method, headers, body, retries}
  * @param {Function} callback function(response)
  */
+ 
+var headersRegex = /^(.*?):[ \t]*([^\r\n]*)$/mg;
+
 module.exports = function(request, callback){
   
   // Create the XMLHttpRequest
@@ -46,15 +49,17 @@ module.exports = function(request, callback){
  * @return {Object} response
  */
 function createResponse(xhr, request){
+  
+  // XHR header processing borrowed from jQuery
+  var responseHeaders = {}, match;
+  while ((match = headersRegex.exec(xhr.getAllResponseHeaders()))) {
+		responseHeaders[match[1].toLowerCase()] = match[2];
+	}
+	
   return {
     statusCode: xhr.status,
     statusText: xhr.statusText,
-    getHeader: function(name){
-      return xhr.getResponseHeader(name);
-    },
-    getAllHeaders: function(){
-      return xhr.getAllResponseHeaders();
-    },
+    headers: responseHeaders,
     originalUrl: request.url,
     effectiveUrl: request.url,
     redirected: false,

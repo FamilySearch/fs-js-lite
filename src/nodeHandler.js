@@ -33,12 +33,7 @@ function createResponse(request, response, body){
   return {
     statusCode: response.statusCode,
     statusText: response.statusMsg,
-    getHeader: function(name){
-      return response.headers[name.toLowerCase()];
-    },
-    getAllHeaders: function(){
-      return response.headers;
-    },
+    headers: response.headers,
     originalUrl: request.url,
     effectiveUrl: request.url,
     redirected: false,

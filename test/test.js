@@ -351,7 +351,7 @@ function createPerson(client, callback){
     }
   }, function(error, response){
     if(response && response.statusCode === 201){
-      callback(response.getHeader('X-entity-id'));
+      callback(response.headers['x-entity-id']);
     } else {
       callback();
     }
