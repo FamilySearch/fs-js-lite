@@ -22,13 +22,15 @@ module.exports = function(request, callback){
   xhr.onload = function(){
     var response = createResponse(xhr, request);
     setTimeout(function(){
-      callback(response);
+      callback(null, response);
     });
   };
   
   // Attach error handler
   xhr.onerror = function(error){
-    setTimeout(callback);
+    setTimeout(function(){
+      callback(error);
+    });
   };
   
   // Now we can send the request

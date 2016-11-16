@@ -11,12 +11,12 @@ module.exports = function(req, callback){
     headers: req.headers,
     body: req.body
   }, function(error, res, body){
-    if(error){
-      console.error(error.stack);
+    var response;
+    if(res){
+      response = createResponse(req, res, body);
     }
-    var response = createResponse(req, res, body);
     setTimeout(function(){
-      callback(response);
+      callback(error, response);
     });
   });
 };

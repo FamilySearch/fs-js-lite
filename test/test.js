@@ -1,5 +1,4 @@
 var FamilySearch = require('../src/FamilySearch'),
-    jsdom = require('jsdom').jsdom,
     assert = require('chai').assert,
     nock = require('nock'),
     nockBack = nock.back,
@@ -24,7 +23,7 @@ describe('FamilySearch', function(){
   
     it('password', function(done){
       nockBack('oauthPassword.json', function(nockDone){
-        client.oauthPassword('sdktester', '1234sdkpass', function(response){
+        client.oauthPassword('sdktester', '1234sdkpass', function(error, response){
           nockDone();
           check(done, function(){
             assert.isDefined(response);
@@ -39,7 +38,7 @@ describe('FamilySearch', function(){
     it('get', function(done){
       nockBack('getPerson.json', function(nockDone){
         createPerson(client, function(personId){
-          client.get('/platform/tree/persons/' + personId, function(response){
+          client.get('/platform/tree/persons/' + personId, function(error, response){
             nockDone();
             check(done, function(){
               assert.isDefined(response);
@@ -66,7 +65,7 @@ describe('FamilySearch', function(){
     
     it('head', function(done){
       nockBack('headPerson.json', function(nockDone){
-        client.head('/platform/tree/persons/L5C2-WYC', function(response){
+        client.head('/platform/tree/persons/L5C2-WYC', function(error, response){
           nockDone();
           check(done, function(){
             assert.isDefined(response);
@@ -80,7 +79,7 @@ describe('FamilySearch', function(){
     it('delete', function(done){
       nockBack('deletePerson.json', function(nockDone){
         createPerson(client, function(personId){
-          client.delete('/platform/tree/persons/' + personId, function(response){
+          client.delete('/platform/tree/persons/' + personId, function(error, response){
             nockDone();
             check(done, function(){
               assert.isDefined(response);
@@ -94,7 +93,7 @@ describe('FamilySearch', function(){
     
     it('redirect', function(done){
       nockBack('redirect.json', function(nockDone){
-        client.get('/platform/tree/current-person', function(response){
+        client.get('/platform/tree/current-person', function(error, response){
           nockDone();
           check(done, function(){
             assert.isDefined(response);
@@ -112,8 +111,8 @@ describe('FamilySearch', function(){
     it('throttled', function(done){
       this.timeout(1800000);
       nockBack('throttled.json', function(nockDone){
-        client.get('/platform/throttled?processingTime=1800000', function(response){
-          client.get('/platform/throttled', function(response){
+        client.get('/platform/throttled?processingTime=1800000', function(error, response){
+          client.get('/platform/throttled', function(error, response){
             nockDone();
             check(done, function(){
               assert.isDefined(response);
@@ -142,7 +141,7 @@ describe('FamilySearch', function(){
     
     it('oauth response', function(done){
       nockBack('oauthPassword.json', function(nockDone){
-        client.oauthPassword('sdktester', '1234sdkpass', function(response){
+        client.oauthPassword('sdktester', '1234sdkpass', function(error, response){
           nockDone();
           check(done, function(){
             assert.isDefined(response);
@@ -159,7 +158,7 @@ describe('FamilySearch', function(){
     it('gedcomx response', function(done){
       nockBack('getPerson.json', function(nockDone){
         createPerson(client, function(personId){
-          client.get('/platform/tree/persons/' + personId, function(response){
+          client.get('/platform/tree/persons/' + personId, function(error, response){
             nockDone();
             check(done, function(){
               assert.isDefined(response);
@@ -181,7 +180,7 @@ describe('FamilySearch', function(){
             headers: {
               Accept: 'application/x-gedcomx-atom+json'
             }
-          }, function(response){
+          }, function(error, response){
             nockDone();
             check(done, function(){
               assert.isDefined(response);
@@ -198,7 +197,7 @@ describe('FamilySearch', function(){
     
     it('errors response', function(done){
       nockBack('errors.json', function(nockDone){
-        client.get('/platform/tree/persons/PPPPPP', function(response){
+        client.get('/platform/tree/persons/PPPPPP', function(error, response){
           nockDone();
           check(done, function(){
             assert.isDefined(response);
@@ -262,7 +261,7 @@ function authenticatedClient(options, callback){
   }
   nockBack('oauthPassword.json', function(nockDone){
     var client = apiClient(options);
-    client.oauthPassword('sdktester', '1234sdkpass', function(response){
+    client.oauthPassword('sdktester', '1234sdkpass', function(error, response){
       nockDone();
       callback(client);
     });
@@ -304,7 +303,7 @@ function createPerson(client, callback){
         }
       ]
     }
-  }, function(response){
+  }, function(error, response){
     if(response && response.statusCode === 201){
       callback(response.getHeader('X-entity-id'));
     } else {

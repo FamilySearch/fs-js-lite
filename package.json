@@ -31,10 +31,8 @@
     "gedcomx-fs-js": "^1.3.0",
     "gedcomx-js": "^2.6.0",
     "istanbul": "^0.4.5",
-    "jsdom": "^9.4.2",
     "mocha": "^3.0.2",
     "nock": "8.0.0",
-    "nock-vcr-recorder-mocha": "^0.3.2",
     "webpack": "^1.13.3"
   },
   "dependencies": {

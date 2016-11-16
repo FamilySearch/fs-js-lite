@@ -105,8 +105,8 @@ FamilySearch.prototype.oauthResponse = function(callback){
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded'
       }
-    }, function(response){
-      client.processOauthResponse(response, callback);
+    }, function(error, response){
+      client.processOauthResponse(error, response, callback);
     });
     
     return true;
@@ -135,21 +135,21 @@ FamilySearch.prototype.oauthPassword = function(username, password, callback){
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded'
     }
-  }, function(response){
-    client.processOauthResponse(response, callback);
+  }, function(error, response){
+    client.processOauthResponse(error, response, callback);
   });
 };
 
 /**
  * Process an OAuth2 access_token response
  */
-FamilySearch.prototype.processOauthResponse = function(response, callback){
+FamilySearch.prototype.processOauthResponse = function(error, response, callback){
   if(response && response.statusCode === 200 && response.data){
     this.setAccessToken(response.data.access_token);
   }
   if(callback){
     setTimeout(function(){
-      callback(response);
+      callback(error, response);
     });
   }
 };
@@ -309,25 +309,34 @@ FamilySearch.prototype._execute = function(request, callback){
   var client = this;
   
   // First we run request middleware
-  client._runRequestMiddleware(request, function(response){
+  client._runRequestMiddleware(request, function(middlewareResponse){
     
     // If request middleware returns a response then we're done and return the
     // response to the user. This may happen with caching middleware.
-    if(response){
+    if(middlewareResponse){
       setTimeout(function(){
-        callback(response);
+        callback(null, middlewareResponse);
       });
     } 
     
     // If we didn't receive a response from the request middleware then we
     // proceed with executing the actual request.
     else {
-      requestHandler(request, function(response){
+      requestHandler(request, function(error, response){
+        
+        // If the request errored (network error) then we immediately return
+        // and don't run response middleware because we don't have an HTTP response
+        if(error){
+          setTimeout(function(){
+            callback(error);
+          });
+          return;
+        }
         
         // Run response middleware.
         client._runResponseMiddleware(request, response, function(){
           setTimeout(function(){
-            callback(response);
+            callback(null, response);
           });
         });
       });

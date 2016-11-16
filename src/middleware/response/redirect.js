@@ -5,13 +5,13 @@ module.exports = function(client, request, response, next){
       setTimeout(function(){
         var originalUrl = request.url;
         request.url = response.getHeader('Location');
-        client._execute(request, function(response){
+        client._execute(request, function(error, response){
           if(response){
             response.originalUrl = originalUrl;
             response.redirected = true;
           }
           setTimeout(function(){
-            request.callback(response);
+            request.callback(error, response);
           });
         });
       });

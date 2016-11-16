@@ -10,11 +10,11 @@ module.exports = function(client, request, response, next){
       // until we retry the request
       var retryAfter = parseInt(response.getHeader('Retry'), 10) * 1000 || 1000;
       setTimeout(function(){
-        client._execute(request, function(response){
+        client._execute(request, function(error, response){
           response.throttled = true;
           response.retries = ++request.retries;
           setTimeout(function(){
-            request.callback(response);
+            request.callback(error, response);
           });
         });
       }, retryAfter);

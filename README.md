@@ -84,16 +84,16 @@ fs.oauthRedirect();
 // true is returned it means a code was found and a request was sent to exchange
 // the code for an access token. You still must use a callback to check the response
 // of that request and verify whether an access token was recieved.
-fs.oauthResponse(function(response){ });
+fs.oauthResponse(function(error, response){ });
 
 // OAuth password flow. Access tokens will be automatically saved in a cookie
 // if that behavior is enabled. The OAuth password flow is disabled by default
 // for app keys. Contact Developer Support to inquire about it being enabled for
 // your app key. Only mobile and desktop apps are granted permission.
-fs.oauthPassword(username, password, function(response){ });
+fs.oauthPassword(username, password, function(error, response){ });
 
 // GET
-fs.get('/platform/tree/current-person', function(response){ });
+fs.get('/platform/tree/current-person', function(error, response){ });
 
 // The SDK defaults the Accept and Content-Type headers to application/x-fs-v1+json
 // for all /platform/ URLs. But that doesn't work for some endpoints which use
@@ -102,30 +102,30 @@ fs.get('/platform/tree/persons/PPPP-PPP/matches?collection=records', {
   headers: {
     Accept: 'application/x-gedcomx-atom+json'
   }
-}, function(response){ });
+}, function(error, response){ });
 
 // POST
 fs.post('/platform/tree/persons', {
   body: { persons: [ personData ] }
-}, function(response){ });
+}, function(error, response){ });
 
 // HEAD
-fs.head('/platform/tree/persons/PPPP-PPP', function(response){ });
+fs.head('/platform/tree/persons/PPPP-PPP', function(error, response){ });
 
 // DELETE
-fs.delete('/platform/tree/persons/PPPP-PPP', function(response){ });
+fs.delete('/platform/tree/persons/PPPP-PPP', function(error, response){ });
 
 // Underneath the covers, `get()`, `post()`, `head()`, and `delete()` call the
 // `request()` method which has the same method signature.
 fs.request('/platform/tree/persons/PPPP-PPP', {
   method: 'POST',
   body: { persons: [ personData ] }
-}, function(response){ });
+}, function(error, response){ });
 
 // The options object is optional. When options are not include, the SDK will
 // automatically detect that the callback is the second parameter.
 // The `method` option defaults to 'GET'.
-fs.request('/platform/tree/persons/PPPP-PPP', function(response){ });
+fs.request('/platform/tree/persons/PPPP-PPP', function(error, response){ });
 
 // Set the access token. This will also save it in a cookie if that behavior
 // is enabled.
@@ -176,7 +176,7 @@ Responses are objects with the following properties and methods:
 * `retries` - Integer. Number of times the request was retried. Requests are only retried
   when they are throttled.
 
-### Error handling
+### Error Handling
 
 There are two types of errors: network errors and HTTP errors. 
 
@@ -184,15 +184,12 @@ For HTTP errors the developer needs access to the response object. The SDK makes
 no attempt to interpret HTTP status codes and enable built-in error handling
 behaviors. It is the developer's job to interpret and respond to HTTP errors.
 
-XMLHttpRequest gives no insight into network errors. All the developer needs to 
-know and can know is that there was a network error and no response is available.
-Since no response is available the callback is called with no agruments. Therefore
-detecting network errors is done by checking for an empty response parameter.
+Network errors are returned as the first argument to response callbacks.
 
 ```js
-fs.get('/platform/tree/persons/PPPP-PPP', function(response){
+fs.get('/platform/tree/persons/PPPP-PPP', function(error, response){
   
-  if(!response){
+  if(error){
     alert('Network error');
   } 
 
