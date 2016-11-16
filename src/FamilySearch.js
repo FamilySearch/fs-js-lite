@@ -311,43 +311,40 @@ FamilySearch.prototype._execute = function(request, callback){
   // First we run request middleware
   client._runRequestMiddleware(request, function(error, middlewareResponse){
     
-    // If request middleware returns a response then we're done and return the
-    // response to the user. This may happen with caching middleware.
+    // Return the error if one was received from the middleware
     if(error || middlewareResponse){
-      
-      // Always force undefined instead of allowing null or undefined
-      if(error === null){
-        error = undefined;
-      }
-      
-      setTimeout(function(){
-        callback(error, middlewareResponse);
-      });
+      responseHandler(error, middlewareResponse);
     } 
     
     // If we didn't receive a response from the request middleware then we
     // proceed with executing the actual request.
     else {
-      requestHandler(request, function(error, response){
-        
-        // If the request errored (network error) then we immediately return
-        // and don't run response middleware because we don't have an HTTP response
-        if(error){
-          setTimeout(function(){
+      requestHandler(request, responseHandler);
+    }
+  });
+  
+  function responseHandler(error, response){
+    // If the request errored then we immediately return and don't run
+    // response middleware because we don't have an HTTP response
+    if(error){
+      setTimeout(function(){
+        callback(error);
+      });
+    }
+    
+    // Run response middleware
+    else {
+      client._runResponseMiddleware(request, response, function(error){
+        setTimeout(function(){
+          if(error){
             callback(error);
-          });
-          return;
-        }
-        
-        // Run response middleware.
-        client._runResponseMiddleware(request, response, function(){
-          setTimeout(function(){
+          } else {
             callback(undefined, response);
-          });
+          }
         });
       });
     }
-  });
+  }
 };
 
 /**

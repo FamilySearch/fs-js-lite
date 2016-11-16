@@ -129,7 +129,7 @@ describe('FamilySearch', function(){
   
   describe('request middleware', function(){
     
-    it('raises an error', function(done){
+    it('returns an error', function(done){
       authenticatedClient(function(client){
         client.addRequestMiddleware(function(client, request, next){
           next(new Error());
@@ -149,10 +149,7 @@ describe('FamilySearch', function(){
           next(null, {
             statusCode: 200,
             statusText: 'OK',
-            getHeader: function(name){},
-            getAllHeaders: function(){
-              return {};
-            },
+            headers: {},
             originalUrl: '/url',
             effectiveUrl: '/url',
             redirected: false,
@@ -182,6 +179,35 @@ describe('FamilySearch', function(){
         c.addResponseMiddleware(gedcomxMiddleware);
         client = c;
         done();
+      });
+    });
+    
+    it('returns an error', function(done){
+      authenticatedClient(function(client){
+        // Add request middleware to simulate a response and skip any real HTTP execution
+        client.addRequestMiddleware(function(client, request, next){
+          next(null, {
+            statusCode: 200,
+            statusText: 'OK',
+            headers: {},
+            originalUrl: '/url',
+            effectiveUrl: '/url',
+            redirected: false,
+            requestMethod: 'GET',
+            requestHeaders: {},
+            retries: 0,
+            throttled: false
+          });
+        });
+        client.addResponseMiddleware(function(client, request, response, next){
+          next(new Error());
+        });
+        client.get('/anything', function(error, response){
+          check(done, function(){
+            assert.isDefined(error);
+            assert.isUndefined(response);
+          });
+        });
       });
     });
     
