@@ -25,12 +25,14 @@ module.exports = function(request, callback){
   xhr.onload = function(){
     var response = createResponse(xhr, request);
     setTimeout(function(){
+      console.log('onload');
       callback(null, response);
     });
   };
   
   // Attach error handler
   xhr.onerror = function(error){
+    console.log('error');
     setTimeout(function(){
       callback(error);
     });

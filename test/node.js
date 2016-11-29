@@ -93,7 +93,9 @@ describe('node', function(){
     
     it('redirect', function(done){
       nockBack('redirect.json', function(nockDone){
-        client.get('/platform/tree/current-person', function(error, response){
+        client.get('/platform/tree/current-person', {
+          followRedirect: true
+        }, function(error, response){
           nockDone();
           check(done, function(){
             assert.isDefined(response);

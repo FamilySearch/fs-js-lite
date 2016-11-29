@@ -93,7 +93,7 @@ fs.oauthResponse(function(error, response){ });
 fs.oauthPassword(username, password, function(error, response){ });
 
 // GET
-fs.get('/platform/tree/current-person', function(error, response){ });
+fs.get('/platform/users/current', function(error, response){ });
 
 // The SDK defaults the Accept and Content-Type headers to application/x-fs-v1+json
 // for all /platform/ URLs. But that doesn't work for some endpoints which use
@@ -124,7 +124,7 @@ fs.request('/platform/tree/persons/PPPP-PPP', {
 
 // The options object is optional. When options are not include, the SDK will
 // automatically detect that the callback is the second parameter.
-// The `method` option defaults to 'GET'.
+// The `method` defaults to 'GET'.
 fs.request('/platform/tree/persons/PPPP-PPP', function(error, response){ });
 
 // Set the access token. This will also save it in a cookie if that behavior
@@ -136,6 +136,9 @@ fs.getAccessToken();
 
 // Delete the access token.
 fs.deleteAccessToken();
+
+// Redirects are tricky. Read more about them below.
+fs.get('/platform/tree/current-person', { followRedirect: true }, function(error, response){ })
 
 // MIDDLEWARE
 //
@@ -209,22 +212,60 @@ fs.get('/platform/tree/persons/PPPP-PPP', function(error, response){
 
 ### Redirects
 
-The [XMLHttpRequest](https://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#infrastructure-for-the-send%28%29-method)
-spec states that redirects should be transparently followed. But that leads to
-problems with the FamilySearch API because some browsers won't repeat all of the
-same options on the second request. For example, if you request JSON from
-`/platform/tree/current-person` by setting the `Accept` header to `application/x-fs-v1+json`,
-the API will responsd with a 303 redirect to the actual person URL, such as 
+__TLDR__: Automatically handling redirects is hard thus the SDK defaults to
+the platform's behavior. This may or may not be desired. Use request options
+to modify the default behavior per request.
+
+```js
+client.get('/platform/tree/current-person', {
+    expectRedirect: true,
+    followRedirect: true
+});
+```
+
+Handling redirects is tricky due to two issues. 
+
+First, browsers are configured to transparently follow 3xx redirects for 
+[XMLHttpRequest](https://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#infrastructure-for-the-send%28%29-method)
+requests. However some browsers don't repeat all of the same request options on
+the redirect. For example, if you request JSON from `/platform/tree/current-person`
+by setting the `Accept` header to `application/x-fs-v1+json`, the API will respond
+with a 303 redirect to the actual person URL, such as 
 `/platform/tree/persons/PPPP-PPP`. Then browser then will send a second request 
 to the new URL but some browsers will not copy the `Accept` header from the first
 request to the second request so the API doesn't know you want JSON for the second
-request and will responsd with XML since that's the default format. That causes
-problems so the API supports a custom `X-Expect-Override` header which instructs
-the browser to respond with a 200 status instead of a 303 so XMLHttpRequest
-doesn't detect the redirect. That allows the SDK to detect the redirect and respond
-accordingly. This also allows the SDK to track both the original URL and the
-effective (final) URL which normally isn't possible with XMLHttpRequest. Responses
+request and will respond with XML since that's the default format. Obtaining XML
+when you really want JSON is obviously problematic so the API supports a custom 
+`X-Expect-Override` header which instructs the browser to respond with a 200 
+status instead of a 303 so XMLHttpRequest doesn't detect the redirect. 
+That allows the SDK to detect the redirect and respond accordingly. 
+This also allows the SDK to track both the original URL and the effective 
+(final) URL which normally isn't possible with XMLHttpRequest. Responses
 from redirected requests will have the `redirected` property set to `true`.
+
+Second, we don't always want to follow redirects. For example, if a person
+portrait exists the API will respond with a 307 redirect to the image file.
+However all we usually want is the URL so that we can add insert the URL into
+HTML and have the browser download the image.
+
+Due to the two issue described above, the SDK defaults to no special handling
+of redirects. In node all redirect responses will be returned to the response
+callbacks and in the browser all redirects will be transparently followed by
+the browser. The default behavior can be modified by setting request options.
+
+* `expectRedirect`: When `true` the `X-Expect-Override` header will be set on the
+request which causes the API to respond with a 200 for redirects.
+* `followRedirect`: When `true` the SDK will automatically follow a redirect.
+
+__It gets worse.__ Redirects are not allowed with CORS requests which require a 
+preflight OPTIONS request thus you wil always want to set the `expectRedirect` 
+header to true in the browser. But you can't do that because the API honors the 
+`X-Expect-Override` header for 304s as well. That is problematic when requesting
+persons because your browser will cache the first response then send a 
+`If-none-match` request the second time which the API would reply to with a 304
+and an empty body but instead sends a 200 with the empty body but the browser
+doesn't understand that it's a cached response thus the response is resolved
+without a body. That's not what you want.
 
 ### Throttling
 
