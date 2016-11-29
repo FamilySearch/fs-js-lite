@@ -86,6 +86,10 @@ input {
   flex: 100%;
 }
 
+label {
+  margin-right: 2em;
+}
+
 #url {
   flex: 100%;
   margin: 0 .5em;

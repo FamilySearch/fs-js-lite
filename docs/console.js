@@ -7,7 +7,9 @@ var client = new FamilySearch({
     $output = document.getElementById('output'),
     $requestBody = document.getElementById('request-body'),
     $authStatus = document.getElementById('auth-status'),
-    $tokenDisplay = document.getElementById('access-token-display');
+    $tokenDisplay = document.getElementById('access-token-display'),
+    $expectRedirect = document.getElementById('expectRedirect'),
+    $followRedirect = document.getElementById('followRedirect');
 
 // Setup event listeners
 
@@ -64,7 +66,9 @@ function makeRequest(){
     method: $method.value,
     headers: {
       Accept: document.getElementById('accept').value
-    }
+    },
+    expectRedirect: $expectRedirect.checked,
+    followRedirect: $followRedirect.checked
   };
   if(options.method === 'POST'){
     options.body = $requestBody.value;
