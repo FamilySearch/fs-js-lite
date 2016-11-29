@@ -47,6 +47,8 @@ var oauthResponseState = client.oauthResponse(function(error, response){
     if(response.statusCode === 200){
       window.location = window.location.pathname;
     }
+  } else {
+    genericError();
   }
 });
 if(!oauthResponseState){
@@ -69,7 +71,7 @@ function makeRequest(){
   }
   client.request($url.value, options, function(error, response){
     if(error){
-      output('Network error. Try again.');
+      genericError();
     } else {
       displayResponse(response);
       
@@ -83,6 +85,13 @@ function makeRequest(){
       }
     }
   });
+}
+
+/**
+ * Display a generic error since XHR gives us no details.
+ */
+function genericError(){
+  output('Fatal error. Open the browser\'s developer console for more details.');
 }
 
 /**

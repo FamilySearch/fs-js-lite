@@ -56,6 +56,10 @@ input {
   display: none;
 }
 
+#auth-status {
+  margin-left: .5em;
+}
+
 #auth-status.loggedin #login-btn {
   display: none;
 }
