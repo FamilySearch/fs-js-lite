@@ -90,6 +90,10 @@ window.location.href = fs.oauthRedirectURL();
 // of that request and verify whether an access token was recieved.
 fs.oauthResponse(function(error, response){ });
 
+// Or if for whatever reason you need to provide the OAuth code directly,
+// such as running in Node.js, you can do that too.
+fs.oauthToken(code, function(error, response){ });
+
 // OAuth password flow. Access tokens will be automatically saved in a cookie
 // if that behavior is enabled. The OAuth password flow is disabled by default
 // for app keys. Contact Developer Support to inquire about it being enabled for

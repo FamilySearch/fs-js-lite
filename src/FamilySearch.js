@@ -84,8 +84,8 @@ FamilySearch.prototype.oauthRedirectURL = function(){
 
 /**
  * Handle an OAuth2 redirect response by extracting the code from the query
- * and exchanging it for an access token. This also automatically saves the
- * token in a cookie when that behavior is enabled.
+ * and exchanging it for an access token. The token is automatically saved
+ * in a cookie when that behavior is enabled.
  * 
  * @param {Function} callback that receives the access token response
  * @return {Boolean} true if a code was detected; false otherwise. This does
@@ -95,32 +95,39 @@ FamilySearch.prototype.oauthRedirectURL = function(){
  */
 FamilySearch.prototype.oauthResponse = function(callback){
   
-  var client = this;
-  
-  // Extract the code from the query
+  // Extract the code from the query params
   var code = utils.getParameterByName('code');
-  
   if(code){
   
-    // Exchange the code for the access token
-    this.post(this.identHost() + '/cis-web/oauth2/v3/token', {
-      body: {
-        grant_type: 'authorization_code',
-        code: code,
-        client_id: this.appKey
-      },
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
-      }
-    }, function(error, response){
-      client.processOauthResponse(error, response, callback);
-    });
-    
+    // Exchange the code for an access token
+    this.oauthToken(code, callback);
     return true;
-    
   }
-  
   return false;
+};
+
+/**
+ * Exchange an OAuth code for an access token. You don't need to call this in
+ * the browser if you use oauthResponse() to automatically get the URL from the
+ * query parameters.
+ * 
+ * @param {String} code
+ * @param {Function} callback that receives the access token response
+ */
+FamilySearch.prototype.oauthToken = function(code, callback){
+  var client = this;
+  client.post(client.identHost() + '/cis-web/oauth2/v3/token', {
+    body: {
+      grant_type: 'authorization_code',
+      code: code,
+      client_id: client.appKey
+    },
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    }
+  }, function(error, response){
+    client.processOauthResponse(error, response, callback);
+  });
 };
 
 /**
