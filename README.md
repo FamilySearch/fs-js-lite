@@ -76,6 +76,10 @@ var fs = new FamilySearch({
 // and forward the user to that URL.
 fs.oauthRedirect();
 
+// Or just get the redirect URL to perform the redirect yourself. This is most
+// useful in Node.js
+window.location.href = fs.oauthRedirectURL();
+
 // Handle OAuth redirect response by retrieving the code from the URL query and
 // exchanging the code for an access token. The access token will be saved if
 // that behavior is enabled.
