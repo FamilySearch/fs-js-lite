@@ -20,6 +20,10 @@ describe('node', function(){
         done();
       });
     });
+    
+    it('oauthRedirectURL()', function(){
+      assert.equal(client.oauthRedirectURL(), 'https://integration.familysearch.org/cis-web/oauth2/v3/authorization?response_type=code&client_id=a02j000000JBxOxAAL&redirect_uri=http://foobaz.com/oauth-redirect');
+    });
   
     it('password', function(done){
       nockBack('oauthPassword.json', function(nockDone){
@@ -314,7 +318,8 @@ describe('node', function(){
 function apiClient(options){
   var defaults = {
     appKey: sandbox.appkey,
-    saveAccessToken: false
+    saveAccessToken: false,
+    redirectUri: 'http://foobaz.com/oauth-redirect'
   };
   if(options){
     for(var o in options){

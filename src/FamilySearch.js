@@ -71,7 +71,14 @@ var FamilySearch = function(options){
  * Start the OAuth2 redirect flow by redirecting the user to FamilySearch.org
  */
 FamilySearch.prototype.oauthRedirect = function(){
-  window.location.href = this.identHost() + '/cis-web/oauth2/v3/authorization' +
+  window.location.href = this.oauthRedirectURL();
+};
+
+/**
+ * Generate the OAuth 2 redirect URL
+ */
+FamilySearch.prototype.oauthRedirectURL = function(){
+  return this.identHost() + '/cis-web/oauth2/v3/authorization' +
     '?response_type=code&client_id=' + this.appKey + '&redirect_uri=' + this.redirectUri;
 };
 
