@@ -9,7 +9,8 @@ module.exports = function(req, callback){
     url: req.url,
     method: req.method,
     headers: req.headers,
-    body: req.body
+    body: req.body,
+    followRedirect: false
   }, function(error, res, body){
     var response;
     if(res){
