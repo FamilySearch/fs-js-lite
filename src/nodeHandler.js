@@ -32,7 +32,7 @@ module.exports = function(req, callback){
 function createResponse(request, response, body){
   return {
     statusCode: response.statusCode,
-    statusText: response.statusMsg,
+    statusText: response.statusMessage,
     headers: response.headers,
     originalUrl: request.url,
     effectiveUrl: request.url,
