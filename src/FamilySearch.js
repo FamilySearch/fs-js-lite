@@ -26,9 +26,15 @@ var FamilySearch = function(options){
   this.appKey = options.appKey;
   this.environment = options.environment || 'integration';
   this.redirectUri = options.redirectUri;
-  this.saveAccessToken = typeof options.saveAccessToken === 'undefined' ? true : options.saveAccessToken;
   this.tokenCookie = options.tokenCookie || 'FS_AUTH_TOKEN';
   this.maxThrottledRetries = options.maxThrottledRetries || 10;
+  
+  // Default saveAccessToken to true. Set to false if specified in the options
+  // or if document is not defined and thus we can't use cookies.
+  this.saveAccessToken = true;
+  if(options.saveAccessToken === false || typeof document === 'undefined'){
+    this.saveAccessToken = false;
+  }
   
   this.middleware = {
     request: [
