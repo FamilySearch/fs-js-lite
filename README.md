@@ -15,6 +15,8 @@ considered bad practice when using the API. In most cases, FamilySearch does not
 consider URL changes as breaking changes. Read more about 
 [dealing with change](https://familysearch.org/developers/docs/guides/evolution).
 
+> TODO: Add a Table of contents
+
 ## Install
 
 Download or include the SDK directly from the CDN
@@ -79,21 +81,21 @@ var fs = new FamilySearch({
 
 ### Authentication
 
-`oauthRedirectURL()` - Obtain the URL of the login screen on familysearch.org
+__`oauthRedirectURL()`__ - Obtain the URL of the login screen on familysearch.org
 that the user should be redirected to for initiating authentication via OAuth 2.
 This method will automatically assemble the URL with the proper query parameters
 (the app key and redirect URI that were specified when the sdk client was created).
 
-`oauthRedirect()` - Begin OAuth 2 by automatically redirecting the user to the
+__`oauthRedirect()`__ - Begin OAuth 2 by automatically redirecting the user to the
 login screen on familysearch.org. This only works in the browser as a shortcut
 for `window.location.href = fs.oauthRedirectURL();`.
 
-`oauthToken(code, callback)` - In the second step of OAuth 2, exchange the code
+__`oauthToken(code, callback)`__ - In the second step of OAuth 2, exchange the code
 for an access token. The access token will be saved if that behavior is enabled.
 he `callback` is a normal request callback that recieves `error` and `response`
 parameters.
 
-`oauthResponse(callback)` - When handling the OAuth 2 response in the browser,
+__`oauthResponse(callback)`__ - When handling the OAuth 2 response in the browser,
 call this method which is automatically extract the `code` from the query
 parameter and call `oauthToken()` for you. The method will return `false` if no
 code was found in the query paremeter. When `true` is returned it means a code
@@ -101,20 +103,20 @@ was found and a request was sent to exchange the code for an access token. In
 that case you still must use a callback to check the response of that request
 and verify whether an access token was recieved.
 
-`oauthPassword(username, password, callback)` - Use the OAuth password flow.
+__`oauthPassword(username, password, callback)`__ - Use the OAuth password flow.
 Access tokens will be automatically saved in a cookie if that behavior is
 enabled. The OAuth password flow is disabled by default for app keys. Contact
 Developer Support to inquire about it being enabled for your app key. Typically
 only mobile and desktop apps are granted permission.
 
-`setAccessToken(accessToken)` - Set the access token. This will also save it in
+__`setAccessToken(accessToken)`__ - Set the access token. This will also save it in
 a cookie if that behavior is enabled.
 
-`getAccessToken()` - Get the access token if one is set. This does not send a
+__`getAccessToken()`__ - Get the access token if one is set. This does not send a
 request to the API to initiate authentication, it just returns what is currently
 stored in the sdk client's properties.
 
-`deleteAccessToken()` - Delete the access token. This doesn't actually invalidate
+__`deleteAccessToken()`__ - Delete the access token. This doesn't actually invalidate
 the access token it just removes it from the sdk client.
 
 #### Authentication in the Browser
