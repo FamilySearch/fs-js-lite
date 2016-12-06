@@ -318,7 +318,6 @@ describe('node', function(){
 function apiClient(options){
   var defaults = {
     appKey: sandbox.appkey,
-    saveAccessToken: false,
     redirectUri: 'http://foobaz.com/oauth-redirect'
   };
   if(options){

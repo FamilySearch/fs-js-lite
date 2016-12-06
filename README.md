@@ -23,25 +23,11 @@ Download or include the SDK directly from the CDN
 <script src="https://unpkg.com/fs-js-lite@latest/dist/FamilySearch.min.js"></script>
 ```
 
-You may install the SDK via npm if you have a build process using webpack,
-browserify, or any related tools.
+Or install from npm
 
 ```
 npm install --save fs-js-lite
 ```
-
-#### Node.js Support
-
-The SDK doesn't have built-in support for being run in node.js but it can be 
-used with a [shim for XMLHttpRequest](https://www.npmjs.com/package/xmlhttprequest).
-
-```js
-global.XMLHttpRequest = require('xmlhttprequest').XMLHttpRequest;
-```
-
-Be sure to set `saveAccessToken` to `false` in the options so that the SDK doesn't
-attempt to use cookies. You'll have to manually set the access token via
-`fs.setAccessToken(accessToken);`.
 
 ## Usage
 
@@ -49,27 +35,51 @@ The SDK includes a UMD wrapper to support being loaded in AMD environments (Requ
 and Node as well as being loaded as a browser global.
 
 ```js
+fs.get('/platform/users/current', function(error, response){
+  if(error){
+    console.error(error);
+  } else {
+    console.log(response.data);
+  }
+});
+```
+
+### Initialization Options
+
+```js
 // Create a client instance. All available options are shown here for the sake
 // of documentation though you normally won't specify all of them.
 var fs = new FamilySearch({
+  
+  // Specify the FamilySearch reference environment that will be used. Options 
+  // are: 'production', 'beta', and 'integration'. Defaults to 'integration'.
   environment: 'production',
+  
+  // App keys are obtained by registering you app in the FamilySearch developer's center.
+  // https://familysearch.org/developers/docs/guides/gs1-register-app
   appKey: 'ahfud9Adjfia',
+  
+  // Required when using OAuth.
+  // https://familysearch.org/developers/docs/guides/authentication
   redirectUri: 'https://example.com/fs-redirect',
   
   // Save the access token in a cookie and load if from a cookie so that the
-  // session isn't lost when the page reloads or changes. Defaults to true.
-  // Set to false if you will store the access token somewhere else (such as in
-  // a session on the server). Use the `tokenCookie` option to change the name
-  // of the cookie.
+  // session isn't lost when the page reloads or changes. Defaults to false.
+  // Use the `tokenCookie` option to change the name of the cookie.
   saveAccessToken: true,
   
-  // Name of the cookie where the access token will be stored. Defaults to 'FS_AUTH_TOKEN'
+  // Name of the cookie where the access token will be stored when `saveAccessToken`
+  // is set to `true`. Defaults to 'FS_AUTH_TOKEN'.
   tokenCookie: 'FS_AUTH_TOKEN',
   
   // Maximum number of times that a throttled request will be retried. Defaults to 10.
   maxThrottledRetries: 10
 });
+```
 
+### Authentication
+
+```js
 // Begin OAuth by redirecting the user to the login screen on familysearch.org.
 // This method will automatically assemble the URL with the proper query parameters
 // (such as the redirect URI that was specified when the client was created)
@@ -100,6 +110,20 @@ fs.oauthToken(code, function(error, response){ });
 // your app key. Only mobile and desktop apps are granted permission.
 fs.oauthPassword(username, password, function(error, response){ });
 
+// Set the access token. This will also save it in a cookie if that behavior
+// is enabled.
+fs.setAccessToken(accessToken);
+
+// Get the access token.
+fs.getAccessToken();
+
+// Delete the access token.
+fs.deleteAccessToken();
+```
+
+### Requests
+
+```js
 // GET
 fs.get('/platform/users/current', function(error, response){ });
 
@@ -134,41 +158,9 @@ fs.request('/platform/tree/persons/PPPP-PPP', {
 // automatically detect that the callback is the second parameter.
 // The `method` defaults to 'GET'.
 fs.request('/platform/tree/persons/PPPP-PPP', function(error, response){ });
-
-// Set the access token. This will also save it in a cookie if that behavior
-// is enabled.
-fs.setAccessToken(accessToken);
-
-// Get the access token.
-fs.getAccessToken();
-
-// Delete the access token.
-fs.deleteAccessToken();
-
-// Redirects are tricky. Read more about them below.
-fs.get('/platform/tree/current-person', { followRedirect: true }, function(error, response){ })
-
-// MIDDLEWARE
-//
-// The SDK also supports middleware for modifying requests and responses. 
-// You can read a detailed description about middleware is below in the readme.
-
-// Add request middleware to log all requests
-fs.addRequestMiddlware(function(client, request, next){
-  console.log(request.method + ' ' + request.url);
-  next();
-});
-
-// Add response middleware to log all responses
-fs.addResponseMiddlware(function(client, request, response, next){
-  if(response){
-    console.log(response.originalUrl + ' ' + response.statusText);
-  }
-  next();
-});
 ```
 
-### Response objects
+### Responses
 
 Responses are objects with the following properties and methods:
 
@@ -239,7 +231,7 @@ requests. However some browsers don't repeat all of the same request options on
 the redirect. For example, if you request JSON from `/platform/tree/current-person`
 by setting the `Accept` header to `application/x-fs-v1+json`, the API will respond
 with a 303 redirect to the actual person URL, such as 
-`/platform/tree/persons/PPPP-PPP`. Then browser then will send a second request 
+`/platform/tree/persons/PPPP-PPP`. Then the browser will send a second request 
 to the new URL but some browsers will not copy the `Accept` header from the first
 request to the second request so the API doesn't know you want JSON for the second
 request and will respond with XML since that's the default format. Obtaining XML
@@ -253,7 +245,7 @@ from redirected requests will have the `redirected` property set to `true`.
 
 Second, we don't always want to follow redirects. For example, if a person
 portrait exists the API will respond with a 307 redirect to the image file.
-However all we usually want is the URL so that we can add insert the URL into
+However all we usually want is the URL so that we can insert the URL into
 HTML and have the browser download the image.
 
 Due to the two issue described above, the SDK defaults to no special handling
@@ -266,7 +258,7 @@ request which causes the API to respond with a 200 for redirects.
 * `followRedirect`: When `true` the SDK will automatically follow a redirect.
 
 __It gets worse.__ Redirects are not allowed with CORS requests which require a 
-preflight OPTIONS request thus you wil always want to set the `expectRedirect` 
+preflight OPTIONS request thus you will always want to set the `expectRedirect` 
 header to true in the browser. But you can't do that because the API honors the 
 `X-Expect-Override` header for 304s as well. That is problematic when requesting
 persons because your browser will cache the first response then send a 
@@ -321,11 +313,18 @@ fs.addResponseMiddlware(function(client, request, response, next){
 The SDK allows for customizing the request and response processing via middleware.
 Middleware can be used to support caching, logging, and other features.
 
+// MIDDLEWARE
+//
+// The SDK also supports middleware for modifying requests and responses. 
+// You can read a detailed description about middleware is below in the readme.
+
 ### Request Middleware
 
 ```js
+// Add request middleware to log all requests
 fs.addRequestMiddlware(function(client, request, next){
-  
+  console.log(request.method + ' ' + request.url);
+  next();
 });
 ```
 
@@ -347,8 +346,10 @@ The SDK sets up some request middleware by default.
 ### Response Middleware
 
 ```js
+// Add response middleware to log all responses
 fs.addResponseMiddlware(function(client, request, response, next){
-  
+  console.log(response.originalUrl + ' ' + response.statusText);
+  next();
 });
 ```
 
@@ -379,10 +380,10 @@ At the moment there is no official way to modify the default middleware. Visit
 [issue 6](https://github.com/FamilySearch/fs-js-lite/issues/6) to voice your
 support for this functionality and express your opinion on how it should be done.
 
-## Testing
+## Migration from v1 to v2
 
-The SDK is designed for being used in a browser environment therefore we use
-[jsdom](https://github.com/tmpvar/jsdom) for automated testing with a headless 
-browser environment. [Nock](https://github.com/node-nock/nock) is used to record
-and playback requests so that we don't need to rely on the API being available
-for tests.
+Breaking changes:
+
+* Response header methods
+* `saveAccessToken` now defaults to false
+* Parameters of response callbacks changed

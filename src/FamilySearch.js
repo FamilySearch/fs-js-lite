@@ -14,9 +14,9 @@ var cookies = require('doc-cookies'),
  * @param {String} options.appKey Application Key
  * @param {String} options.redirectUri OAuth2 redirect URI
  * @param {String} options.saveAccessToken Save the access token to a cookie
- * and automatically load it from that cookie. Defaults to true.
+ * and automatically load it from that cookie. Defaults to false.
  * @param {String} options.tokenCookie Name of the cookie that the access token
- * will be saved in. Defaults to 'FS_AUTH_TOKEN'.
+ * will be saved in when `saveAccessToken` is true. Defaults to 'FS_AUTH_TOKEN'.
  * @param {String} options.maxThrottledRetries Maximum number of a times a 
  * throttled request should be retried. Defaults to 10.
  * @param {Array} options.pendingModifications List of pending modifications
@@ -28,13 +28,7 @@ var FamilySearch = function(options){
   this.redirectUri = options.redirectUri;
   this.tokenCookie = options.tokenCookie || 'FS_AUTH_TOKEN';
   this.maxThrottledRetries = options.maxThrottledRetries || 10;
-  
-  // Default saveAccessToken to true. Set to false if specified in the options
-  // or if document is not defined and thus we can't use cookies.
-  this.saveAccessToken = true;
-  if(options.saveAccessToken === false || typeof document === 'undefined'){
-    this.saveAccessToken = false;
-  }
+  this.saveAccessToken = options.saveAccessToken === true;
   
   this.middleware = {
     request: [
