@@ -31,7 +31,7 @@ consider URL changes as breaking changes. Read more about
         2. [Response Middleware](#response-middleware)
         3. [Default Middleware](#default-middleware)
     9. [Objects Instead of Plain JSON](#objects-json)
-3. [Migration from v1 to v2](#v2-migration)
+3. [Migrating from v1 to v2](#v2-migration)
 
 <a name="install"></a>
 
@@ -460,7 +460,7 @@ fs.addResponseMiddlware(function(client, request, response, next){
 
 <a name="v2-migration"></a>
 
-## Migration from v1 to v2
+## Migrating from v1 to v2
 
 Breaking changes:
 
