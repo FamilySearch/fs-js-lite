@@ -78,11 +78,11 @@ input {
 }
 
 .header-row .label {
-  width: 120px;
+  width: 130px;
   flex-shrink: 0;
 }
 
-.header-row input {
+.header-row input[type=text] {
   flex: 100%;
 }
 

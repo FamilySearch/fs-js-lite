@@ -34,22 +34,17 @@
         </div>
         
         <div class="header-row">
-          <span class="label">Redirects:</span>
-          <label>
-            <input type="checkbox" id="expectRedirect"> expectRedirect
-          </label>
-          <label>
-            <input type="checkbox" id="followRedirect"> followRedirect
-          </label>
-        </div>
-        
-        <div class="header-row">
           <span class="label">Authorization:</span>
-          <input id="access-token-display"/>
+          <input id="access-token-display" type="text" />
           <div id="auth-status">
             <button id="login-btn">Login</button>
             <button id="logout-btn">Logout</button>
           </div>
+        </div>
+        
+        <div class="header-row">
+          <span class="label">Follow Redirects:</span>
+          <input type="checkbox" id="followRedirect">
         </div>
       
       </div>

@@ -84,7 +84,6 @@ describe('browser', function(){
           nockBack('browserRedirect.json', function(nockDone){
             createPerson(client, function(personId){
               client.get('/platform/tree/current-person', {
-                expectRedirect: true,
                 followRedirect: true
               }, function(error, response){
                 nockDone();

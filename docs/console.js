@@ -1,6 +1,7 @@
 var client = new FamilySearch({
       appKey: 'a02j000000JBxOxAAL',
-      redirectUri: window.location.href
+      redirectUri: window.location.href,
+      saveAccessToken: true
     }),
     $url = document.getElementById('url'),
     $method = document.getElementById('method'),
@@ -8,7 +9,6 @@ var client = new FamilySearch({
     $requestBody = document.getElementById('request-body'),
     $authStatus = document.getElementById('auth-status'),
     $tokenDisplay = document.getElementById('access-token-display'),
-    $expectRedirect = document.getElementById('expectRedirect'),
     $followRedirect = document.getElementById('followRedirect');
 
 // Setup event listeners
@@ -67,7 +67,6 @@ function makeRequest(){
     headers: {
       Accept: document.getElementById('accept').value
     },
-    expectRedirect: $expectRedirect.checked,
     followRedirect: $followRedirect.checked
   };
   if(options.method === 'POST'){
