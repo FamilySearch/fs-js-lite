@@ -81,6 +81,9 @@ var fs = new FamilySearch({
 
 ### Authentication
 
+We recommend reading the FamilySearch [Authentication Guide](https://familysearch.org/developers/docs/guides/authentication)
+before deciding with authentication methods are best for you.
+
 __`oauthRedirectURL()`__ - Obtain the URL of the login screen on familysearch.org
 that the user should be redirected to for initiating authentication via OAuth 2.
 This method will automatically assemble the URL with the proper query parameters
@@ -181,34 +184,35 @@ fs.request('/platform/tree/persons/PPPP-PPP', function(error, response){ });
 
 Request options:
 
-* `method` - The HTTP method. Supported methods are 'GET', 'POST', 'HEAD', and 
-'DELETE'. Defaults to 'GET'.
-* `headers` - HTTP request headers in an object where header names are keys. The
+* __`method`__ - The HTTP method. Supported methods are `GET`, `POST`, `HEAD`, and 
+`DELETE`. Defaults to `GET`.
+* __`headers`__ - HTTP request headers in an object where header names are keys. The
 SDK will default `Accept` and `Content-Type` to `application/x-fs-v1+json`. Usually
 that's what you want but some endpoints require `application/x-gedcomx-atom+json`
 so you'll have to specifically set that.
-* `body` - The request body. Only valid when the `method` is 'POST'. May be a
-string or an object.
+* __`body`__ - The request body. Only valid when the `method` is `POST`. The body 
+may be a string or an object.
 
 Any other options you include in the request will be made available to 
-middleware at `request.options`.
+middleware at `request.options`. This allows you to pass request options to 
+custom middleware.
 
 ### Responses
 
 Responses are objects with the following properties and methods:
 
-* `statusCode` - Integer
-* `statusText` - String
-* `headers` - Map of the response headers. Header names are lowercased.
-* `body` - Response body text, if it exists
-* `data` - Object; only exists if the `body` is parsable JSON
-* `originalUrl` - String
-* `effectiveUrl` - Will be different from `originalUrl` when the request is redirected
-* `requestMethod` - HTTP method used on the request
-* `requestHeaders` - HTTP headers set on the request
-* `redirected` - Boolean specifying whether the request was redirected
-* `throttled` - Boolean specifying whether the request was throttled
-* `retries` - Integer. Number of times the request was retried. Requests are only retried
+* __`statusCode`__ - Integer
+* __`statusText`__ - String
+* __`headers`__ - Map of the response headers. Header names are lowercased.
+* __`body`__ - Response body text, if it exists
+* __`data`__ - Object; only exists if the `body` is parsable JSON
+* __`originalUrl`__ - String
+* __`effectiveUrl`__ - Will be different from `originalUrl` when the request is redirected
+* __`requestMethod`__ - HTTP method used on the request
+* __`requestHeaders`__ - HTTP headers set on the request
+* __`redirected`__ - Boolean specifying whether the request was redirected
+* __`throttled`__ - Boolean specifying whether the request was throttled
+* __`retries`__ - Integer. Number of times the request was retried. Requests are only retried
   when they are throttled.
 
 ### Error Handling
@@ -412,6 +416,10 @@ fs.addResponseMiddlware(function(client, request, response, next){
 
 Breaking changes:
 
-* Response header methods
-* `saveAccessToken` now defaults to false
-* Parameters of response callbacks changed
+1. The `getHeader()` and `getAllHeaders()` response methods were replaced with
+the `headers` object.
+2. `saveAccessToken` now defaults to `false` instead of `true`.
+3. The signature of response callbacks changed from `function(response)` to
+`function(error, response)`.
+4. In v1 response middleware was called even when a network error occurred. In
+v2 the response middleware is only called when a response is actually recieved.
