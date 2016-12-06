@@ -79,47 +79,61 @@ var fs = new FamilySearch({
 
 ### Authentication
 
-```js
-// Begin OAuth by redirecting the user to the login screen on familysearch.org.
-// This method will automatically assemble the URL with the proper query parameters
-// (such as the redirect URI that was specified when the client was created)
-// and forward the user to that URL.
-fs.oauthRedirect();
+`oauthRedirectURL()` - Obtain the URL of the login screen on familysearch.org
+that the user should be redirected to for initiating authentication via OAuth 2.
+This method will automatically assemble the URL with the proper query parameters
+(the app key and redirect URI that were specified when the sdk client was created).
 
-// Or just get the redirect URL to perform the redirect yourself. This is most
-// useful in Node.js
-window.location.href = fs.oauthRedirectURL();
+`oauthRedirect()` - Begin OAuth 2 by automatically redirecting the user to the
+login screen on familysearch.org. This only works in the browser as a shortcut
+for `window.location.href = fs.oauthRedirectURL();`.
 
-// Handle OAuth redirect response by retrieving the code from the URL query and
-// exchanging the code for an access token. The access token will be saved if
-// that behavior is enabled.
-//
-// The method will return false if no code was found in the query paremeter. When
-// true is returned it means a code was found and a request was sent to exchange
-// the code for an access token. You still must use a callback to check the response
-// of that request and verify whether an access token was recieved.
-fs.oauthResponse(function(error, response){ });
+`oauthToken(code, callback)` - In the second step of OAuth 2, exchange the code
+for an access token. The access token will be saved if that behavior is enabled.
+he `callback` is a normal request callback that recieves `error` and `response`
+parameters.
 
-// Or if for whatever reason you need to provide the OAuth code directly,
-// such as running in Node.js, you can do that too.
-fs.oauthToken(code, function(error, response){ });
+`oauthResponse(callback)` - When handling the OAuth 2 response in the browser,
+call this method which is automatically extract the `code` from the query
+parameter and call `oauthToken()` for you. The method will return `false` if no
+code was found in the query paremeter. When `true` is returned it means a code
+was found and a request was sent to exchange the code for an access token. In
+that case you still must use a callback to check the response of that request
+and verify whether an access token was recieved.
 
-// OAuth password flow. Access tokens will be automatically saved in a cookie
-// if that behavior is enabled. The OAuth password flow is disabled by default
-// for app keys. Contact Developer Support to inquire about it being enabled for
-// your app key. Only mobile and desktop apps are granted permission.
-fs.oauthPassword(username, password, function(error, response){ });
+`oauthPassword(username, password, callback)` - Use the OAuth password flow.
+Access tokens will be automatically saved in a cookie if that behavior is
+enabled. The OAuth password flow is disabled by default for app keys. Contact
+Developer Support to inquire about it being enabled for your app key. Typically
+only mobile and desktop apps are granted permission.
 
-// Set the access token. This will also save it in a cookie if that behavior
-// is enabled.
-fs.setAccessToken(accessToken);
+`setAccessToken(accessToken)` - Set the access token. This will also save it in
+a cookie if that behavior is enabled.
 
-// Get the access token.
-fs.getAccessToken();
+`getAccessToken()` - Get the access token if one is set. This does not send a
+request to the API to initiate authentication, it just returns what is currently
+stored in the sdk client's properties.
 
-// Delete the access token.
-fs.deleteAccessToken();
-```
+`deleteAccessToken()` - Delete the access token. This doesn't actually invalidate
+the access token it just removes it from the sdk client.
+
+#### Authentication in the Browser
+
+Authentication can be completely handled in the browser. First you would call
+`oauthRedirect()` to send the user to the login screen on familysearch.org. Then
+when the user returns to your app you would call `oauthResponse()` to complete
+authentication. You would also likely want to set the `saveAccessToken` to `true`
+when instantiating the SDK.
+
+#### Authentication in Node.js
+
+When handling authentication on the server, you first redirect the user to the URL
+returned by `oauthRedirectURL()`. Then when the user returns to your app you
+will retrieve the `code` from the query paremeters and call `oauthToken()` to
+complete authentication. When authentication is finished you would typically
+save the access token in a session so that the user remains authenticated
+between page loads. See the [node sample app](https://github.com/FamilySearch/fs-pedigree-browser-node)
+for an example of how this can be done with [Express](http://expressjs.com/).
 
 ### Requests
 
@@ -254,7 +268,7 @@ callbacks and in the browser all redirects will be transparently followed by
 the browser. The default behavior can be modified by setting request options.
 
 * `expectRedirect`: When `true` the `X-Expect-Override` header will be set on the
-request which causes the API to respond with a 200 for redirects.
+request which causes the API to respond with a 200 instead of a 3xx for redirects.
 * `followRedirect`: When `true` the SDK will automatically follow a redirect.
 
 __It gets worse.__ Redirects are not allowed with CORS requests which require a 
