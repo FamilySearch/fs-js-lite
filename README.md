@@ -289,6 +289,73 @@ include the `retries` property which is an integer specifying how many times the
 request was throttled and a `throttled` property which is `true` when the request
 has been throttled.
 
+### Middleware
+
+The SDK allows for customizing the request and response processing via middleware.
+Middleware can be used to support caching, logging, and other features.
+
+#### Request Middleware
+
+```js
+// Add request middleware to log all requests
+fs.addRequestMiddlware(function(client, request, next){
+  console.log(request.method + ' ' + request.url);
+  next();
+});
+```
+
+Request middleware is applied to every request the API makes. Request middleware 
+is a function with the signature `(client, request, next)`.
+
+* `client` is the instance of the FamilySearch sdk that the request is associated
+with.
+* `request` is an object that has {url, method, headers, body}.
+* `next` is a method that must be called when the middleware is done. Its
+signature is `function(error, response)`. In most cases nothing will be returned.
+When an error is returned the middleware chain will be canceled and the error
+will be returned to the request callback. A response may be returned by the
+middleware to enable caching. In this case the response is immediately returned.
+
+Request middleware is applied in the order that it was added.
+The SDK sets up some request middleware by default.
+
+#### Response Middleware
+
+```js
+// Add response middleware to log all responses
+fs.addResponseMiddlware(function(client, request, response, next){
+  console.log(response.originalUrl + ' ' + response.statusText);
+  next();
+});
+```
+
+Response middleware is applied to every response received from the API. Response 
+middleware is a function with the signature `(client, request, response, next)`.
+
+* `client` is the instance of the FamilySearch sdk that the request is associated
+* with.
+* `request` is an object that has {url, method, headers, body}.
+* `response` is a response object.
+* `next` is a method that must be called when the middleware is done. Its
+signature is `function(error, cancel)`. When `cancel` has any truthy value
+the response middleware chain is canceled but unlike request
+middleware the request callback is not called. Cancelling is done when a new
+request must be issued, such as middleware that handles redirects or throttling.
+In this case the subsequent request will have it's own middleware chain which
+must be completed this the current middleware chain is canceled.
+
+Response middleware is applied in the order that it was added. 
+The SDK sets up some response middleware by default.
+
+#### Default Middlware
+
+Some request and response middleware is configured by default for processing
+request bodies, handling throttling, and other default functionality.
+
+At the moment there is no official way to modify the default middleware. Visit
+[issue 6](https://github.com/FamilySearch/fs-js-lite/issues/6) to voice your
+support for this functionality and express your opinion on how it should be done.
+
 ### Objects Instead of Plain JSON
 
 If you would prefer having response bodies deserialized with an object model
@@ -321,78 +388,6 @@ fs.addResponseMiddlware(function(client, request, response, next){
   next();
 });
 ```
-
-## Middleware
-
-The SDK allows for customizing the request and response processing via middleware.
-Middleware can be used to support caching, logging, and other features.
-
-// MIDDLEWARE
-//
-// The SDK also supports middleware for modifying requests and responses. 
-// You can read a detailed description about middleware is below in the readme.
-
-### Request Middleware
-
-```js
-// Add request middleware to log all requests
-fs.addRequestMiddlware(function(client, request, next){
-  console.log(request.method + ' ' + request.url);
-  next();
-});
-```
-
-Request middleware is applied to every request the API makes. Request middleware 
-is a function with the signature `(client, request, next)`.
-
-* `client` is the instance of the FamilySearch sdk that the request is associated
-with.
-* `request` is an object that has {url, method, headers, body}.
-* `next` is a method that must be called when the middleware is done. Its
-signature is `function(error, response)`. In most cases nothing will be returned.
-When an error is returned the middleware chain will be canceled and the error
-will be returned to the request callback. A response may be returned by the
-middleware to enable caching. In this case the response is immediately returned.
-
-Request middleware is applied in the order that it was added.
-The SDK sets up some request middleware by default.
-
-### Response Middleware
-
-```js
-// Add response middleware to log all responses
-fs.addResponseMiddlware(function(client, request, response, next){
-  console.log(response.originalUrl + ' ' + response.statusText);
-  next();
-});
-```
-
-Response middleware is applied to every response received from the API. Response 
-middleware is a function with the signature `(client, request, response, next)`.
-
-* `client` is the instance of the FamilySearch sdk that the request is associated
-* with.
-* `request` is an object that has {url, method, headers, body}.
-* `response` is a response object.
-* `next` is a method that must be called when the middleware is done. Its
-signature is `function(error, cancel)`. When `cancel` has any truthy value
-the response middleware chain is canceled but unlike request
-middleware the request callback is not called. Cancelling is done when a new
-request must be issued, such as middleware that handles redirects or throttling.
-In this case the subsequent request will have it's own middleware chain which
-must be completed this the current middleware chain is canceled.
-
-Response middleware is applied in the order that it was added. 
-The SDK sets up some response middleware by default.
-
-### Default Middlware
-
-Some request and response middleware is configured by default for processing
-request bodies, handling throttling, and other default functionality.
-
-At the moment there is no official way to modify the default middleware. Visit
-[issue 6](https://github.com/FamilySearch/fs-js-lite/issues/6) to voice your
-support for this functionality and express your opinion on how it should be done.
 
 ## Migration from v1 to v2
 
