@@ -137,6 +137,9 @@ save the access token in a session so that the user remains authenticated
 between page loads. See the [node sample app](https://github.com/FamilySearch/fs-pedigree-browser-node)
 for an example of how this can be done with [Express](http://expressjs.com/).
 
+You can also use a mixed approach to authentication by beginning in the browser
+with the redirect to familysearch.org and handling the response on the server.
+
 ### Requests
 
 ```js
