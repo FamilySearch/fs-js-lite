@@ -146,15 +146,6 @@ with the redirect to familysearch.org and handling the response on the server.
 // GET
 fs.get('/platform/users/current', function(error, response){ });
 
-// The SDK defaults the Accept and Content-Type headers to application/x-fs-v1+json
-// for all /platform/ URLs. But that doesn't work for some endpoints which use
-// the atom data format so you'll need to set the headers yourself.
-fs.get('/platform/tree/persons/PPPP-PPP/matches?collection=records', {
-  headers: {
-    Accept: 'application/x-gedcomx-atom+json'
-  }
-}, function(error, response){ });
-
 // POST
 fs.post('/platform/tree/persons', {
   body: { persons: [ personData ] }
@@ -165,6 +156,15 @@ fs.head('/platform/tree/persons/PPPP-PPP', function(error, response){ });
 
 // DELETE
 fs.delete('/platform/tree/persons/PPPP-PPP', function(error, response){ });
+
+// The SDK defaults the Accept and Content-Type headers to application/x-fs-v1+json
+// for all /platform/ URLs. But that doesn't work for some endpoints which use
+// the atom data format so you'll need to set the headers yourself.
+fs.get('/platform/tree/persons/PPPP-PPP/matches?collection=records', {
+  headers: {
+    Accept: 'application/x-gedcomx-atom+json'
+  }
+}, function(error, response){ });
 
 // Underneath the covers, `get()`, `post()`, `head()`, and `delete()` call the
 // `request()` method which has the same method signature.
@@ -178,6 +178,20 @@ fs.request('/platform/tree/persons/PPPP-PPP', {
 // The `method` defaults to 'GET'.
 fs.request('/platform/tree/persons/PPPP-PPP', function(error, response){ });
 ```
+
+Request options:
+
+* `method` - The HTTP method. Supported methods are 'GET', 'POST', 'HEAD', and 
+'DELETE'. Defaults to 'GET'.
+* `headers` - HTTP request headers in an object where header names are keys. The
+SDK will default `Accept` and `Content-Type` to `application/x-fs-v1+json`. Usually
+that's what you want but some endpoints require `application/x-gedcomx-atom+json`
+so you'll have to specifically set that.
+* `body` - The request body. Only valid when the `method` is 'POST'. May be a
+string or an object.
+
+Any other options you include in the request will be made available to 
+middleware at `request.options`.
 
 ### Responses
 
