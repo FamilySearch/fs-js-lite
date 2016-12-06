@@ -15,7 +15,25 @@ considered bad practice when using the API. In most cases, FamilySearch does not
 consider URL changes as breaking changes. Read more about 
 [dealing with change](https://familysearch.org/developers/docs/guides/evolution).
 
-> TODO: Add a Table of contents
+1. [Install](#install)
+2. [Usage](#usage)
+    1. [Initialization Options](#init-options)
+    2. [Authentication](#authentication)
+        1. [Browser](#authentication-browser)
+        2. [Node.js](#authentication-node)
+    3. [Requests](#requests)
+    4. [Responses](#responses)
+    5. [Error Handling](#errors)
+    6. [Redirects](#redirects)
+    7. [Throttling](#throttling)
+    8. [Middleware](#middleware)
+        1. [Request Middleware](#request-middleware)
+        2. [Response Middleware](#response-middleware)
+        3. [Default Middleware](#default-middleware)
+    9. [Objects Instead of Plain JSON](#objects-json)
+3. [Migration from v1 to v2](#v2-migration)
+
+<a name="install"></a>
 
 ## Install
 
@@ -30,6 +48,7 @@ Or install from npm
 ```
 npm install --save fs-js-lite
 ```
+<a name="usage"></a>
 
 ## Usage
 
@@ -45,6 +64,7 @@ fs.get('/platform/users/current', function(error, response){
   }
 });
 ```
+<a name="init-options"></a>
 
 ### Initialization Options
 
@@ -78,6 +98,8 @@ var fs = new FamilySearch({
   maxThrottledRetries: 10
 });
 ```
+
+<a name="authentication"></a>
 
 ### Authentication
 
@@ -122,6 +144,8 @@ stored in the sdk client's properties.
 __`deleteAccessToken()`__ - Delete the access token. This doesn't actually invalidate
 the access token it just removes it from the sdk client.
 
+<a name="authentication-browser"></a>
+
 #### Authentication in the Browser
 
 Authentication can be completely handled in the browser. First you would call
@@ -129,6 +153,8 @@ Authentication can be completely handled in the browser. First you would call
 when the user returns to your app you would call `oauthResponse()` to complete
 authentication. You would also likely want to set the `saveAccessToken` to `true`
 when instantiating the SDK.
+
+<a name="authentication-node"></a>
 
 #### Authentication in Node.js
 
@@ -142,6 +168,8 @@ for an example of how this can be done with [Express](http://expressjs.com/).
 
 You can also use a mixed approach to authentication by beginning in the browser
 with the redirect to familysearch.org and handling the response on the server.
+
+<a name="requests"></a>
 
 ### Requests
 
@@ -197,6 +225,8 @@ Any other options you include in the request will be made available to
 middleware at `request.options`. This allows you to pass request options to 
 custom middleware.
 
+<a name="responses"></a>
+
 ### Responses
 
 Responses are objects with the following properties and methods:
@@ -214,6 +244,8 @@ Responses are objects with the following properties and methods:
 * __`throttled`__ - Boolean specifying whether the request was throttled
 * __`retries`__ - Integer. Number of times the request was retried. Requests are only retried
   when they are throttled.
+
+<a name="errors"></a>
 
 ### Error Handling
 
@@ -246,6 +278,8 @@ fs.get('/platform/tree/persons/PPPP-PPP', function(error, response){
     
 });
 ```
+
+<a name="redirects"></a>
 
 ### Redirects
 
@@ -304,6 +338,8 @@ and an empty body but instead sends a 200 with the empty body but the browser
 doesn't understand that it's a cached response thus the response is resolved
 without a body. That's not what you want.
 
+<a name="throttling"></a>
+
 ### Throttling
 
 The SDK will automatically retry throttled requests and obey the throttling
@@ -312,10 +348,14 @@ include the `retries` property which is an integer specifying how many times the
 request was throttled and a `throttled` property which is `true` when the request
 has been throttled.
 
+<a name="middleware"></a>
+
 ### Middleware
 
 The SDK allows for customizing the request and response processing via middleware.
 Middleware can be used to support caching, logging, and other features.
+
+<a name="request-middleware"></a>
 
 #### Request Middleware
 
@@ -341,6 +381,8 @@ middleware to enable caching. In this case the response is immediately returned.
 
 Request middleware is applied in the order that it was added.
 The SDK sets up some request middleware by default.
+
+<a name="response-middleware"></a>
 
 #### Response Middleware
 
@@ -370,6 +412,8 @@ must be completed this the current middleware chain is canceled.
 Response middleware is applied in the order that it was added. 
 The SDK sets up some response middleware by default.
 
+<a name="default-middleware"></a>
+
 #### Default Middlware
 
 Some request and response middleware is configured by default for processing
@@ -378,6 +422,8 @@ request bodies, handling throttling, and other default functionality.
 At the moment there is no official way to modify the default middleware. Visit
 [issue 6](https://github.com/FamilySearch/fs-js-lite/issues/6) to voice your
 support for this functionality and express your opinion on how it should be done.
+
+<a name="objects-json"></a>
 
 ### Objects Instead of Plain JSON
 
@@ -411,6 +457,8 @@ fs.addResponseMiddlware(function(client, request, response, next){
   next();
 });
 ```
+
+<a name="v2-migration"></a>
 
 ## Migration from v1 to v2
 
