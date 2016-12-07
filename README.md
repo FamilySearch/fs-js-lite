@@ -8,7 +8,7 @@ Lite JavaScript SDK for the [FamilySearch API](https://familysearch.org/develope
 This SDK is designed for use in a web browser and uses XMLHttpRequest.
 
 There is also an [API Explorer](http://familysearch.github.io/fs-js-lite/docs/console.html)
-which is built using the SDK.
+which is built using the SDK and a [Node.js sample app](https://github.com/FamilySearch/fs-pedigree-browser-node).
 
 __Warning__: this SDK requires hard-coding the API endpoint URLs. That is
 considered bad practice when using the API. In most cases, FamilySearch does not
