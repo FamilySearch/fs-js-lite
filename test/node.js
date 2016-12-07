@@ -1,29 +1,14 @@
 var FamilySearch = require('../src/FamilySearch'),
-    jsdom = require('jsdom').jsdom,
     assert = require('chai').assert,
-    nock = require('nock'),
-    nockBack = nock.back,
-    GedcomX = require('gedcomx-js');
+    nockBack = require('./nockback'),
+    GedcomX = require('gedcomx-js'),
+    sandbox = require('./sandbox'),
+    createPerson = require('./createperson'),
+    check = require('./check');
 
 GedcomX.addExtensions(require('gedcomx-fs-js'));
 
-nockBack.fixtures = __dirname + '/responses/';
-
-describe('FamilySearch', function(){
-  
-  // Create a new FamilySearch client and a mock browser window
-  before(function(){
-    
-    // Setup the mock window
-    var document = jsdom(undefined, {
-          url: 'https://integration.familysearch.org',
-          strictSSL: false
-        }),
-        window = document.defaultView;
-    global.XMLHttpRequest = window.XMLHttpRequest;
-    global.window = window;
-    global.document = window.document;
-  });
+describe('node', function(){
   
   describe('basic', function(){
   
@@ -35,10 +20,14 @@ describe('FamilySearch', function(){
         done();
       });
     });
+    
+    it('oauthRedirectURL()', function(){
+      assert.equal(client.oauthRedirectURL(), 'https://integration.familysearch.org/cis-web/oauth2/v3/authorization?response_type=code&client_id=a02j000000JBxOxAAL&redirect_uri=http://foobaz.com/oauth-redirect');
+    });
   
     it('password', function(done){
       nockBack('oauthPassword.json', function(nockDone){
-        client.oauthPassword('sdktester', '1234sdkpass', function(response){
+        client.oauthPassword(sandbox.username, sandbox.password, function(error, response){
           nockDone();
           check(done, function(){
             assert.isDefined(response);
@@ -53,7 +42,7 @@ describe('FamilySearch', function(){
     it('get', function(done){
       nockBack('getPerson.json', function(nockDone){
         createPerson(client, function(personId){
-          client.get('/platform/tree/persons/' + personId, function(response){
+          client.get('/platform/tree/persons/' + personId, function(error, response){
             nockDone();
             check(done, function(){
               assert.isDefined(response);
@@ -80,7 +69,7 @@ describe('FamilySearch', function(){
     
     it('head', function(done){
       nockBack('headPerson.json', function(nockDone){
-        client.head('/platform/tree/persons/L5C2-WYC', function(response){
+        client.head('/platform/tree/persons/L5C2-WYC', function(error, response){
           nockDone();
           check(done, function(){
             assert.isDefined(response);
@@ -94,7 +83,7 @@ describe('FamilySearch', function(){
     it('delete', function(done){
       nockBack('deletePerson.json', function(nockDone){
         createPerson(client, function(personId){
-          client.delete('/platform/tree/persons/' + personId, function(response){
+          client.delete('/platform/tree/persons/' + personId, function(error, response){
             nockDone();
             check(done, function(){
               assert.isDefined(response);
@@ -108,7 +97,9 @@ describe('FamilySearch', function(){
     
     it('redirect', function(done){
       nockBack('redirect.json', function(nockDone){
-        client.get('/platform/tree/current-person', function(response){
+        client.get('/platform/tree/current-person', {
+          followRedirect: true
+        }, function(error, response){
           nockDone();
           check(done, function(){
             assert.isDefined(response);
@@ -118,6 +109,7 @@ describe('FamilySearch', function(){
             assert(response.redirected);
             assert.isDefined(response.originalUrl);
             assert.isDefined(response.effectiveUrl);
+            assert(response.originalUrl !== response.effectiveUrl);
           });
         });
       });
@@ -126,8 +118,8 @@ describe('FamilySearch', function(){
     it('throttled', function(done){
       this.timeout(1800000);
       nockBack('throttled.json', function(nockDone){
-        client.get('/platform/throttled?processingTime=1800000', function(response){
-          client.get('/platform/throttled', function(response){
+        client.get('/platform/throttled?processingTime=1800000', function(error, response){
+          client.get('/platform/throttled', function(error, response){
             nockDone();
             check(done, function(){
               assert.isDefined(response);
@@ -142,7 +134,50 @@ describe('FamilySearch', function(){
     
   });
   
-  describe('gedcomx middleware', function(){
+  describe('request middleware', function(){
+    
+    it('returns an error', function(done){
+      authenticatedClient(function(client){
+        client.addRequestMiddleware(function(client, request, next){
+          next(new Error());
+        });
+        client.get('/anything', function(error, response){
+          check(done, function(){
+            assert.isDefined(error);
+            assert.isUndefined(response);
+          });
+        });
+      });
+    });
+    
+    it('returns a new response', function(done){
+      authenticatedClient(function(client){
+        client.addRequestMiddleware(function(client, request, next){
+          next(null, {
+            statusCode: 200,
+            statusText: 'OK',
+            headers: {},
+            originalUrl: '/url',
+            effectiveUrl: '/url',
+            redirected: false,
+            requestMethod: 'GET',
+            requestHeaders: {},
+            retries: 0,
+            throttled: false
+          });
+        });
+        client.get('/anything', function(error, response){
+          check(done, function(){
+            assert.isUndefined(error);
+            assert.isDefined(response);
+          });
+        });
+      });
+    });
+    
+  });
+  
+  describe('response middleware', function(){
     
     var client;
     
@@ -154,9 +189,38 @@ describe('FamilySearch', function(){
       });
     });
     
+    it('returns an error', function(done){
+      authenticatedClient(function(client){
+        // Add request middleware to simulate a response and skip any real HTTP execution
+        client.addRequestMiddleware(function(client, request, next){
+          next(null, {
+            statusCode: 200,
+            statusText: 'OK',
+            headers: {},
+            originalUrl: '/url',
+            effectiveUrl: '/url',
+            redirected: false,
+            requestMethod: 'GET',
+            requestHeaders: {},
+            retries: 0,
+            throttled: false
+          });
+        });
+        client.addResponseMiddleware(function(client, request, response, next){
+          next(new Error());
+        });
+        client.get('/anything', function(error, response){
+          check(done, function(){
+            assert.isDefined(error);
+            assert.isUndefined(response);
+          });
+        });
+      });
+    });
+    
     it('oauth response', function(done){
       nockBack('oauthPassword.json', function(nockDone){
-        client.oauthPassword('sdktester', '1234sdkpass', function(response){
+        client.oauthPassword(sandbox.username, sandbox.password, function(error, response){
           nockDone();
           check(done, function(){
             assert.isDefined(response);
@@ -173,7 +237,7 @@ describe('FamilySearch', function(){
     it('gedcomx response', function(done){
       nockBack('getPerson.json', function(nockDone){
         createPerson(client, function(personId){
-          client.get('/platform/tree/persons/' + personId, function(response){
+          client.get('/platform/tree/persons/' + personId, function(error, response){
             nockDone();
             check(done, function(){
               assert.isDefined(response);
@@ -195,7 +259,7 @@ describe('FamilySearch', function(){
             headers: {
               Accept: 'application/x-gedcomx-atom+json'
             }
-          }, function(response){
+          }, function(error, response){
             nockDone();
             check(done, function(){
               assert.isDefined(response);
@@ -212,7 +276,7 @@ describe('FamilySearch', function(){
     
     it('errors response', function(done){
       nockBack('errors.json', function(nockDone){
-        client.get('/platform/tree/persons/PPPPPP', function(response){
+        client.get('/platform/tree/persons/PPPPPP', function(error, response){
           nockDone();
           check(done, function(){
             assert.isDefined(response);
@@ -253,7 +317,8 @@ describe('FamilySearch', function(){
  */
 function apiClient(options){
   var defaults = {
-    appKey: 'a02j000000JBxOxAAL'
+    appKey: sandbox.appkey,
+    redirectUri: 'http://foobaz.com/oauth-redirect'
   };
   if(options){
     for(var o in options){
@@ -275,54 +340,10 @@ function authenticatedClient(options, callback){
   }
   nockBack('oauthPassword.json', function(nockDone){
     var client = apiClient(options);
-    client.oauthPassword('sdktester', '1234sdkpass', function(response){
+    client.oauthPassword(sandbox.username, sandbox.password, function(error, response){
       nockDone();
       callback(client);
     });
-  });
-}
-
-/**
- * Create a person.
- * 
- * @param {FamilySearch} client
- * @param {Function} callback - is given the new person's ID on success, nothing on error
- */
-function createPerson(client, callback){
-  client.post('/platform/tree/persons', {
-    body: {
-      "persons": [
-        {
-          "living": true,
-          "gender": {
-            "type": "http://gedcomx.org/Male"
-          },
-          "names": [
-            {
-              "type": "http://gedcomx.org/BirthName",
-              "preferred": true,
-              "nameForms": [
-                {
-                  "fullText": "Jacob",
-                  "parts": [
-                    {
-                      "value": "Jacob",
-                      "type": "http://gedcomx.org/Given"
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    }
-  }, function(response){
-    if(response && response.statusCode === 201){
-      callback(response.getHeader('X-entity-id'));
-    } else {
-      callback();
-    }
   });
 }
 
@@ -345,17 +366,4 @@ function gedcomxMiddleware(client, request, response, next){
     }
   }
   next();
-}
-
-/**
- * Helper method that assists in managing exceptions during async tests
- * http://stackoverflow.com/a/15208067
- */
-function check( done, f ) {
-  try {
-    f();
-    done();
-  } catch( e ) {
-    done( e );
-  }
 }

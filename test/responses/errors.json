@@ -5,22 +5,26 @@
         "path": "/platform/tree/persons/PPPPPP",
         "body": "",
         "status": 404,
-        "response": [
-            "1f8b0800000000000000",
-            "3d8ebd4ec4400c84fb7b8ad1d6dc06a4ab22212a7eaa1305542cc59275022267476b8726cabbe3bb205c8d3e8f3db3ec8040b54ad580166f581c38eaa4d0191cae0f571b39916a1e2e30bc72fe18092640a55c603d26aa2a1cc39f5b2d77df5673b71d3cdebfe0d36c6a9bc6faf8c546439c754f596d7f130bfdc45e47e9f218a50e6e69b677cdf365ee84e94926bd65179e6873652ac82e75125682c7d9ac90fe5c1847313cc8cca54dbc244ec1610a2d52f8dfa490780dde75c5fb6efd05bd855ae506010000"
-        ],
+        "response": {
+            "errors": [
+                {
+                    "code": 404,
+                    "message": "Unable to  read tf person.",
+                    "stacktrace": "GET http://tf.integ.us-east-1.dev.fslocal.org/tf/person/PPPPPP?oneHops=none returned a response status of 404 Not Found:\n{\n\"404\": \"Not Found\"\n}"
+                }
+            ]
+        },
         "headers": {
             "cache-control": "no-cache, no-store, no-transform, must-revalidate, max-age=0",
-            "content-encoding": "gzip",
             "content-location": "/tree/persons/PPPPPP",
             "content-type": "application/x-fs-v1+json",
-            "date": "Tue, 08 Nov 2016 22:14:02 GMT",
+            "date": "Tue, 15 Nov 2016 22:37:56 GMT",
             "server": "Apache-Coyote/1.1",
             "vary": "Accept, Accept-Language, Accept-Encoding, Expect, Accept-Encoding",
             "warning": "400 FamilySearch \"Unable to  read tf person.\"",
-            "x-processing-time": "147",
-            "x-throttle-millis-left": "1794005",
-            "x-throttle-millis-used": "5995",
+            "x-processing-time": "171",
+            "x-throttle-millis-left": "1795572",
+            "x-throttle-millis-used": "4428",
             "x-throttle-window-size": "1800000",
             "transfer-encoding": "chunked",
             "connection": "Close"

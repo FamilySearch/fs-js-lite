@@ -6,12 +6,39 @@
  * @param {Function} callback
  */
 var Request = function(url, options, callback){
+  
+  // Inititialize and set defaults
   this.url = url;
-  this.method = options.method || 'GET';
-  this.headers = options.headers ? JSON.parse(JSON.stringify(options.headers)) : {};
-  this.body = options.body;
-  this.retries = options.retries || 0;
   this.callback = callback || function(){};
+  this.method = 'GET';
+  this.headers = {};
+  this.retries = 0;
+  this.options = {};
+  
+  // Process request options. We use a for loop so that we can stuff all
+  // non-standard options into the options object on the reuqest.
+  var opt;
+  for(opt in options){
+    if(options.hasOwnProperty(opt)){
+      switch(opt){
+        
+        case 'method':
+        case 'body':
+        case 'retries':
+          this[opt] = options[opt];
+          break;
+          
+        case 'headers':
+          // We copy the headers object so that we don't have to worry about the developer
+          // and the SDK stepping on each other's toes by modifying the headers object.
+          this.headers = JSON.parse(JSON.stringify(options.headers));
+          break;
+          
+        default:
+          this.options[opt] = options[opt];
+      }
+    }
+  }
 };
 
 /**

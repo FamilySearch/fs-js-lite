@@ -35,11 +35,16 @@
         
         <div class="header-row">
           <span class="label">Authorization:</span>
-          <input id="access-token-display" disabled/>
+          <input id="access-token-display" type="text" />
           <div id="auth-status">
             <button id="login-btn">Login</button>
             <button id="logout-btn">Logout</button>
           </div>
+        </div>
+        
+        <div class="header-row">
+          <span class="label">Follow Redirects:</span>
+          <input type="checkbox" id="followRedirect">
         </div>
       
       </div>
@@ -72,7 +77,7 @@
       </ul>
     </div>
     
-    <script src="https://unpkg.com/fs-js-lite@1.x/dist/FamilySearch.min.js"></script>
+    <script src="https://unpkg.com/fs-js-lite@2.x/dist/FamilySearch.min.js"></script>
     <script src="console.js"></script>
   </body>
 </html>

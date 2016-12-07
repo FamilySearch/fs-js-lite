@@ -1,13 +1,15 @@
 var client = new FamilySearch({
       appKey: 'a02j000000JBxOxAAL',
-      redirectUri: window.location.href
+      redirectUri: window.location.href,
+      saveAccessToken: true
     }),
     $url = document.getElementById('url'),
     $method = document.getElementById('method'),
     $output = document.getElementById('output'),
     $requestBody = document.getElementById('request-body'),
     $authStatus = document.getElementById('auth-status'),
-    $tokenDisplay = document.getElementById('access-token-display');
+    $tokenDisplay = document.getElementById('access-token-display'),
+    $followRedirect = document.getElementById('followRedirect');
 
 // Setup event listeners
 
@@ -39,7 +41,7 @@ document.getElementById('logout-btn').addEventListener('click', function(){
 
 // Handle an OAuth2 response if we're in that state. Otherwise we initialize the
 // app with a request on load.
-var oauthResponseState = client.oauthResponse(function(response){
+var oauthResponseState = client.oauthResponse(function(error, response){
   if(response){
     displayResponse(response);
     
@@ -47,6 +49,8 @@ var oauthResponseState = client.oauthResponse(function(response){
     if(response.statusCode === 200){
       window.location = window.location.pathname;
     }
+  } else {
+    genericError();
   }
 });
 if(!oauthResponseState){
@@ -62,14 +66,15 @@ function makeRequest(){
     method: $method.value,
     headers: {
       Accept: document.getElementById('accept').value
-    }
+    },
+    followRedirect: $followRedirect.checked
   };
   if(options.method === 'POST'){
     options.body = $requestBody.value;
   }
-  client.request($url.value, options, function(response){
-    if(!response){
-      output('Network error. Try again.');
+  client.request($url.value, options, function(error, response){
+    if(error){
+      genericError();
     } else {
       displayResponse(response);
       
@@ -86,6 +91,13 @@ function makeRequest(){
 }
 
 /**
+ * Display a generic error since XHR gives us no details.
+ */
+function genericError(){
+  output('Fatal error. Open the browser\'s developer console for more details.');
+}
+
+/**
  * Display an API response
  * 
  * @param {Object} response
@@ -95,9 +107,10 @@ function displayResponse(response){
   // Gather and display HTTP response data
   var lines = [
     response.statusCode + ' ' + response.statusText,
-    response.getAllHeaders()
+    headersToString(response.headers)
   ];
   if(response.data){
+    lines.push('');
     lines.push(prettyPrint(response.data));
   }
   output(lines.join('\n'));
@@ -111,6 +124,20 @@ function displayResponse(response){
       window.scrollTo(0, 0);
     });
   });
+}
+
+/**
+ * Convert a headers map into a multi-line string
+ * 
+ * @param {Object} headers
+ * @return {String}
+ */
+function headersToString(headers){
+  var lines = [];
+  for(var name in headers){
+    lines.push(name + ': ' + headers[name]);
+  }
+  return lines.join('\n');
 }
 
 /**

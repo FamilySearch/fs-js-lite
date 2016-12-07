@@ -1,6 +1,6 @@
 var cookies = require('doc-cookies'),
     Request = require('./Request'),
-    XHR = require('./XHR'),
+    requestHandler = require('./nodeHandler'),
     utils = require('./utils'),
     requestMiddleware = require('./middleware/request'),
     responseMiddleware = require('./middleware/response');
@@ -14,9 +14,9 @@ var cookies = require('doc-cookies'),
  * @param {String} options.appKey Application Key
  * @param {String} options.redirectUri OAuth2 redirect URI
  * @param {String} options.saveAccessToken Save the access token to a cookie
- * and automatically load it from that cookie. Defaults to true.
+ * and automatically load it from that cookie. Defaults to false.
  * @param {String} options.tokenCookie Name of the cookie that the access token
- * will be saved in. Defaults to 'FS_AUTH_TOKEN'.
+ * will be saved in when `saveAccessToken` is true. Defaults to 'FS_AUTH_TOKEN'.
  * @param {String} options.maxThrottledRetries Maximum number of a times a 
  * throttled request should be retried. Defaults to 10.
  * @param {Array} options.pendingModifications List of pending modifications
@@ -26,9 +26,9 @@ var FamilySearch = function(options){
   this.appKey = options.appKey;
   this.environment = options.environment || 'integration';
   this.redirectUri = options.redirectUri;
-  this.saveAccessToken = options.saveAccessToken || true;
   this.tokenCookie = options.tokenCookie || 'FS_AUTH_TOKEN';
   this.maxThrottledRetries = options.maxThrottledRetries || 10;
+  this.saveAccessToken = options.saveAccessToken === true;
   
   this.middleware = {
     request: [
@@ -71,14 +71,21 @@ var FamilySearch = function(options){
  * Start the OAuth2 redirect flow by redirecting the user to FamilySearch.org
  */
 FamilySearch.prototype.oauthRedirect = function(){
-  window.location.href = this.identHost() + '/cis-web/oauth2/v3/authorization' +
+  window.location.href = this.oauthRedirectURL();
+};
+
+/**
+ * Generate the OAuth 2 redirect URL
+ */
+FamilySearch.prototype.oauthRedirectURL = function(){
+  return this.identHost() + '/cis-web/oauth2/v3/authorization' +
     '?response_type=code&client_id=' + this.appKey + '&redirect_uri=' + this.redirectUri;
 };
 
 /**
  * Handle an OAuth2 redirect response by extracting the code from the query
- * and exchanging it for an access token. This also automatically saves the
- * token in a cookie when that behavior is enabled.
+ * and exchanging it for an access token. The token is automatically saved
+ * in a cookie when that behavior is enabled.
  * 
  * @param {Function} callback that receives the access token response
  * @return {Boolean} true if a code was detected; false otherwise. This does
@@ -88,32 +95,39 @@ FamilySearch.prototype.oauthRedirect = function(){
  */
 FamilySearch.prototype.oauthResponse = function(callback){
   
-  var client = this;
-  
-  // Extract the code from the query
+  // Extract the code from the query params
   var code = utils.getParameterByName('code');
-  
   if(code){
   
-    // Exchange the code for the access token
-    this.post(this.identHost() + '/cis-web/oauth2/v3/token', {
-      body: {
-        grant_type: 'authorization_code',
-        code: code,
-        client_id: this.appKey
-      },
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
-      }
-    }, function(response){
-      client.processOauthResponse(response, callback);
-    });
-    
+    // Exchange the code for an access token
+    this.oauthToken(code, callback);
     return true;
-    
   }
-  
   return false;
+};
+
+/**
+ * Exchange an OAuth code for an access token. You don't need to call this in
+ * the browser if you use oauthResponse() to automatically get the URL from the
+ * query parameters.
+ * 
+ * @param {String} code
+ * @param {Function} callback that receives the access token response
+ */
+FamilySearch.prototype.oauthToken = function(code, callback){
+  var client = this;
+  client.post(client.identHost() + '/cis-web/oauth2/v3/token', {
+    body: {
+      grant_type: 'authorization_code',
+      code: code,
+      client_id: client.appKey
+    },
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    }
+  }, function(error, response){
+    client.processOauthResponse(error, response, callback);
+  });
 };
 
 /**
@@ -135,21 +149,21 @@ FamilySearch.prototype.oauthPassword = function(username, password, callback){
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded'
     }
-  }, function(response){
-    client.processOauthResponse(response, callback);
+  }, function(error, response){
+    client.processOauthResponse(error, response, callback);
   });
 };
 
 /**
  * Process an OAuth2 access_token response
  */
-FamilySearch.prototype.processOauthResponse = function(response, callback){
+FamilySearch.prototype.processOauthResponse = function(error, response, callback){
   if(response && response.statusCode === 200 && response.data){
     this.setAccessToken(response.data.access_token);
   }
   if(callback){
     setTimeout(function(){
-      callback(response);
+      callback(error, response);
     });
   }
 };
@@ -309,42 +323,60 @@ FamilySearch.prototype._execute = function(request, callback){
   var client = this;
   
   // First we run request middleware
-  client._runRequestMiddleware(request, function(response){
+  client._runRequestMiddleware(request, function(error, middlewareResponse){
     
-    // If request middleware returns a response then we're done and return the
-    // response to the user. This may happen with caching middleware.
-    if(response){
-      setTimeout(function(){
-        callback(response);
-      });
+    // Return the error if one was received from the middleware
+    if(error || middlewareResponse){
+      responseHandler(error, middlewareResponse);
     } 
     
     // If we didn't receive a response from the request middleware then we
     // proceed with executing the actual request.
     else {
-      XHR(request, function(response){
-        
-        // Run response middleware.
-        client._runResponseMiddleware(request, response, function(){
-          setTimeout(function(){
-            callback(response);
-          });
+      requestHandler(request, responseHandler);
+    }
+  });
+  
+  function responseHandler(error, response){
+    // If the request errored then we immediately return and don't run
+    // response middleware because we don't have an HTTP response
+    if(error){
+      setTimeout(function(){
+        callback(error);
+      });
+    }
+    
+    // Run response middleware
+    else {
+      client._runResponseMiddleware(request, response, function(error){
+        setTimeout(function(){
+          if(error){
+            callback(error);
+          } else {
+            callback(undefined, response);
+          }
         });
       });
     }
-  });
+  }
 };
 
 /**
  * Run request middleware
  * 
  * @param {Object} request
- * @param {Function} callback(response)
+ * @param {Function} callback(error, response)
  */
 FamilySearch.prototype._runRequestMiddleware = function(request, callback){
   var client = this;
   utils.asyncEach(this.middleware.request, function(middleware, next){
-    middleware(client, request, next);
+    middleware(client, request, function(error, newResponse){
+      if(error || newResponse){
+        callback(error, newResponse);
+      } else {
+        next();
+      }
+    });
   }, callback);
 };
 
@@ -353,22 +385,19 @@ FamilySearch.prototype._runRequestMiddleware = function(request, callback){
  * 
  * @param {Object} request
  * @param {Object} response
- * @param {Function} callback(response)
+ * @param {Function} callback(error)
  */
 FamilySearch.prototype._runResponseMiddleware = function(request, response, callback){
   var client = this;
   utils.asyncEach(this.middleware.response, function(middleware, next){
-    middleware(client, request, response, next);
-  }, function(newResponse){
-    
-    // Cancel response middleware by passing anything to the next function.
-    // Canceling middleware is useful when middleware issues a new request,
-    // such as throttling. We just drop this middleware chain when it's
-    // canceled because the new request will run it's own middleware.
-    if(typeof newResponse === 'undefined'){
-      setTimeout(callback);
-    }
-  });
+    middleware(client, request, response, function(error, cancel){
+      if(error){
+        callback(error);
+      } else if(typeof cancel === 'undefined') {
+        next();
+      }
+    });
+  }, callback);
 };
 
 /**

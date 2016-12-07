@@ -9,13 +9,13 @@
         "headers": {
             "cache-control": "no-cache, no-store, no-transform, must-revalidate, max-age=0",
             "content-type": "application/x-fs-v1+json",
-            "date": "Tue, 08 Nov 2016 22:13:59 GMT",
+            "date": "Tue, 15 Nov 2016 22:37:53 GMT",
             "location": "https://integration.familysearch.org/platform/tree/persons/KW7G-28J",
             "server": "Apache-Coyote/1.1",
             "vary": "Accept, Accept-Language, Accept-Encoding, Expect, Accept-Encoding",
-            "x-processing-time": "167",
-            "x-throttle-millis-left": "1794620",
-            "x-throttle-millis-used": "5380",
+            "x-processing-time": "170",
+            "x-throttle-millis-left": "1796231",
+            "x-throttle-millis-used": "3769",
             "x-throttle-window-size": "1800000",
             "content-length": "0",
             "connection": "Close"
@@ -27,24 +27,246 @@
         "path": "/platform/tree/persons/KW7G-28J",
         "body": "",
         "status": 200,
-        "response": [
-            "1f8b0800000000000000",
-            "ed59db6edb46107dd7572c98970415cd8b289a52d3044d9d188a23dbad04b88013142b72256dcd1b962bc582e17fcf7029dea948704cb5289a1747dce19c33979d9d593e7410921c12d98c869c06be8486487a3139932f6e4ecf65ddfa2875638990b028f0a378f5163dc01378461d215c1284c751c0f805d9883535fb97aeba744dfd45bcc8d98a6c1f2e88ef10163f4c54e7cab13e20c4d24c593506866c983d43c633c794fbba3ad0673313f7faa96a780973cee86c95da912a83153bf093a5809557608d912858319b08c025e761345414ea73b26038567532c71e753711c1cc5e9e046ca1842ee6f38079ca2a02bf2818f8f348198fcdb16cfdfe31e353d23e4a0cca843299c75c5cf20287ce2911a25a6f60e9a6da1b68e640ed546425be0973c2c077411c3bf0ee05bd317649ee1497fa7751dd1db6bb8a6a7e82a52523f32778823342946d9628694a28390e78e99050e65ee914ff3e66d953b1450a3103e7cb8cb88261b4a461d5d867b5a811af169d280c20355a259242d4b0ed25f617445ed208927dd3268504a98102f66d12f167054f55be4d58fc92559d1ab81ff0763d9f0034e0fab287b9bd6c1d5dc609509d4308b59761cadbdd0219480d3f600ef545a8da245040a9677fe0bac46e38019ec820d71709367544f12e6dd7e20c6367c48f11f03afa11f23d8568a873d4758e57f89be09a39c101d13a9118a3861eb771d049c1ce78ceca5bd0babff826022d9adf70d68af64a2ef4b0ed9ebb02ae21f61e610b5241e6c48bd53da5b52ca13f84d479540402fc70e25f0f6fb10d3ca2bf787047fcee9cba9cb0c742ef99b788380c5d6a0b40e56fd0d72d3eb897e791bcd67edab970efb9e5e7f09b937bae2cb9e716f1623e21af211e025052e3bac157a1e5ea7a3ababa9c74cfdf4fbbd7579369c938caddc4ba6be1233416eedf9190f257ca976dd78a0690fd1b2669e38e57c61af1769fe3200823ce1ab7bead4a38f58692713ac776bb7d8d47bc80351fb2a2e93fc25c916397c61eeac05a3c18b2f2f0d330fbc5bb013a7f904f66f5c3c8617637544c6da0f61463a80db374455f4a3c7cec91d21d403ea8dbaaae61cbb264bb6ff465a3679dca8353a2cb3318ebfabd9ed15775fbff41bd12ac7794f1e5253835f74c084945184b34e75724ffa239fea048d7e7f87c4e027b3f00542591e24e7ae5ba53385904edc9d9059ac2c84758b1ecc336e1b517f778f99caea15b2ac57a8ddd1549618a113e5ceb64c5fc62e42a7ab7d473d5e84bc18cd407237f1e345803e537b90e4b816bf15a6bcafb150b8020b54b209df2ff3258292b9fb7d923874610f752af2898edf27fe19e4eaade31cd4914e2e4f6f05372c5976ff6ac7fbc5c79b3edfb9ad4d4b6360ba4d3cfafd1b5a892b5c4498aa7f6fd82f1a27251599119556e331bb77d02a43f4365aa55dc9b3fe5f1a7cb3ddcb6420dbbeb3fe70e537ef787becf1d8950dd1df9662b24cf6ff1e0f4b4dc79a20d97f258bfd96743227474ffc6b0c621dc8c666ec551f7b68d3cabd7b24e1659a9d62f6fabda761a3cab0c83d56f16d5ef1b71959a052bdec8184e592f0c7c88c4d5bc542bab9f4d9ee366296db552ff4cbf730425934fcab2d492189a665aba6a5aaaaa6ed7d77167b865aaf5cc9e3a38352cd3d2ac7ef9fb4cf586bd62e58f37c0db095a294eec4a31228d3db04d39aec533268c93cf4952e18c2f9cc39fa50f82089a828bbb9f25e4608e6738225df49abe49d62682e46b85be412f771cb8a02af52fd2fb6802832e898f2aa4ab9ad145ba36ec1bafba0872846d105889f2e3f3e5f5e80cfd4817feea679475c5003fdba0356614c63824bada13a972d28bd1b8eaa652c7838add49fee23f3e66241bbcf3f80d84e04df7951c0000"
-        ],
+        "response": {
+            "description": "#SD-KW7G-28J",
+            "persons": [
+                {
+                    "id": "KW7G-28J",
+                    "sortKey": "0000000000",
+                    "living": true,
+                    "gender": {
+                        "id": "a29ee816-0494-4634-abd6-52092bb6a350",
+                        "attribution": {
+                            "contributor": {
+                                "resource": "https://integration.familysearch.org/platform/users/agents/MM6M-8QJ",
+                                "resourceId": "MM6M-8QJ"
+                            },
+                            "modified": 1398260391690
+                        },
+                        "type": "http://gedcomx.org/Male",
+                        "links": {
+                            "conclusion": {
+                                "href": "https://integration.familysearch.org/platform/tree/persons/KW7G-28J/conclusions/a29ee816-0494-4634-abd6-52092bb6a350"
+                            }
+                        }
+                    },
+                    "links": {
+                        "parent-relationships": {
+                            "href": "https://integration.familysearch.org/platform/tree/persons/KW7G-28J/parent-relationships"
+                        },
+                        "spouses": {
+                            "href": "https://integration.familysearch.org/platform/tree/persons/KW7G-28J/spouses"
+                        },
+                        "change-history": {
+                            "href": "https://integration.familysearch.org/platform/tree/persons/KW7G-28J/changes"
+                        },
+                        "ancestry": {
+                            "href": "https://integration.familysearch.org/platform/tree/ancestry?person=KW7G-28J"
+                        },
+                        "notes": {
+                            "href": "https://integration.familysearch.org/platform/tree/persons/KW7G-28J/notes"
+                        },
+                        "non-matches": {
+                            "href": "https://integration.familysearch.org/platform/tree/persons/KW7G-28J/not-a-match"
+                        },
+                        "portraits": {
+                            "href": "https://integration.familysearch.org/platform/tree/persons/KW7G-28J/portraits"
+                        },
+                        "ordinances": {
+                            "href": "https://integration.familysearch.org/platform/tree/persons/KW7G-28J/ordinances"
+                        },
+                        "collection": {
+                            "href": "https://integration.familysearch.org/platform/collections/tree"
+                        },
+                        "families": {
+                            "href": "https://integration.familysearch.org/platform/tree/persons/KW7G-28J/families"
+                        },
+                        "portrait": {
+                            "href": "https://integration.familysearch.org/platform/tree/persons/KW7G-28J/portrait"
+                        },
+                        "matches": {
+                            "href": "https://integration.familysearch.org/platform/tree/persons/KW7G-28J/matches"
+                        },
+                        "child-relationships": {
+                            "href": "https://integration.familysearch.org/platform/tree/persons/KW7G-28J/child-relationships"
+                        },
+                        "children": {
+                            "href": "https://integration.familysearch.org/platform/tree/persons/KW7G-28J/children"
+                        },
+                        "descendancy": {
+                            "href": "https://integration.familysearch.org/platform/tree/descendancy?person=KW7G-28J"
+                        },
+                        "person": {
+                            "href": "https://integration.familysearch.org/platform/tree/persons/KW7G-28J"
+                        },
+                        "source-descriptions": {
+                            "href": "https://integration.familysearch.org/platform/tree/persons/KW7G-28J/sources"
+                        },
+                        "merge": {
+                            "template": "https://integration.familysearch.org/platform/tree/persons/{pid}/merges/{dpid}{?access_token,filter}",
+                            "type": "application/json,application/x-fs-v1+json,application/x-fs-v1+xml,application/xml,text/html",
+                            "accept": "application/x-fs-v1+json,application/x-fs-v1+xml",
+                            "allow": "OPTIONS,GET,POST",
+                            "title": "Person Merge"
+                        },
+                        "person-with-relationships": {
+                            "href": "https://integration.familysearch.org/platform/tree/persons-with-relationships?person=KW7G-28J"
+                        },
+                        "spouse-relationships": {
+                            "href": "https://integration.familysearch.org/platform/tree/persons/KW7G-28J/spouse-relationships"
+                        },
+                        "ordinance-reservations": {
+                            "href": "https://integration.familysearch.org/platform/tree/persons/KW7G-28J/reservations"
+                        },
+                        "artifacts": {
+                            "href": "https://integration.familysearch.org/platform/tree/persons/KW7G-28J/memories"
+                        },
+                        "parents": {
+                            "href": "https://integration.familysearch.org/platform/tree/persons/KW7G-28J/parents"
+                        }
+                    },
+                    "identifiers": {
+                        "http://gedcomx.org/Persistent": [
+                            "https://integration.familysearch.org/ark:/61903/4:1:KW7G-28J"
+                        ]
+                    },
+                    "names": [
+                        {
+                            "id": "c021a888-c545-4387-97e2-ba355334502c",
+                            "attribution": {
+                                "contributor": {
+                                    "resource": "https://integration.familysearch.org/platform/users/agents/MM6M-8QJ",
+                                    "resourceId": "MM6M-8QJ"
+                                },
+                                "modified": 1398260391690
+                            },
+                            "type": "http://gedcomx.org/BirthName",
+                            "preferred": true,
+                            "links": {
+                                "conclusion": {
+                                    "href": "https://integration.familysearch.org/platform/tree/persons/KW7G-28J/conclusions/c021a888-c545-4387-97e2-ba355334502c"
+                                }
+                            },
+                            "nameForms": [
+                                {
+                                    "fullText": "SDK Tester",
+                                    "parts": [
+                                        {
+                                            "type": "http://gedcomx.org/Given",
+                                            "value": "SDK"
+                                        },
+                                        {
+                                            "type": "http://gedcomx.org/Surname",
+                                            "value": "Tester"
+                                        }
+                                    ],
+                                    "nameFormInfo": [
+                                        {
+                                            "order": "http://familysearch.org/v1/Eurotypic"
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ],
+                    "facts": [],
+                    "display": {
+                        "name": "SDK Tester",
+                        "gender": "Male",
+                        "lifespan": "Living",
+                        "ascendancyNumber": "1",
+                        "descendancyNumber": "1",
+                        "familiesAsParent": [
+                            {
+                                "parent1": {
+                                    "resource": "#KW7G-28J",
+                                    "resourceId": "KW7G-28J"
+                                },
+                                "parent2": {
+                                    "resource": "https://integration.familysearch.org/ark:/61903/4:1:KWWX-MLN",
+                                    "resourceId": "KWWX-MLN"
+                                }
+                            },
+                            {
+                                "parent1": {
+                                    "resource": "#KW7G-28J",
+                                    "resourceId": "KW7G-28J"
+                                },
+                                "parent2": {
+                                    "resource": "https://integration.familysearch.org/ark:/61903/4:1:KWW6-BR2",
+                                    "resourceId": "KWW6-BR2"
+                                }
+                            }
+                        ],
+                        "familiesAsChild": [
+                            {
+                                "parent1": {
+                                    "resource": "https://integration.familysearch.org/ark:/61903/4:1:KWWN-M2W",
+                                    "resourceId": "KWWN-M2W"
+                                },
+                                "parent2": {
+                                    "resource": "https://integration.familysearch.org/ark:/61903/4:1:KWWN-M24",
+                                    "resourceId": "KWWN-M24"
+                                },
+                                "children": [
+                                    {
+                                        "resource": "#KW7G-28J",
+                                        "resourceId": "KW7G-28J"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                }
+            ],
+            "relationships": [],
+            "sourceDescriptions": [
+                {
+                    "id": "SD-KW7G-28J",
+                    "about": "#KW7G-28J",
+                    "componentOf": {
+                        "description": "https://integration.familysearch.org/platform/collections/tree"
+                    },
+                    "resourceType": "http://gedcomx.org/Person",
+                    "modified": 1411682068000,
+                    "version": "136309748681850000",
+                    "links": {
+                        "description": {
+                            "href": "https://integration.familysearch.org/platform/sources/descriptions/SD-KW7G-28J"
+                        }
+                    },
+                    "citations": [
+                        {
+                            "lang": "en",
+                            "value": "\"Family Tree,\" database, <i>FamilySearch</i> (http://familysearch.org : modified 25 September 2014, 21:54), entry for SDK Tester(PID https://integration.familysearch.org/ark:/61903/4:1:KW7G-28J); contributed by various users."
+                        }
+                    ],
+                    "titles": [
+                        {
+                            "value": "SDK Tester"
+                        }
+                    ],
+                    "identifiers": {
+                        "http://gedcomx.org/Persistent": [
+                            "https://integration.familysearch.org/ark:/61903/4:1:KW7G-28J"
+                        ]
+                    }
+                }
+            ]
+        },
         "headers": {
             "allow": "OPTIONS, HEAD, GET, POST, DELETE",
             "cache-control": "no-transform, must-revalidate, max-age=0",
-            "content-encoding": "gzip",
             "content-location": "/tree/persons/KW7G-28J",
             "content-type": "application/x-fs-v1+json",
-            "date": "Tue, 08 Nov 2016 22:13:59 GMT",
-            "etag": "\"136309748681850000-gzip\"",
+            "date": "Tue, 15 Nov 2016 22:37:54 GMT",
+            "etag": "\"136309748681850000\"",
             "last-modified": "Thu, 25 Sep 2014 21:54:28 GMT",
             "server": "Apache-Coyote/1.1",
             "vary": "Accept, Accept-Language, Accept-Encoding, Expect, Accept-Encoding",
-            "x-processing-time": "172",
-            "x-throttle-millis-left": "1794456",
-            "x-throttle-millis-used": "5544",
+            "x-processing-time": "171",
+            "x-throttle-millis-left": "1796069",
+            "x-throttle-millis-used": "3931",
             "x-throttle-window-size": "1800000",
             "transfer-encoding": "chunked",
             "connection": "Close"
