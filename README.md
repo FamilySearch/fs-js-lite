@@ -427,3 +427,5 @@ the `headers` object.
 `function(error, response)`.
 4. In v1 response middleware was called even when a network error occurred. In
 v2 the response middleware is only called when a response is actually recieved.
+5. Redirects are not automatically followed. Use the `followRedirect: true`
+request option to have the SDK automatically follow a redirect response.
