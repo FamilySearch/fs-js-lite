@@ -362,8 +362,7 @@ signature is `function(error, cancel)`. When `cancel` has any truthy value
 the response middleware chain is canceled but unlike request
 middleware the request callback is not called. Cancelling is done when a new
 request must be issued, such as middleware that handles redirects or throttling.
-In this case the subsequent request will have it's own middleware chain which
-must be completed this the current middleware chain is canceled.
+In this case the subsequent request will have it's own middleware chain.
 
 Response middleware is applied in the order that it was added. 
 The SDK sets up some response middleware by default.
