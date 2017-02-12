@@ -104,7 +104,7 @@ var fs = new FamilySearch({
 ### Authentication
 
 We recommend reading the FamilySearch [Authentication Guide](https://familysearch.org/developers/docs/guides/authentication)
-before deciding with authentication methods are best for you.
+before deciding which authentication methods are best for you.
 
 __`oauthRedirectURL()`__ - Obtain the URL of the login screen on familysearch.org
 that the user should be redirected to for initiating authentication via OAuth 2.
