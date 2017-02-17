@@ -104,7 +104,7 @@ var fs = new FamilySearch({
 ### Authentication
 
 We recommend reading the FamilySearch [Authentication Guide](https://familysearch.org/developers/docs/guides/authentication)
-before deciding with authentication methods are best for you.
+before deciding which authentication methods are best for you.
 
 __`oauthRedirectURL([state])`__ - Obtain the URL of the login screen on familysearch.org
 that the user should be redirected to for initiating authentication via OAuth 2.
@@ -363,8 +363,7 @@ signature is `function(error, cancel)`. When `cancel` has any truthy value
 the response middleware chain is canceled but unlike request
 middleware the request callback is not called. Cancelling is done when a new
 request must be issued, such as middleware that handles redirects or throttling.
-In this case the subsequent request will have it's own middleware chain which
-must be completed this the current middleware chain is canceled.
+In this case the subsequent request will have it's own middleware chain.
 
 Response middleware is applied in the order that it was added. 
 The SDK sets up some response middleware by default.
