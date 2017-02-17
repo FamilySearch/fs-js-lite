@@ -106,12 +106,12 @@ var fs = new FamilySearch({
 We recommend reading the FamilySearch [Authentication Guide](https://familysearch.org/developers/docs/guides/authentication)
 before deciding with authentication methods are best for you.
 
-__`oauthRedirectURL()`__ - Obtain the URL of the login screen on familysearch.org
+__`oauthRedirectURL([state])`__ - Obtain the URL of the login screen on familysearch.org
 that the user should be redirected to for initiating authentication via OAuth 2.
 This method will automatically assemble the URL with the proper query parameters
 (the app key and redirect URI that were specified when the sdk client was created).
 
-__`oauthRedirect()`__ - Begin OAuth 2 by automatically redirecting the user to the
+__`oauthRedirect([state])`__ - Begin OAuth 2 by automatically redirecting the user to the
 login screen on familysearch.org. This only works in the browser as a shortcut
 for `window.location.href = fs.oauthRedirectURL();`.
 
@@ -120,13 +120,14 @@ for an access token. The access token will be saved if that behavior is enabled.
 he `callback` is a normal request callback that recieves `error` and `response`
 parameters.
 
-__`oauthResponse(callback)`__ - When handling the OAuth 2 response in the browser,
+__`oauthResponse([state,] callback)`__ - When handling the OAuth 2 response in the browser,
 call this method which is automatically extract the `code` from the query
 parameter and call `oauthToken()` for you. The method will return `false` if no
-code was found in the query paremeter. When `true` is returned it means a code
-was found and a request was sent to exchange the code for an access token. In
-that case you still must use a callback to check the response of that request
-and verify whether an access token was recieved.
+code was found in the query paremeter or when the optional state parameter is
+given and it doesn't match the state paremeter in the query. `true` is returned
+when a code was found and a request was sent to exchange the code for an access 
+token. In that case you still must use a callback to check the response of that
+request and verify whether an access token was received.
 
 __`oauthPassword(username, password, callback)`__ - Use the OAuth password flow.
 Access tokens will be automatically saved in a cookie if that behavior is
