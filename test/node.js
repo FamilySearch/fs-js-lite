@@ -28,6 +28,20 @@ describe('node', function(){
     it('oauthRedirectURL(state)', function(){
       assert.equal(client.oauthRedirectURL('state123'), 'https://integration.familysearch.org/cis-web/oauth2/v3/authorization?response_type=code&client_id=a02j000000JBxOxAAL&redirect_uri=http://foobaz.com/oauth-redirect&state=state123');
     });
+    
+    it('oauthUnauthenticatedToken()', function(done){
+      nockBack('unauthenticated.json', function(nockDone){
+        client.oauthUnauthenticatedToken('192.168.1.1', function(error, response){
+          nockDone();
+          check(done, function(){
+            assert.isDefined(response);
+            assert.equal(response.statusCode, 200);
+            assert.isDefined(response.data);
+            assert.isDefined(response.data.token);
+          });
+        });
+      });
+    });
   
     it('password', function(done){
       nockBack('oauthPassword.json', function(nockDone){

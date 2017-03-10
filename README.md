@@ -120,6 +120,12 @@ for an access token. The access token will be saved if that behavior is enabled.
 The `callback` is a normal request callback that recieves `error` and `response`
 parameters.
 
+__`oauthUnauthenticatedToken(ipAddress, callback)`__ - Request an 
+[unauthenticated access token](https://familysearch.org/developers/docs/guides/authentication#unauthenticated-access-tokens).
+The access token will be saved if that behavior is enabled. `ipAddress` is the
+IP address of the user. The `callback` is a normal request callback that recieves
+`error` and `response` parameters.
+
 __`oauthResponse([state,] callback)`__ - When handling the OAuth 2 response in the browser,
 call this method which is automatically extract the `code` from the query
 parameter and call `oauthToken()` for you. The method will return `false` if no

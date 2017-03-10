@@ -1,0 +1,26 @@
+[
+    {
+        "scope": "https://integration.familysearch.org:443",
+        "method": "POST",
+        "path": "/cis-web/oauth2/v3/token",
+        "body": "grant_type=unauthenticated_session&ip_address=192.168.1.1&client_id=a02j000000JBxOxAAL",
+        "status": 200,
+        "response": {
+            "access_token": "USYS08071314575D784CBBE44FAE045DE32B_idses-int02.a.fsglobal.net",
+            "token_type": "family_search",
+            "token": "USYS08071314575D784CBBE44FAE045DE32B_idses-int02.a.fsglobal.net"
+        },
+        "headers": {
+            "server": "Apache-Coyote/1.1",
+            "expires": "Tue, 03 Jul 2001 06:00:00 GMT",
+            "last-modified": "Fri Mar 10 19:38:15 GMT 2017",
+            "cache-control": "no-store, no-cache, must-revalidate, max-age=0, post-check=0, pre-check=0",
+            "pragma": "no-cache",
+            "content-type": "application/json;charset=ISO-8859-1",
+            "content-language": "en-US",
+            "content-length": "185",
+            "date": "Fri, 10 Mar 2017 19:38:15 GMT",
+            "connection": "close"
+        }
+    }
+]

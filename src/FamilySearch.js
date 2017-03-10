@@ -155,6 +155,29 @@ FamilySearch.prototype.oauthToken = function(code, callback){
 };
 
 /**
+ * Obtain an access token for an unauthenticated session. Currently unauthenticated
+ * access tokens only grant access to the Dates and Places endpoints.
+ * 
+ * @param {String} ipAddress The IP address of the user
+ * @param {Function} callback that receives the access token response
+ */
+FamilySearch.prototype.oauthUnauthenticatedToken = function(ipAddress, callback){
+  var client = this;
+  client.post(client.identHost() + '/cis-web/oauth2/v3/token', {
+    body: {
+      grant_type: 'unauthenticated_session',
+      ip_address: ipAddress,
+      client_id: client.appKey
+    },
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    }
+  }, function(error, response){
+    client.processOauthResponse(error, response, callback);
+  });
+};
+
+/**
  * OAuth2 password authentication
  * 
  * @param {String} username
