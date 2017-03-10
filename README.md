@@ -117,7 +117,7 @@ for `window.location.href = fs.oauthRedirectURL();`.
 
 __`oauthToken(code, callback)`__ - In the second step of OAuth 2, exchange the code
 for an access token. The access token will be saved if that behavior is enabled.
-he `callback` is a normal request callback that recieves `error` and `response`
+The `callback` is a normal request callback that recieves `error` and `response`
 parameters.
 
 __`oauthResponse([state,] callback)`__ - When handling the OAuth 2 response in the browser,
