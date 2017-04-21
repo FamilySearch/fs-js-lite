@@ -401,7 +401,7 @@ to use [gedcomx-fs-js](https://github.com/rootsdev/gedcomx-fs-js).
 // Then we register the middleware. When a response has a body, the body is 
 // deserialized into an object model provided by gedcomx-js and made available
 // on the request via the `gedcomx` attribute.
-fs.addResponseMiddlware(function(client, request, response, next){
+fs.addResponseMiddleware(function(client, request, response, next){
   if(response.data){
     if(response.data.entries){
       response.gedcomx = GedcomX.AtomFeed(response.data);
