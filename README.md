@@ -99,6 +99,14 @@ var fs = new FamilySearch({
 });
 ```
 
+You can also change these options later via `config()`. It accepts the same options.
+
+```js
+fs.config({
+  appKey: 'mynewappkey'
+})
+```
+
 <a name="authentication"></a>
 
 ### Authentication
