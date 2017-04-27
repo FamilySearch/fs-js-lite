@@ -131,7 +131,7 @@ function createClient(envConfig, clientConfig, callback){
     }, clientConfig || {});
     envConfig = Object.assign({
       html: '<div></div>',
-      scripts: 'file://' + __dirname + '/../dist/FamilySearch.js',
+      scripts: 'file://' + __dirname + '/../dist/FamilySearch.min.js',
       /* Enable the virtual console to pipe the virtual window console
          into the console of the current node instance. Helpful for debugging tests. */
       virtualConsole: jsdom.createVirtualConsole().sendTo(console),
