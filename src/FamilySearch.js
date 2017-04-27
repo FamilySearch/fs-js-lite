@@ -23,13 +23,15 @@ var cookies = require('doc-cookies'),
  * that should be activated.
  */
 var FamilySearch = function(options){
-  this.appKey = options.appKey;
-  this.environment = options.environment || 'integration';
-  this.redirectUri = options.redirectUri;
-  this.tokenCookie = options.tokenCookie || 'FS_AUTH_TOKEN';
-  this.maxThrottledRetries = options.maxThrottledRetries || 10;
-  this.saveAccessToken = options.saveAccessToken === true;
   
+  // Set the default options
+  this.appKey = '';
+  this.environment = 'integration';
+  this.redirectUri = '';
+  this.tokenCookie = 'FS_AUTH_TOKEN';
+  this.maxThrottledRetries = 10;
+  this.saveAccessToken = false;
+  this.accessToken = '';
   this.middleware = {
     request: [
       requestMiddleware.url,
@@ -45,24 +47,54 @@ var FamilySearch = function(options){
     ]
   };
   
+  // Process options
+  this.config(options);
+};
+
+/**
+ * Set the configuration options of the SDK client.
+ * 
+ * @param {Object} options
+ * @param {String} options.environment Reference environment: production, beta,
+ * or integration. Defaults to integration.
+ * @param {String} options.appKey Application Key
+ * @param {String} options.redirectUri OAuth2 redirect URI
+ * @param {String} options.saveAccessToken Save the access token to a cookie
+ * and automatically load it from that cookie. Defaults to false.
+ * @param {String} options.tokenCookie Name of the cookie that the access token
+ * will be saved in when `saveAccessToken` is true. Defaults to 'FS_AUTH_TOKEN'.
+ * @param {String} options.maxThrottledRetries Maximum number of a times a 
+ * throttled request should be retried. Defaults to 10.
+ * @param {Array} options.pendingModifications List of pending modifications
+ * that should be activated.
+ */
+FamilySearch.prototype.config = function(options){
+  this.appKey = options.appKey || this.appKey;
+  this.environment = options.environment || this.environment;
+  this.redirectUri = options.redirectUri || this.redirectUri;
+  this.tokenCookie = options.tokenCookie || this.tokenCookie;
+  this.maxThrottledRetries = options.maxThrottledRetries || this.maxThrottledRetries;
+  this.saveAccessToken = (options.saveAccessToken === true) || this.saveAccessToken;
+  
+  if(options.accessToken){
+    this.setAccessToken(options.accessToken);
+  }
+  
   if(Array.isArray(options.pendingModifications) && options.pendingModifications.length > 0){
     this.addRequestMiddleware(requestMiddleware.pendingModifications(options.pendingModifications));
   }
   
-  // Figure out initial authentication state
-  if(this.saveAccessToken){
-    
-    // If an access token was provided, save it.
-    if(options.accessToken){
-      this.setAccessToken(options.accessToken);
-    }
-    
-    // If we don't have an access token, try loading one.
-    else {
-      var token = cookies.getItem(this.tokenCookie);
-      if(token){
-        this.accessToken = token;
-      }
+  // When the SDK is configured to save the access token in a cookie and we don't
+  // presently have an access token then we try loading one from the cookie.
+  //
+  // We only do this when the saveAccessToken value changes, thus we examine
+  // the value from the options object instead of the SDK. But the accessToken
+  // has already been processed above so we check the SDK to see whether or not
+  // an access token is already available.
+  if(options.saveAccessToken && !this.getAccessToken()) {
+    var token = cookies.getItem(this.tokenCookie);
+    if(token){
+      this.setAccessToken(token);
     }
   }
 };
