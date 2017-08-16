@@ -95,7 +95,10 @@ var fs = new FamilySearch({
   tokenCookie: 'FS_AUTH_TOKEN',
   
   // Maximum number of times that a throttled request will be retried. Defaults to 10.
-  maxThrottledRetries: 10
+  maxThrottledRetries: 10,
+  
+  // List of pending modifications that should be activated.
+  pendingModifications: ['consolidate-redundant-resources', 'another-pending-mod']
 });
 ```
 
