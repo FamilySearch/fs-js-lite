@@ -8,19 +8,7 @@ var cookies = require('doc-cookies'),
 /**
  * Create an instance of the FamilySearch SDK Client
  * 
- * @param {Object} options
- * @param {String} options.environment Reference environment: production, beta,
- * or integration. Defaults to integration.
- * @param {String} options.appKey Application Key
- * @param {String} options.redirectUri OAuth2 redirect URI
- * @param {String} options.saveAccessToken Save the access token to a cookie
- * and automatically load it from that cookie. Defaults to false.
- * @param {String} options.tokenCookie Name of the cookie that the access token
- * will be saved in when `saveAccessToken` is true. Defaults to 'FS_AUTH_TOKEN'.
- * @param {String} options.maxThrottledRetries Maximum number of a times a 
- * throttled request should be retried. Defaults to 10.
- * @param {Array} options.pendingModifications List of pending modifications
- * that should be activated.
+ * @param {Object} options See a description of the possible options in the docs for config().
  */
 var FamilySearch = function(options){
   
@@ -67,6 +55,11 @@ var FamilySearch = function(options){
  * throttled request should be retried. Defaults to 10.
  * @param {Array} options.pendingModifications List of pending modifications
  * that should be activated.
+ * @param {Integer} options.requestInterval Minimum interval between requests in milliseconds (ms).
+ * By default this behavior is disabled; i.e. requests are issued immediately.
+ * When this option is set then requests are queued to ensure there is at least
+ * {requestInterval} ms between them. This is useful for smoothing out bursts
+ * of requests and thus playing nice with the API servers.
  */
 FamilySearch.prototype.config = function(options){
   this.appKey = options.appKey || this.appKey;
@@ -82,6 +75,10 @@ FamilySearch.prototype.config = function(options){
   
   if(Array.isArray(options.pendingModifications) && options.pendingModifications.length > 0){
     this.addRequestMiddleware(requestMiddleware.pendingModifications(options.pendingModifications));
+  }
+  
+  if(parseInt(options.requestInterval, 10)) {
+    this.addRequestMiddleware(requestMiddleware.requestInterval(parseInt(options.requestInterval, 10)));
   }
   
   // When the SDK is configured to save the access token in a cookie and we don't

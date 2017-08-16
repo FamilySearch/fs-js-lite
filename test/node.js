@@ -325,6 +325,51 @@ describe('node', function(){
     
   });
   
+  describe('requestInterval', function(){
+    
+    it('request interval is enforced', function(done){
+      // Here we test that requests are propertly enqueued and the timing
+      // between them is enforced when the requestInterval param is present.
+      var interval = 1500,
+          numRequests = 3,
+          timings = [],
+          client = apiClient({
+            requestInterval: interval
+          });
+      this.timeout(interval * numRequests * 2);
+      client.addRequestMiddleware(function(client, request, next){
+        // This middleware is added after the requestInterval middleware so we
+        // know that it's called after the requestInterval limit has been enforced.
+        timings[request.options.num] = Date.now();
+        if(timings.length === numRequests) {
+          done(verifyTimings());
+        }
+        next();
+      });
+      for(var i = 0; i < numRequests; i++) {
+        client.get('/foo', {
+          num: i
+        }, function(){});
+      }
+      
+      // Make sure each subsequent request was at least {interval} ms after the 
+      // previous request. Our timing is marked on a different tick in this test
+      // than it is in the middleware and that can account for many ms of
+      // difference so we allow a shortcoming of 30 ms below.
+      function verifyTimings() {
+        var diff;
+        for(var i = 1; i < numRequests; i++) {
+          diff = timings[i] - timings[i-1];
+          if(diff < interval - 30) {
+            console.log(timings);
+            return new Error(`Request ${i+1} was only ${diff}ms after the request before it; expected ${interval}ms.`);
+          }
+        }
+      }
+    });
+    
+  });
+  
 });
 
 /**

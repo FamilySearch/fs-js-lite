@@ -95,7 +95,13 @@ var fs = new FamilySearch({
   tokenCookie: 'FS_AUTH_TOKEN',
   
   // Maximum number of times that a throttled request will be retried. Defaults to 10.
-  maxThrottledRetries: 10
+  maxThrottledRetries: 10,
+  
+  // Optional settings that enforces a minimum time in milliseconds (ms) between
+  // requests. This is useful for smoothing out bursts of requests and being nice
+  // to the API servers. When this parameter isn't set (which is the default)
+  // then all requests are immediately sent.
+  requestInterval: 1000
 });
 ```
 
