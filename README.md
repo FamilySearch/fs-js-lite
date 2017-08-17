@@ -98,7 +98,14 @@ var fs = new FamilySearch({
   maxThrottledRetries: 10,
   
   // List of pending modifications that should be activated.
-  pendingModifications: ['consolidate-redundant-resources', 'another-pending-mod']
+  pendingModifications: ['consolidate-redundant-resources', 'another-pending-mod'],
+  
+  // Optional settings that enforces a minimum time in milliseconds (ms) between
+  // requests. This is useful for smoothing out bursts of requests and being nice
+  // to the API servers. When this parameter isn't set (which is the default)
+  // then all requests are immediately sent.
+  requestInterval: 1000
+  
 });
 ```
 
