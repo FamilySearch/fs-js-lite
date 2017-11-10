@@ -85,6 +85,10 @@ var fs = new FamilySearch({
   // https://familysearch.org/developers/docs/guides/authentication
   redirectUri: 'https://example.com/fs-redirect',
   
+  // Optionally initialize the client with an access token. This is useful when
+  // authentication is handled server-side.
+  accessToken: 'myaccesstoken',
+  
   // Save the access token in a cookie and load if from a cookie so that the
   // session isn't lost when the page reloads or changes. Defaults to false.
   // Use the `tokenCookie` option to change the name of the cookie.

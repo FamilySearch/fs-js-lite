@@ -49,6 +49,7 @@ var FamilySearch = function(options){
  * @param {String} options.redirectUri OAuth2 redirect URI
  * @param {String} options.saveAccessToken Save the access token to a cookie
  * and automatically load it from that cookie. Defaults to false.
+ * @param {String} options.accessToken Initialize the client with an access token.
  * @param {String} options.tokenCookie Name of the cookie that the access token
  * will be saved in when `saveAccessToken` is true. Defaults to 'FS_AUTH_TOKEN'.
  * @param {String} options.tokenCookiePath Path value of the access token cookie.
