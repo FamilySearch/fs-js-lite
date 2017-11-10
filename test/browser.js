@@ -40,6 +40,62 @@ describe('browser', function(){
     });
   });
   
+  it('delete an access token cookie', function(done){
+    var cookieJar = jsdom.createCookieJar();
+    cookieJar.setCookieSync('FS_AUTH_TOKEN=loaded', 'http://test.testing/');
+    createClient({ 
+      url: 'http://test.testing',
+      cookieJar: cookieJar
+    }, { 
+      saveAccessToken: true
+    }, function(error, client){
+      if(error){ done(error); }
+      check(done, function(){
+        assert.equal(client.getAccessToken(), 'loaded');
+        client.deleteAccessToken();
+        assert.equal(client.getAccessToken(), undefined);
+        assert.equal(cookieJar.getCookieStringSync('http://test.testing/'), '');
+      });
+    });
+  });
+  
+  it('load an access token with a cookie path', function(done){
+    var cookieJar = jsdom.createCookieJar();
+    cookieJar.setCookieSync('FS_AUTH_TOKEN=loaded', 'http://test.testing/path');
+    createClient({ 
+      url: 'http://test.testing/path',
+      cookieJar: cookieJar
+    }, { 
+      saveAccessToken: true,
+      tokenCookiePath: '/path'
+    }, function(error, client){
+      if(error){ done(error); }
+      check(done, function(){
+        assert.equal(client.getAccessToken(), 'loaded');
+      });
+    });
+  });
+  
+  it('delete an access token cookie with a cookie path', function(done){
+    var cookieJar = jsdom.createCookieJar();
+    cookieJar.setCookieSync('FS_AUTH_TOKEN=loaded;path=/path', 'http://test.testing/path');
+    createClient({ 
+      url: 'http://test.testing/path',
+      cookieJar: cookieJar
+    }, { 
+      saveAccessToken: true,
+      tokenCookiePath: '/path'
+    }, function(error, client){
+      if(error){ done(error); }
+      check(done, function(){
+        assert.equal(client.getAccessToken(), 'loaded');
+        client.deleteAccessToken();
+        assert.equal(client.getAccessToken(), undefined);
+        assert.equal(cookieJar.getCookieStringSync('http://test.testing/path'), '');
+      });
+    });
+  });
+  
   it('create and get person', function(done){
     this.timeout(10000);
     createClient(null, null, function(error, client){

@@ -51,6 +51,8 @@ var FamilySearch = function(options){
  * and automatically load it from that cookie. Defaults to false.
  * @param {String} options.tokenCookie Name of the cookie that the access token
  * will be saved in when `saveAccessToken` is true. Defaults to 'FS_AUTH_TOKEN'.
+ * @param {String} options.tokenCookiePath Path value of the access token cookie.
+ * Defaults to current path (which is probably not what you want).
  * @param {String} options.maxThrottledRetries Maximum number of a times a 
  * throttled request should be retried. Defaults to 10.
  * @param {Array} options.pendingModifications List of pending modifications
@@ -66,6 +68,7 @@ FamilySearch.prototype.config = function(options){
   this.environment = options.environment || this.environment;
   this.redirectUri = options.redirectUri || this.redirectUri;
   this.tokenCookie = options.tokenCookie || this.tokenCookie;
+  this.tokenCookiePath = options.tokenCookiePath || this.tokenCookiePath;
   this.maxThrottledRetries = options.maxThrottledRetries || this.maxThrottledRetries;
   this.saveAccessToken = (options.saveAccessToken === true) || this.saveAccessToken;
   
@@ -256,7 +259,7 @@ FamilySearch.prototype.setAccessToken = function(accessToken){
   if(this.saveAccessToken){
     // Expire in 24 hours because tokens never last longer than that, though
     // they can expire before that after 1 hour of inactivity.
-    cookies.setItem(this.tokenCookie, accessToken, 86400);
+    cookies.setItem(this.tokenCookie, accessToken, 86400, this.tokenCookiePath);
   }
   return this;
 };
@@ -278,7 +281,7 @@ FamilySearch.prototype.getAccessToken = function(){
 FamilySearch.prototype.deleteAccessToken = function(){
   this.accessToken = undefined;
   if(this.saveAccessToken){
-    cookies.removeItem(this.tokenCookie);
+    cookies.removeItem(this.tokenCookie, this.tokenCookiePath);
   }
   return this;
 };

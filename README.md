@@ -94,6 +94,10 @@ var fs = new FamilySearch({
   // is set to `true`. Defaults to 'FS_AUTH_TOKEN'.
   tokenCookie: 'FS_AUTH_TOKEN',
   
+  // Path value of the access token cookie.
+  // Defaults to the current path (which is probably not what you want).
+  tokenCookiePath: '/',
+  
   // Maximum number of times that a throttled request will be retried. Defaults to 10.
   maxThrottledRetries: 10,
   
