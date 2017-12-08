@@ -1,6 +1,6 @@
 [
     {
-        "scope": "https://integration.familysearch.org:443",
+        "scope": "https://api-integ.familysearch.org:443",
         "method": "GET",
         "path": "/platform/tree/current-person",
         "body": "",
@@ -9,25 +9,32 @@
         "headers": {
             "cache-control": "no-cache, no-store, no-transform, must-revalidate, max-age=0",
             "content-type": "application/x-fs-v1+json",
-            "date": "Tue, 15 Nov 2016 22:37:53 GMT",
-            "location": "https://integration.familysearch.org/platform/tree/persons/KW7G-28J",
+            "date": "Fri, 08 Dec 2017 19:52:54 GMT",
+            "location": "https://api-integ.familysearch.org/platform/tree/persons/KW7G-28J",
             "server": "Apache-Coyote/1.1",
             "vary": "Accept, Accept-Language, Accept-Encoding, Expect, Accept-Encoding",
-            "x-processing-time": "170",
-            "x-throttle-millis-left": "1796231",
-            "x-throttle-millis-used": "3769",
-            "x-throttle-window-size": "1800000",
+            "x-processing-time": "140",
+            "x-throttle-millis-left": "55270",
+            "x-throttle-millis-used": "4730",
+            "x-throttle-window-size": "60000",
             "content-length": "0",
             "connection": "Close"
         }
     },
     {
-        "scope": "https://integration.familysearch.org:443",
+        "scope": "https://api-integ.familysearch.org:443",
         "method": "GET",
         "path": "/platform/tree/persons/KW7G-28J",
         "body": "",
         "status": 200,
         "response": {
+            "links": {
+                "alternate": [
+                    {
+                        "href": "https://api-integ.familysearch.org/tree/person/KW7G-28J/details"
+                    }
+                ]
+            },
             "description": "#SD-KW7G-28J",
             "persons": [
                 {
@@ -38,7 +45,7 @@
                         "id": "a29ee816-0494-4634-abd6-52092bb6a350",
                         "attribution": {
                             "contributor": {
-                                "resource": "https://integration.familysearch.org/platform/users/agents/MM6M-8QJ",
+                                "resource": "https://api-integ.familysearch.org/platform/users/agents/MM6M-8QJ",
                                 "resourceId": "MM6M-8QJ"
                             },
                             "modified": 1398260391690
@@ -46,83 +53,71 @@
                         "type": "http://gedcomx.org/Male",
                         "links": {
                             "conclusion": {
-                                "href": "https://integration.familysearch.org/platform/tree/persons/KW7G-28J/conclusions/a29ee816-0494-4634-abd6-52092bb6a350"
+                                "href": "https://api-integ.familysearch.org/platform/tree/persons/KW7G-28J/conclusions/a29ee816-0494-4634-abd6-52092bb6a350"
                             }
                         }
                     },
                     "links": {
-                        "parent-relationships": {
-                            "href": "https://integration.familysearch.org/platform/tree/persons/KW7G-28J/parent-relationships"
-                        },
                         "spouses": {
-                            "href": "https://integration.familysearch.org/platform/tree/persons/KW7G-28J/spouses"
+                            "href": "https://api-integ.familysearch.org/platform/tree/persons/KW7G-28J/spouses"
                         },
                         "change-history": {
-                            "href": "https://integration.familysearch.org/platform/tree/persons/KW7G-28J/changes"
+                            "href": "https://api-integ.familysearch.org/platform/tree/persons/KW7G-28J/changes"
                         },
                         "ancestry": {
-                            "href": "https://integration.familysearch.org/platform/tree/ancestry?person=KW7G-28J"
+                            "href": "https://api-integ.familysearch.org/platform/tree/ancestry?person=KW7G-28J"
                         },
                         "notes": {
-                            "href": "https://integration.familysearch.org/platform/tree/persons/KW7G-28J/notes"
+                            "href": "https://api-integ.familysearch.org/platform/tree/persons/KW7G-28J/notes"
                         },
                         "non-matches": {
-                            "href": "https://integration.familysearch.org/platform/tree/persons/KW7G-28J/not-a-match"
+                            "href": "https://api-integ.familysearch.org/platform/tree/persons/KW7G-28J/not-a-match"
                         },
                         "portraits": {
-                            "href": "https://integration.familysearch.org/platform/tree/persons/KW7G-28J/portraits"
+                            "href": "https://api-integ.familysearch.org/platform/tree/persons/KW7G-28J/portraits"
                         },
                         "ordinances": {
-                            "href": "https://integration.familysearch.org/platform/tree/persons/KW7G-28J/ordinances"
+                            "href": "https://api-integ.familysearch.org/platform/tree/persons/KW7G-28J/ordinances"
                         },
                         "collection": {
-                            "href": "https://integration.familysearch.org/platform/collections/tree"
+                            "href": "https://api-integ.familysearch.org/platform/collections/tree"
                         },
                         "families": {
-                            "href": "https://integration.familysearch.org/platform/tree/persons/KW7G-28J/families"
+                            "href": "https://api-integ.familysearch.org/platform/tree/persons/KW7G-28J/families"
                         },
                         "portrait": {
-                            "href": "https://integration.familysearch.org/platform/tree/persons/KW7G-28J/portrait"
+                            "href": "https://api-integ.familysearch.org/platform/tree/persons/KW7G-28J/portrait"
                         },
                         "matches": {
-                            "href": "https://integration.familysearch.org/platform/tree/persons/KW7G-28J/matches"
-                        },
-                        "child-relationships": {
-                            "href": "https://integration.familysearch.org/platform/tree/persons/KW7G-28J/child-relationships"
+                            "href": "https://api-integ.familysearch.org/platform/tree/persons/KW7G-28J/matches"
                         },
                         "children": {
-                            "href": "https://integration.familysearch.org/platform/tree/persons/KW7G-28J/children"
+                            "href": "https://api-integ.familysearch.org/platform/tree/persons/KW7G-28J/children"
                         },
                         "descendancy": {
-                            "href": "https://integration.familysearch.org/platform/tree/descendancy?person=KW7G-28J"
+                            "href": "https://api-integ.familysearch.org/platform/tree/descendancy?person=KW7G-28J"
                         },
                         "person": {
-                            "href": "https://integration.familysearch.org/platform/tree/persons/KW7G-28J"
+                            "href": "https://api-integ.familysearch.org/platform/tree/persons/KW7G-28J"
                         },
                         "source-descriptions": {
-                            "href": "https://integration.familysearch.org/platform/tree/persons/KW7G-28J/sources"
+                            "href": "https://api-integ.familysearch.org/platform/tree/persons/KW7G-28J/sources"
                         },
                         "merge": {
-                            "template": "https://integration.familysearch.org/platform/tree/persons/{pid}/merges/{dpid}{?access_token,filter}",
+                            "template": "https://api-integ.familysearch.org/platform/tree/persons/{pid}/merges/{dpid}{?access_token,filter}",
                             "type": "application/json,application/x-fs-v1+json,application/x-fs-v1+xml,application/xml,text/html",
                             "accept": "application/x-fs-v1+json,application/x-fs-v1+xml",
                             "allow": "OPTIONS,GET,POST",
                             "title": "Person Merge"
                         },
-                        "person-with-relationships": {
-                            "href": "https://integration.familysearch.org/platform/tree/persons-with-relationships?person=KW7G-28J"
-                        },
-                        "spouse-relationships": {
-                            "href": "https://integration.familysearch.org/platform/tree/persons/KW7G-28J/spouse-relationships"
-                        },
                         "ordinance-reservations": {
-                            "href": "https://integration.familysearch.org/platform/tree/persons/KW7G-28J/reservations"
+                            "href": "https://api-integ.familysearch.org/platform/tree/persons/KW7G-28J/reservations"
                         },
                         "artifacts": {
-                            "href": "https://integration.familysearch.org/platform/tree/persons/KW7G-28J/memories"
+                            "href": "https://api-integ.familysearch.org/platform/tree/persons/KW7G-28J/memories"
                         },
                         "parents": {
-                            "href": "https://integration.familysearch.org/platform/tree/persons/KW7G-28J/parents"
+                            "href": "https://api-integ.familysearch.org/platform/tree/persons/KW7G-28J/parents"
                         }
                     },
                     "identifiers": {
@@ -135,7 +130,7 @@
                             "id": "c021a888-c545-4387-97e2-ba355334502c",
                             "attribution": {
                                 "contributor": {
-                                    "resource": "https://integration.familysearch.org/platform/users/agents/MM6M-8QJ",
+                                    "resource": "https://api-integ.familysearch.org/platform/users/agents/MM6M-8QJ",
                                     "resourceId": "MM6M-8QJ"
                                 },
                                 "modified": 1398260391690
@@ -144,7 +139,7 @@
                             "preferred": true,
                             "links": {
                                 "conclusion": {
-                                    "href": "https://integration.familysearch.org/platform/tree/persons/KW7G-28J/conclusions/c021a888-c545-4387-97e2-ba355334502c"
+                                    "href": "https://api-integ.familysearch.org/platform/tree/persons/KW7G-28J/conclusions/c021a888-c545-4387-97e2-ba355334502c"
                                 }
                             },
                             "nameForms": [
@@ -219,20 +214,127 @@
                     }
                 }
             ],
-            "relationships": [],
+            "relationships": [
+                {
+                    "id": "MMMJ-XMH",
+                    "sortKey": "0000000001",
+                    "type": "http://gedcomx.org/Couple",
+                    "person1": {
+                        "resource": "#KW7G-28J",
+                        "resourceId": "KW7G-28J"
+                    },
+                    "person2": {
+                        "resource": "https://api-integ.familysearch.org/platform/tree/persons/KWWX-MLN",
+                        "resourceId": "KWWX-MLN"
+                    },
+                    "links": {
+                        "person2": {
+                            "href": "https://api-integ.familysearch.org/platform/tree/persons/KWWX-MLN"
+                        },
+                        "person1": {
+                            "href": "https://api-integ.familysearch.org/platform/tree/persons/KW7G-28J"
+                        },
+                        "woman": {
+                            "href": "https://api-integ.familysearch.org/platform/tree/persons/KWWX-MLN"
+                        },
+                        "man": {
+                            "href": "https://api-integ.familysearch.org/platform/tree/persons/KW7G-28J"
+                        },
+                        "relationship": {
+                            "href": "https://api-integ.familysearch.org/platform/tree/couple-relationships/MMMJ-XMH"
+                        }
+                    }
+                },
+                {
+                    "id": "MMMJ-62K",
+                    "sortKey": "0000000002",
+                    "type": "http://gedcomx.org/Couple",
+                    "person1": {
+                        "resource": "#KW7G-28J",
+                        "resourceId": "KW7G-28J"
+                    },
+                    "person2": {
+                        "resource": "https://api-integ.familysearch.org/platform/tree/persons/KWW6-BR2",
+                        "resourceId": "KWW6-BR2"
+                    },
+                    "links": {
+                        "person2": {
+                            "href": "https://api-integ.familysearch.org/platform/tree/persons/KWW6-BR2"
+                        },
+                        "person1": {
+                            "href": "https://api-integ.familysearch.org/platform/tree/persons/KW7G-28J"
+                        },
+                        "woman": {
+                            "href": "https://api-integ.familysearch.org/platform/tree/persons/KWW6-BR2"
+                        },
+                        "man": {
+                            "href": "https://api-integ.familysearch.org/platform/tree/persons/KW7G-28J"
+                        },
+                        "relationship": {
+                            "href": "https://api-integ.familysearch.org/platform/tree/couple-relationships/MMMJ-62K"
+                        }
+                    }
+                },
+                {
+                    "id": "FMMMG-GXW",
+                    "type": "http://gedcomx.org/ParentChild",
+                    "person1": {
+                        "resource": "https://api-integ.familysearch.org/platform/tree/persons/KWWN-M2W",
+                        "resourceId": "KWWN-M2W"
+                    },
+                    "person2": {
+                        "resource": "#KW7G-28J",
+                        "resourceId": "KW7G-28J"
+                    },
+                    "links": {
+                        "person2": {
+                            "href": "https://api-integ.familysearch.org/platform/tree/persons/KW7G-28J"
+                        },
+                        "person1": {
+                            "href": "https://api-integ.familysearch.org/platform/tree/persons/KWWN-M2W"
+                        }
+                    },
+                    "identifiers": {
+                        "http://familysearch.org/v1/ChildAndParentsRelationship": "https://api-integ.familysearch.org/platform/tree/child-and-parents-relationships/MMMG-GXW"
+                    }
+                },
+                {
+                    "id": "MMMMG-GXW",
+                    "type": "http://gedcomx.org/ParentChild",
+                    "person1": {
+                        "resource": "https://api-integ.familysearch.org/platform/tree/persons/KWWN-M24",
+                        "resourceId": "KWWN-M24"
+                    },
+                    "person2": {
+                        "resource": "#KW7G-28J",
+                        "resourceId": "KW7G-28J"
+                    },
+                    "links": {
+                        "person2": {
+                            "href": "https://api-integ.familysearch.org/platform/tree/persons/KW7G-28J"
+                        },
+                        "person1": {
+                            "href": "https://api-integ.familysearch.org/platform/tree/persons/KWWN-M24"
+                        }
+                    },
+                    "identifiers": {
+                        "http://familysearch.org/v1/ChildAndParentsRelationship": "https://api-integ.familysearch.org/platform/tree/child-and-parents-relationships/MMMG-GXW"
+                    }
+                }
+            ],
             "sourceDescriptions": [
                 {
                     "id": "SD-KW7G-28J",
                     "about": "#KW7G-28J",
                     "componentOf": {
-                        "description": "https://integration.familysearch.org/platform/collections/tree"
+                        "description": "https://api-integ.familysearch.org/platform/collections/tree"
                     },
                     "resourceType": "http://gedcomx.org/Person",
                     "modified": 1411682068000,
                     "version": "136309748681850000",
                     "links": {
                         "description": {
-                            "href": "https://integration.familysearch.org/platform/sources/descriptions/SD-KW7G-28J"
+                            "href": "https://api-integ.familysearch.org/platform/sources/descriptions/SD-KW7G-28J"
                         }
                     },
                     "citations": [
@@ -252,6 +354,42 @@
                         ]
                     }
                 }
+            ],
+            "childAndParentsRelationships": [
+                {
+                    "id": "MMMG-GXW",
+                    "father": {
+                        "resource": "https://api-integ.familysearch.org/platform/tree/persons/KWWN-M2W",
+                        "resourceId": "KWWN-M2W"
+                    },
+                    "mother": {
+                        "resource": "https://api-integ.familysearch.org/platform/tree/persons/KWWN-M24",
+                        "resourceId": "KWWN-M24"
+                    },
+                    "child": {
+                        "resource": "#KW7G-28J",
+                        "resourceId": "KW7G-28J"
+                    },
+                    "links": {
+                        "mother": {
+                            "href": "https://api-integ.familysearch.org/platform/tree/persons/KWWN-M24"
+                        },
+                        "father": {
+                            "href": "https://api-integ.familysearch.org/platform/tree/persons/KWWN-M2W"
+                        },
+                        "relationship": {
+                            "href": "https://api-integ.familysearch.org/platform/tree/child-and-parents-relationships/MMMG-GXW"
+                        },
+                        "child": {
+                            "href": "https://api-integ.familysearch.org/platform/tree/persons/KW7G-28J"
+                        }
+                    },
+                    "identifiers": {
+                        "http://gedcomx.org/Primary": [
+                            "https://api-integ.familysearch.org/platform/tree/child-and-parents-relationships/MMMG-GXW"
+                        ]
+                    }
+                }
             ]
         },
         "headers": {
@@ -259,15 +397,12 @@
             "cache-control": "no-transform, must-revalidate, max-age=0",
             "content-location": "/tree/persons/KW7G-28J",
             "content-type": "application/x-fs-v1+json",
-            "date": "Tue, 15 Nov 2016 22:37:54 GMT",
+            "date": "Fri, 08 Dec 2017 19:52:54 GMT",
             "etag": "\"136309748681850000\"",
             "last-modified": "Thu, 25 Sep 2014 21:54:28 GMT",
             "server": "Apache-Coyote/1.1",
             "vary": "Accept, Accept-Language, Accept-Encoding, Expect, Accept-Encoding",
-            "x-processing-time": "171",
-            "x-throttle-millis-left": "1796069",
-            "x-throttle-millis-used": "3931",
-            "x-throttle-window-size": "1800000",
+            "x-processing-time": "165",
             "transfer-encoding": "chunked",
             "connection": "Close"
         }

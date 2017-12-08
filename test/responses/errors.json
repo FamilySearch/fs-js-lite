@@ -1,6 +1,6 @@
 [
     {
-        "scope": "https://integration.familysearch.org:443",
+        "scope": "https://api-integ.familysearch.org:443",
         "method": "GET",
         "path": "/platform/tree/persons/PPPPPP",
         "body": "",
@@ -18,15 +18,12 @@
             "cache-control": "no-cache, no-store, no-transform, must-revalidate, max-age=0",
             "content-location": "/tree/persons/PPPPPP",
             "content-type": "application/x-fs-v1+json",
-            "date": "Tue, 15 Nov 2016 22:37:56 GMT",
+            "date": "Fri, 08 Dec 2017 19:53:07 GMT",
             "server": "Apache-Coyote/1.1",
             "vary": "Accept, Accept-Language, Accept-Encoding, Expect, Accept-Encoding",
             "warning": "400 FamilySearch \"Unable to  read tf person.\"",
-            "x-processing-time": "171",
-            "x-throttle-millis-left": "1795572",
-            "x-throttle-millis-used": "4428",
-            "x-throttle-window-size": "1800000",
-            "transfer-encoding": "chunked",
+            "x-processing-time": "164",
+            "content-length": "262",
             "connection": "Close"
         }
     }

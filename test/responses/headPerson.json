@@ -1,6 +1,6 @@
 [
     {
-        "scope": "https://integration.familysearch.org:443",
+        "scope": "https://api-integ.familysearch.org:443",
         "method": "HEAD",
         "path": "/platform/tree/persons/L5C2-WYC",
         "body": "",
@@ -11,15 +11,15 @@
             "cache-control": "no-transform, must-revalidate, max-age=0",
             "content-location": "/tree/persons/L5C2-WYC",
             "content-type": "application/x-fs-v1+json",
-            "date": "Tue, 15 Nov 2016 22:37:52 GMT",
+            "date": "Fri, 08 Dec 2017 19:52:53 GMT",
             "etag": "\"136900632758820000\"",
             "last-modified": "Tue, 09 Aug 2016 19:21:15 GMT",
             "server": "Apache-Coyote/1.1",
             "vary": "Accept, Accept-Language, Accept-Encoding, Expect, Accept-Encoding",
-            "x-processing-time": "148",
-            "x-throttle-millis-left": "1796682",
-            "x-throttle-millis-used": "3318",
-            "x-throttle-window-size": "1800000",
+            "x-processing-time": "165",
+            "x-throttle-millis-left": "55718",
+            "x-throttle-millis-used": "4282",
+            "x-throttle-window-size": "60000",
             "connection": "Close"
         }
     }

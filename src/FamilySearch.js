@@ -508,7 +508,7 @@ FamilySearch.prototype.platformHost = function(){
     case 'beta':
       return 'https://beta.familysearch.org';
     default:
-      return 'https://integration.familysearch.org';
+      return 'https://api-integ.familysearch.org';
   }
 };
 
