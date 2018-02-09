@@ -492,7 +492,7 @@ FamilySearch.prototype.identHost = function(){
     case 'beta':
       return 'https://identbeta.familysearch.org';
     default:
-      return 'https://integration.familysearch.org';
+      return 'https://identint.familysearch.org';
   }
 };
 
