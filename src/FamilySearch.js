@@ -1,4 +1,4 @@
-var cookies = require('doc-cookies'),
+var cookies = require('js-cookie'),
     Request = require('./Request'),
     requestHandler = require('./nodeHandler'),
     utils = require('./utils'),
@@ -93,7 +93,7 @@ FamilySearch.prototype.config = function(options){
   // has already been processed above so we check the SDK to see whether or not
   // an access token is already available.
   if(options.saveAccessToken && !this.getAccessToken()) {
-    var token = cookies.getItem(this.tokenCookie);
+    var token = cookies.get(this.tokenCookie);
     if(token){
       this.setAccessToken(token);
     }
@@ -260,7 +260,7 @@ FamilySearch.prototype.setAccessToken = function(accessToken){
   if(this.saveAccessToken){
     // Expire in 24 hours because tokens never last longer than that, though
     // they can expire before that after 1 hour of inactivity.
-    cookies.setItem(this.tokenCookie, accessToken, 86400, this.tokenCookiePath);
+    cookies.set(this.tokenCookie, accessToken, { expires: 1, path: this.tokenCookiePath });
   }
   return this;
 };
@@ -282,7 +282,7 @@ FamilySearch.prototype.getAccessToken = function(){
 FamilySearch.prototype.deleteAccessToken = function(){
   this.accessToken = undefined;
   if(this.saveAccessToken){
-    cookies.removeItem(this.tokenCookie, this.tokenCookiePath);
+    cookies.remove(this.tokenCookie, { path: this.tokenCookiePath });
   }
   return this;
 };
