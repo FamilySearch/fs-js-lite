@@ -6,7 +6,7 @@ module.exports = function(client, request, response, next){
     
     // Throttled responses include a retry header that tells us how long to wait
     // until we retry the request
-    var retryAfter = parseInt(response.headers['retry'], 10) * 1000 || 1000;
+    var retryAfter = parseInt(response.headers['retry'] || response.headers['retry-after'], 10) * 1000 || 1000;
     setTimeout(function(){
       client._execute(request, function(error, response){
         response.throttled = true;
