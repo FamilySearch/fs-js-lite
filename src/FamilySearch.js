@@ -115,7 +115,7 @@ FamilySearch.prototype.oauthRedirect = function(state){
  * @param {String} state
  */
 FamilySearch.prototype.oauthRedirectURL = function(state){
-  var url = this.identHost() + '/cis-web/oauth2/v3/authorization?response_type=code' 
+  var url = this.identHost() + '/cis-web/oauth2/v3/authorization?response_type=code&scope=openid' 
     + '&client_id=' + this.appKey + '&redirect_uri=' + this.redirectUri;
   if(state){
     url +=  '&state=' + state;
@@ -173,7 +173,7 @@ FamilySearch.prototype.oauthResponse = function(state, callback){
  */
 FamilySearch.prototype.oauthToken = function(code, callback){
   var client = this;
-  client.post(client.identHost() + '/cis-web/oauth2/v3/token', {
+  client.post(client.identHost() + '/cis-web/oauth2/v3/token?redirect_uri=' + this.redirectUri, {
     body: {
       grant_type: 'authorization_code',
       code: code,
