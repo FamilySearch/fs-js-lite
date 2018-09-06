@@ -22,11 +22,11 @@ describe('node', function(){
     });
     
     it('oauthRedirectURL()', function(){
-      assert.equal(client.oauthRedirectURL(), 'https://identint.familysearch.org/cis-web/oauth2/v3/authorization?response_type=code&scope=openid&client_id=a02j000000JBxOxAAL&redirect_uri=http://foobaz.com/oauth-redirect');
+      assert.equal(client.oauthRedirectURL(), 'https://identint.familysearch.org/cis-web/oauth2/v3/authorization?response_type=code&scope=openid profile email qualifies_for_affiliate_account country&client_id=a02j000000JBxOxAAL&redirect_uri=http://foobaz.com/oauth-redirect');
     });
     
     it('oauthRedirectURL(state)', function(){
-      assert.equal(client.oauthRedirectURL('state123'), 'https://identint.familysearch.org/cis-web/oauth2/v3/authorization?response_type=code&scope=openid&client_id=a02j000000JBxOxAAL&redirect_uri=http://foobaz.com/oauth-redirect&state=state123');
+      assert.equal(client.oauthRedirectURL('state123'), 'https://identint.familysearch.org/cis-web/oauth2/v3/authorization?response_type=code&scope=openid profile email qualifies_for_affiliate_account country&client_id=a02j000000JBxOxAAL&redirect_uri=http://foobaz.com/oauth-redirect&state=state123');
     });
     
     it('oauthUnauthenticatedToken()', function(done){

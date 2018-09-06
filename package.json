@@ -1,6 +1,6 @@
 {
   "name": "fs-js-lite",
-  "version": "2.6.4",
+  "version": "2.6.5",
   "description": "Lite JS SDK for the FamilySearch API",
   "main": "src/FamilySearch.js",
   "browser": {
@@ -31,12 +31,12 @@
   "homepage": "https://github.com/FamilySearch/fs-js-lite#readme",
   "devDependencies": {
     "chai": "^3.5.0",
-    "coveralls": "^2.11.14",
+    "coveralls": "^3.0.2",
     "gedcomx-fs-js": "^1.3.0",
     "gedcomx-js": "^2.6.0",
     "istanbul": "^0.4.5",
     "jsdom": "^9.12.0",
-    "mocha": "^3.0.2",
+    "mocha": "^5.2.0",
     "nock": "8.0.0",
     "webpack": "^1.13.3"
   },

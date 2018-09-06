@@ -20,6 +20,7 @@ var FamilySearch = function(options){
   this.maxThrottledRetries = 10;
   this.saveAccessToken = false;
   this.accessToken = '';
+  this.jwt = '';
   this.middleware = {
     request: [
       requestMiddleware.url,
@@ -115,7 +116,7 @@ FamilySearch.prototype.oauthRedirect = function(state){
  * @param {String} state
  */
 FamilySearch.prototype.oauthRedirectURL = function(state){
-  var url = this.identHost() + '/cis-web/oauth2/v3/authorization?response_type=code&scope=openid' 
+  var url = this.identHost() + '/cis-web/oauth2/v3/authorization?response_type=code&scope=openid profile email qualifies_for_affiliate_account country' 
     + '&client_id=' + this.appKey + '&redirect_uri=' + this.redirectUri;
   if(state){
     url +=  '&state=' + state;
@@ -183,6 +184,8 @@ FamilySearch.prototype.oauthToken = function(code, callback){
       'Content-Type': 'application/x-www-form-urlencoded'
     }
   }, function(error, response){
+    // Save the OpenId Connect JWT
+    client.jwt = response.data.id_token;
     client.processOauthResponse(error, response, callback);
   });
 };
