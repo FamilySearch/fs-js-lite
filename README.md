@@ -10,28 +10,24 @@ This SDK is designed for use in a web browser and uses XMLHttpRequest.
 There is also an [API Explorer](http://familysearch.github.io/fs-js-lite/docs/console.html)
 which is built using the SDK and a [Node.js sample app](https://github.com/FamilySearch/fs-pedigree-browser-node).
 
-__Warning__: this SDK requires hard-coding the API endpoint URLs. That is
-considered bad practice when using the API. In most cases, FamilySearch does not
-consider URL changes as breaking changes. Read more about 
-[dealing with change](https://familysearch.org/developers/docs/guides/evolution).
-
-1. [Install](#install)
-2. [Usage](#usage)
-    1. [Initialization Options](#init-options)
-    2. [Authentication](#authentication)
-        1. [Browser](#authentication-browser)
-        2. [Node.js](#authentication-node)
-    3. [Requests](#requests)
-    4. [Responses](#responses)
-    5. [Error Handling](#errors)
-    6. [Redirects](#redirects)
-    7. [Throttling](#throttling)
-    8. [Middleware](#middleware)
-        1. [Request Middleware](#request-middleware)
-        2. [Response Middleware](#response-middleware)
-        3. [Default Middleware](#default-middleware)
-    9. [Objects Instead of Plain JSON](#objects-json)
-3. [Migrating from v1 to v2](#v2-migration)
+- [FamilySearch Lite JavaScript SDK](#familysearch-lite-javascript-sdk)
+  - [Install](#install)
+  - [Usage](#usage)
+    - [Initialization Options](#initialization-options)
+    - [Authentication](#authentication)
+      - [Authentication in the Browser](#authentication-in-the-browser)
+      - [Authentication in Node.js](#authentication-in-nodejs)
+    - [Requests](#requests)
+    - [Responses](#responses)
+    - [Error Handling](#error-handling)
+    - [Redirects](#redirects)
+    - [Throttling](#throttling)
+    - [Middleware](#middleware)
+      - [Request Middleware](#request-middleware)
+      - [Response Middleware](#response-middleware)
+      - [Default Middlware](#default-middlware)
+    - [Objects Instead of Plain JSON](#objects-instead-of-plain-json)
+  - [Migrating from v1 to v2](#migrating-from-v1-to-v2)
 
 <a name="install"></a>
 
