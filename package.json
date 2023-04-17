@@ -36,7 +36,7 @@
     "gedcomx-js": "^2.6.0",
     "istanbul": "^1.1.0-alpha.1",
     "jsdom": "^16.5.0",
-    "mocha": "^8.1.1",
+    "mocha": "^10.2.0",
     "nock": "8.0.0",
     "webpack": "^4.35.3",
     "webpack-cli": "^3.3.6"
