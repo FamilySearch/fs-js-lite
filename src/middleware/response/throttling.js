@@ -9,8 +9,10 @@ module.exports = function(client, request, response, next){
     var retryAfter = parseInt(response.headers['retry'] || response.headers['retry-after'], 10) * 1000 || 1000;
     setTimeout(function(){
       client._execute(request, function(error, response){
-        response.throttled = true;
-        response.retries = ++request.retries;
+        if(response){
+          response.throttled = true;
+          response.retries = ++request.retries;
+        }
         setTimeout(function(){
           request.callback(error, response);
         });
