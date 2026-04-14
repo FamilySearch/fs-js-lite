@@ -44,6 +44,11 @@ Or install from npm
 ```
 npm install --save fs-js-lite
 ```
+
+### Requirements
+
+- **Browser**: All modern browsers (Chrome, Firefox, Safari, Edge)
+- **Node.js**: Version 14.0.0 or higher (for server-side usage and development)
 <a name="usage"></a>
 
 ## Usage

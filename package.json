@@ -1,6 +1,6 @@
 {
   "name": "fs-js-lite",
-  "version": "2.6.6",
+  "version": "2.7.0",
   "description": "Lite JS SDK for the FamilySearch API",
   "main": "src/FamilySearch.js",
   "browser": {
@@ -15,35 +15,38 @@
     "test:record:node": "NOCK_BACK_MODE=record npm run test:node",
     "prepublish": "npm test && npm run build",
     "build": "mkdir -p dist && npm run build:full && npm run build:min",
-    "build:full": "webpack --output-library FamilySearch src/FamilySearch.js dist/FamilySearch.js",
-    "build:min": "webpack --output-library FamilySearch --optimize-minimize src/FamilySearch.js dist/FamilySearch.min.js",
-    "coverage": "istanbul cover _mocha",
-    "coveralls": "istanbul cover --report lcovonly _mocha && cat ./coverage/lcov.info | coveralls && rm -rf ./coverage"
+    "build:full": "webpack --mode development",
+    "build:min": "webpack --mode production",
+    "coverage": "nyc mocha test/node.js",
+    "coveralls": "nyc --reporter=lcov mocha test/node.js && cat ./coverage/lcov.info | coveralls && rm -rf ./coverage"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/FamilySearch/fs-js-lite.git"
   },
   "license": "MIT",
+  "engines": {
+    "node": ">=14.0.0"
+  },
   "bugs": {
     "url": "https://github.com/FamilySearch/fs-js-lite/issues"
   },
   "homepage": "https://github.com/FamilySearch/fs-js-lite#readme",
   "devDependencies": {
-    "chai": "^3.5.0",
+    "chai": "^6.2.2",
     "coveralls": "^3.0.2",
     "gedcomx-fs-js": "^1.3.0",
     "gedcomx-js": "^2.6.0",
-    "istanbul": "^1.1.0-alpha.1",
-    "jsdom": "^16.5.0",
-    "mocha": "^8.1.1",
-    "nock": "8.0.0",
-    "webpack": "^4.35.3",
-    "webpack-cli": "^3.3.6"
+    "jsdom": "^29.0.2",
+    "mocha": "^11.7.5",
+    "nock": "^8.0.0",
+    "nyc": "^18.0.0",
+    "webpack": "^5.106.1",
+    "webpack-cli": "^7.0.2"
   },
   "dependencies": {
-    "js-cookie": "^2.2.0",
-    "request": "^2.78.0"
+    "js-cookie": "^3.0.5",
+    "request": "^2.88.2"
   },
   "files": [
     "dist",

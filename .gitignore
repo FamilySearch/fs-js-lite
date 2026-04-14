@@ -1,2 +1,24 @@
 dist
 node_modules
+
+# Coverage output
+.nyc_output/
+coverage/
+
+# IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Baseline/audit files (temporary documentation)
+audit-baseline.json
+audit-final.json
+node-version.txt
+outdated-baseline.txt
+test-baseline.txt
+
+# OS files
+.DS_Store
+Thumbs.db

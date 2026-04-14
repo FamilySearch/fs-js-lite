@@ -1,5 +1,7 @@
 var assert = require('chai').assert,
-    jsdom = require('jsdom'),
+    { JSDOM, VirtualConsole, CookieJar } = require('jsdom'),
+    fs = require('fs'),
+    path = require('path'),
     nockBack = require('./nockback'),
     sandbox = require('./sandbox'),
     createPerson = require('./createperson'),
@@ -8,7 +10,7 @@ var assert = require('chai').assert,
 describe('browser', function(){
   
   it('load an access token from cookies', function(done){
-    var cookieJar = jsdom.createCookieJar();
+    var cookieJar = new CookieJar();
     cookieJar.setCookieSync('FS_AUTH_TOKEN=loaded', 'http://test.testing/');
     createClient({ 
       url: 'http://test.testing',
@@ -24,7 +26,7 @@ describe('browser', function(){
   });
   
   it('save an access token to the cookie', function(done){
-    var cookieJar = jsdom.createCookieJar();
+    var cookieJar = new CookieJar();
     createClient({ 
       url: 'http://test.testing',
       cookieJar: cookieJar
@@ -41,7 +43,7 @@ describe('browser', function(){
   });
   
   it('delete an access token cookie', function(done){
-    var cookieJar = jsdom.createCookieJar();
+    var cookieJar = new CookieJar();
     cookieJar.setCookieSync('FS_AUTH_TOKEN=loaded', 'http://test.testing/');
     createClient({ 
       url: 'http://test.testing',
@@ -60,7 +62,7 @@ describe('browser', function(){
   });
   
   it('load an access token with a cookie path', function(done){
-    var cookieJar = jsdom.createCookieJar();
+    var cookieJar = new CookieJar();
     cookieJar.setCookieSync('FS_AUTH_TOKEN=loaded', 'http://test.testing/path');
     createClient({ 
       url: 'http://test.testing/path',
@@ -77,7 +79,7 @@ describe('browser', function(){
   });
   
   it('delete an access token cookie with a cookie path', function(done){
-    var cookieJar = jsdom.createCookieJar();
+    var cookieJar = new CookieJar();
     cookieJar.setCookieSync('FS_AUTH_TOKEN=loaded;path=/path', 'http://test.testing/path');
     createClient({ 
       url: 'http://test.testing/path',
@@ -176,8 +178,8 @@ describe('browser', function(){
 
 /**
  * Setup the mock browser environment and return an SDK client object.
- * 
- * @param {Object} envConfig set jsdom.env() options
+ *
+ * @param {Object} envConfig set JSDOM options
  * @param {Object} clientConfig set SDK options
  * @param {Function} callback function(error, client)
  */
@@ -185,21 +187,36 @@ function createClient(envConfig, clientConfig, callback){
     clientConfig = Object.assign({
       appKey: sandbox.appkey
     }, clientConfig || {});
-    envConfig = Object.assign({
-      html: '<div></div>',
-      scripts: 'file://' + __dirname + '/../dist/FamilySearch.min.js',
-      /* Enable the virtual console to pipe the virtual window console
-         into the console of the current node instance. Helpful for debugging tests. */
-      virtualConsole: jsdom.createVirtualConsole().sendTo(console),
-      done: function(error, window){
-        if(error){
-          console.error(error);
-          callback(error);
-        }
-        else {
-          callback(null, new window.FamilySearch(clientConfig));
-        }
-      }
+
+    const virtualConsole = new VirtualConsole();
+    // Forward virtual console messages to the real console
+    virtualConsole.on('error', (error) => console.error(error));
+    virtualConsole.on('warn', (message) => console.warn(message));
+    virtualConsole.on('log', (message) => console.log(message));
+
+    // Read the built script file
+    const scriptPath = path.join(__dirname, '..', 'dist', 'FamilySearch.min.js');
+    const scriptContent = fs.readFileSync(scriptPath, 'utf8');
+
+    const options = Object.assign({
+      resources: 'usable',
+      runScripts: 'dangerously',
+      virtualConsole: virtualConsole
     }, envConfig || {});
-    jsdom.env(envConfig);
+
+    const dom = new JSDOM('<div></div>', options);
+    const window = dom.window;
+    const document = window.document;
+
+    // Inject the script content directly
+    const scriptElement = document.createElement('script');
+    scriptElement.textContent = scriptContent;
+    document.head.appendChild(scriptElement);
+
+    // Call the callback after script is loaded
+    try {
+      callback(null, new window.FamilySearch(clientConfig));
+    } catch (error) {
+      callback(error);
+    }
   }
