@@ -174,11 +174,12 @@ FamilySearch.prototype.oauthResponse = function(state, callback){
  */
 FamilySearch.prototype.oauthToken = function(code, callback){
   var client = this;
-  client.post(client.identHost() + '/cis-web/oauth2/v3/token?redirect_uri=' + this.redirectUri, {
+  client.post(client.identHost() + '/cis-web/oauth2/v3/token', {
     body: {
       grant_type: 'authorization_code',
       code: code,
-      client_id: client.appKey
+      client_id: client.appKey,
+      redirectUri: this.redirectUri
     },
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded'
