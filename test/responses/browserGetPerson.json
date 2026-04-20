@@ -6,7 +6,7 @@
         "body": "",
         "status": 204,
         "response": "",
-        "headers": {
+        "rawHeaders": {
             "access-control-allow-headers": "Accept, Accept-Charset, Accept-Encoding, Accept-Language, Accept-Datetime, Authorization, Connection, Content-Length, Content-Md5, Content-Type, Content-Encoding, Date, Expect, From, Host, If-Match, If-Modified-Since, If-None-Match, If-Range, If-Unmodified-Since, Location, Origin, Range, Referer, SingularityJSHeader, Te, User-Agent, Warning, X-Expect-Override, X-Reason, X-Requested-With, X-CorrelationID, X-FS-Feature-Tag",
             "access-control-allow-methods": "OPTIONS, HEAD, GET, PUT, POST, DELETE",
             "access-control-allow-origin": "null",
@@ -15,44 +15,17 @@
             "allow": "OPTIONS,HEAD,POST,GET",
             "date": "Fri, 08 Dec 2017 19:53:14 GMT",
             "server": "Apache-Coyote/1.1",
-            "vary": "Origin",
-            "connection": "keep-alive"
+            "vary": "Origin"
         }
     },
     {
         "scope": "https://api-integ.familysearch.org:443",
         "method": "POST",
         "path": "/platform/tree/persons",
-        "body": {
-            "persons": [
-                {
-                    "living": true,
-                    "gender": {
-                        "type": "http://gedcomx.org/Male"
-                    },
-                    "names": [
-                        {
-                            "type": "http://gedcomx.org/BirthName",
-                            "preferred": true,
-                            "nameForms": [
-                                {
-                                    "fullText": "Jacob",
-                                    "parts": [
-                                        {
-                                            "value": "Jacob",
-                                            "type": "http://gedcomx.org/Given"
-                                        }
-                                    ]
-                                }
-                            ]
-                        }
-                    ]
-                }
-            ]
-        },
+        "body": "{\"persons\":[{\"living\":true,\"gender\":{\"type\":\"http://gedcomx.org/Male\"},\"names\":[{\"type\":\"http://gedcomx.org/BirthName\",\"preferred\":true,\"nameForms\":[{\"fullText\":\"Jacob\",\"parts\":[{\"value\":\"Jacob\",\"type\":\"http://gedcomx.org/Given\"}]}]}]}]}",
         "status": 201,
         "response": "",
-        "headers": {
+        "rawHeaders": {
             "access-control-allow-headers": "Accept, Accept-Charset, Accept-Encoding, Accept-Language, Accept-Datetime, Authorization, Connection, Content-Length, Content-Md5, Content-Type, Content-Encoding, Date, Expect, From, Host, If-Match, If-Modified-Since, If-None-Match, If-Range, If-Unmodified-Since, Location, Origin, Range, Referer, SingularityJSHeader, Te, User-Agent, Warning, X-Expect-Override, X-Reason, X-Requested-With, X-CorrelationID, X-FS-Feature-Tag",
             "access-control-allow-methods": "OPTIONS, HEAD, GET, PUT, POST, DELETE",
             "access-control-allow-origin": "null",
@@ -69,9 +42,7 @@
             "x-processing-time": "300",
             "x-throttle-millis-left": "59103",
             "x-throttle-millis-used": "897",
-            "x-throttle-window-size": "60000",
-            "content-length": "0",
-            "connection": "keep-alive"
+            "x-throttle-window-size": "60000"
         }
     },
     {
@@ -81,7 +52,7 @@
         "body": "",
         "status": 204,
         "response": "",
-        "headers": {
+        "rawHeaders": {
             "access-control-allow-headers": "Accept, Accept-Charset, Accept-Encoding, Accept-Language, Accept-Datetime, Authorization, Connection, Content-Length, Content-Md5, Content-Type, Content-Encoding, Date, Expect, From, Host, If-Match, If-Modified-Since, If-None-Match, If-Range, If-Unmodified-Since, Location, Origin, Range, Referer, SingularityJSHeader, Te, User-Agent, Warning, X-Expect-Override, X-Reason, X-Requested-With, X-CorrelationID, X-FS-Feature-Tag",
             "access-control-allow-methods": "OPTIONS, HEAD, GET, PUT, POST, DELETE",
             "access-control-allow-origin": "null",
@@ -90,8 +61,7 @@
             "allow": "OPTIONS,HEAD,DELETE,POST,GET",
             "date": "Fri, 08 Dec 2017 19:53:14 GMT",
             "server": "Apache-Coyote/1.1",
-            "vary": "Origin",
-            "connection": "keep-alive"
+            "vary": "Origin"
         }
     },
     {
@@ -100,10 +70,8 @@
         "path": "/platform/tree/persons/L5FW-N8K",
         "body": "",
         "status": 200,
-        "response": [
-            "1f8b0800000000000000ed585b6fdb36147ef7af20d49716b322c98eedd8eb5a604853a4ad930c31b087b618688ab2b948a240526e8cc0ff7d47d4fde2355d226c0fcb8b431eea7cdfb9f0f0900f03840c9f8577d2400bf4002318635f5111624593b9cfd92ccc6f05f5922963ab54241796852366b250d1cd898703e6ef25c5826c4fb8d8584a506a4554481e5a9f2617bf9b57671f2d972acc7c69688507f4157e0fc384814b25112c528c871ae0c5edb9997f65e815a92a59656430572fae2d8469c985fa48f75a66177fb9d4673b166e12a11231cd26373474a9285d502af75cc79dbbded4f4bc19354fed1135e713cf311d6f3d25b3f16c6c93b34c75e239a5045bc7b91db93290101ea6222eea1290092a792c087dac6f231f2b8f8bc08a2578c5c2c05e496bb99c2ecdb3df3e146c6aba2f53738a45c59a43b9dc08b8cb3c46f55267e28c66d3d16c7e3ab36783c65a43eda3922eb0dd5097f0e05ed35b629f962e692457ee0ce2c7b2e5a51fccb1c20f95649365b69528d27a54184b9f0caabf8722731a961832e21082a675cf68420ed0f23fd9e27043cd2d939050fbfe08a4381d047048a854cf089d2b7c9b72f8a5d8d52de890ab3e7d9eaaef400dcd002bb2ed19dbc4294c9b4104754d60a67ac42f215ae85cb82cd441ea0fbe82d1ce78eefb947454d67f845f6a939a4b1b4f7fcbfab4b640381ae9fe03ddc6ee3dc773808e9ac67c57d06789efb16a9621b4b09306047a00c8bde7ab68159ddf2f6ae982de4c6f03a66d8159e9bcfa3cc7345847cc032a36b481ab6890a8fbf176a886fd1031f76069fd307093d1c35b4c8085fc43f13b1a0e3d96f4b9874abf54b635388a7c4670e216eb4fd037ac4edc9b9e3477ce4f4705f7815f9f87b1a2f7cadaaac0afe2257c22d5427c0c404d8deff36f5acbf5cdeaf2faea76f8fedd6a78737dbbaa19c7949f5a77a37d8496daf9c72bbd09cd23153bdc7372d450da8d8650ccc3a4cf532fa00117dd85188ba4b7eeb10e67009d0d2773419634e4a2de7676f4dc4944a11784f5e90da9a0a66909eddc36392cee16d6d499db63eb74e12c8a62a16f66258f1007b476f3aa5c8ff0d97c4de8d49c13cf354fc9c836d7f6dc339d91071df5d8b567aef7fff5a816aa5f9950db2b7069e99708128a0a916a2eafa5ff9ddbd363a2dcbe3d95bd33587b01508d244aecc3e95ddc8043b9e2692ff6fd15144c2dfa80095f57a5b069544bd577bcfe9eed6a10b07c87fd9856104a03d0d70a5a4efe32f478072854cbf4e520476d397ae758ef62c1811d23359041fdbf02d628eadde762ca651202566b4e34b30e0f555e338ce65ddca332c2e91bcba7f421a4dc9c45b7721507ebec7bc7e86a916a0b0679cc33fe596771de682c9aaf36cd179e84c19ac769c85f344510c78887b091afbd9a0b9a0f474fbf03e4452faf0cabbf49aaf41ccd39769707dbb633f92ea9d1194f673c1b8fecc964a2eb47fd7daaf9cad0b0f1a90751d68b59d5cecfaa46a3f32c224ce1562c8f6ce0cacefa625c682268050e1e7e31908b155e634987e8357b93ca6e35c9d7167b835e1ed943a02af72eb2cfd0392534c94034b29dd91039f3c564fc6a88203dc41e8191486f88973797e7e829e7e0ab9f51712e01f07a8f7658301e4ba44f9613a3b16d7583d57450679529bff9d7cff874e30e0e7f01eaa070760a160000"
-        ],
-        "headers": {
+        "response": "[\"1f8b0800000000000000ed585b6fdb36147ef7af20d49716b322c98eedd8eb5a604853a4ad930c31b087b618688ab2b948a240526e8cc0ff7d47d4fde2355d226c0fcb8b431eea7cdfb9f0f0900f03840c9f8577d2400bf4002318635f5111624593b9cfd92ccc6f05f5922963ab54241796852366b250d1cd898703e6ef25c5826c4fb8d8584a506a4554481e5a9f2617bf9b57671f2d972acc7c69688507f4157e0fc384814b25112c528c871ae0c5edb9997f65e815a92a59656430572fae2d8469c985fa48f75a66177fb9d4673b166e12a11231cd26373474a9285d502af75cc79dbbded4f4bc19354fed1135e713cf311d6f3d25b3f16c6c93b34c75e239a5045bc7b91db93290101ea6222eea1290092a792c087dac6f231f2b8f8bc08a2578c5c2c05e496bb99c2ecdb3df3e146c6aba2f53738a45c59a43b9dc08b8cb3c46f55267e28c66d3d16c7e3ab36783c65a43eda3922eb0dd5097f0e05ed35b629f962e692457ee0ce2c7b2e5a51fccb1c20f95649365b69528d27a54184b9f0caabf8722731a961832e21082a675cf68420ed0f23fd9e27043cd2d939050fbfe08a4381d047048a854cf089d2b7c9b72f8a5d8d52de890ab3e7d9eaaef400dcd002bb2ed19dbc4294c9b4104754d60a67ac42f215ae85cb82cd441ea0fbe82d1ce78eefb947454d67f845f6a939a4b1b4f7fcbfab4b640381ae9fe03ddc6ee3dc773808e9ac67c57d06789efb16a9621b4b09306047a00c8bde7ab68159ddf2f6ae982de4c6f03a66d8159e9bcfa3cc7345847cc032a36b481ab6890a8fbf176a886fd1031f76069fd307093d1c35b4c8085fc43f13b1a0e3d96f4b9874abf54b635388a7c4670e216eb4fd037ac4edc9b9e3477ce4f4705f7815f9f87b1a2f7cadaaac0afe2257c22d5427c0c404d8deff36f5acbf5cdeaf2faea76f8fedd6a78737dbbaa19c7949f5a77a37d8496daf9c72bbd09cd23153bdc7372d450da8d8650ccc3a4cf532fa00117dd85188ba4b7eeb10e67009d0d2773419634e4a2de7676f4dc4944a11784f5e90da9a0a66909eddc36392cee16d6d499db63eb74e12c8a62a16f66258f1007b476f3aa5c8ff0d97c4de8d49c13cf354fc9c836d7f6dc339d91071df5d8b567aef7fff5a816aa5f9950db2b7069e99708128a0a916a2eafa5ff9ddbd363a2dcbe3d95bd33587b01508d244aecc3e95ddc8043b9e2692ff6fd15144c2dfa80095f57a5b069544bd577bcfe9eed6a10b07c87fd9856104a03d0d70a5a4efe32f478072854cbf4e520476d397ae758ef62c1811d23359041fdbf02d628eadde762ca651202566b4e34b30e0f555e338ce65ddca332c2e91bcba7f421a4dc9c45b7721507ebec7bc7e86a916a0b0679cc33fe596771de682c9aaf36cd179e84c19ac769c85f344510c78887b091afbd9a0b9a0f474fbf03e4452faf0cabbf49aaf41ccd39769707dbb633f92ea9d1194f673c1b8fecc964a2eb47fd7daaf9cad0b0f1a90751d68b59d5cecfaa46a3f32c224ce1562c8f6ce0cacefa625c682268050e1e7e31908b155e634987e8357b93ca6e35c9d7167b835e1ed943a02af72eb2cfd0392534c94034b29dd91039f3c564fc6a88203dc41e8191486f88973797e7e829e7e0ab9f51712e01f07a8f7658301e4ba44f9613a3b16d7583d57450679529bff9d7cff874e30e0e7f01eaa070760a160000\"]",
+        "rawHeaders": {
             "access-control-allow-headers": "Accept, Accept-Charset, Accept-Encoding, Accept-Language, Accept-Datetime, Authorization, Connection, Content-Length, Content-Md5, Content-Type, Content-Encoding, Date, Expect, From, Host, If-Match, If-Modified-Since, If-None-Match, If-Range, If-Unmodified-Since, Location, Origin, Range, Referer, SingularityJSHeader, Te, User-Agent, Warning, X-Expect-Override, X-Reason, X-Requested-With, X-CorrelationID, X-FS-Feature-Tag",
             "access-control-allow-methods": "OPTIONS, HEAD, GET, PUT, POST, DELETE",
             "access-control-allow-origin": "null",
@@ -119,9 +87,7 @@
             "last-modified": "Fri, 08 Dec 2017 19:53:14 GMT",
             "server": "Apache-Coyote/1.1",
             "vary": "Accept, Accept-Language, Accept-Encoding, Expect, Accept-Encoding, Origin",
-            "x-processing-time": "163",
-            "content-length": "1216",
-            "connection": "keep-alive"
+            "x-processing-time": "163"
         }
     }
 ]

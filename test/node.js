@@ -22,11 +22,11 @@ describe('node', function(){
     });
     
     it('oauthRedirectURL()', function(){
-      assert.equal(client.oauthRedirectURL(), 'https://identint.familysearch.org/cis-web/oauth2/v3/authorization?response_type=code&scope=openid profile email qualifies_for_affiliate_account country&client_id=a02j000000JBxOxAAL&redirect_uri=http://foobaz.com/oauth-redirect');
+      assert.equal(client.oauthRedirectURL(), 'https://integration.familysearch.org/cis-web/oauth2/v3/authorization?response_type=code&scope=openid profile email qualifies_for_affiliate_account country&client_id=' + sandbox.appkey + '&redirect_uri=http://foobaz.com/oauth-redirect');
     });
-    
+
     it('oauthRedirectURL(state)', function(){
-      assert.equal(client.oauthRedirectURL('state123'), 'https://identint.familysearch.org/cis-web/oauth2/v3/authorization?response_type=code&scope=openid profile email qualifies_for_affiliate_account country&client_id=a02j000000JBxOxAAL&redirect_uri=http://foobaz.com/oauth-redirect&state=state123');
+      assert.equal(client.oauthRedirectURL('state123'), 'https://integration.familysearch.org/cis-web/oauth2/v3/authorization?response_type=code&scope=openid profile email qualifies_for_affiliate_account country&client_id=' + sandbox.appkey + '&redirect_uri=http://foobaz.com/oauth-redirect&state=state123');
     });
     
     it('oauthUnauthenticatedToken()', function(done){
@@ -136,7 +136,7 @@ describe('node', function(){
     it('throttled', function(done){
       this.timeout(1800000);
       nockBack('throttled.json', function(nockDone){
-        client.get('/platform/throttled?processingTime=1800000', function(error, response){
+        client.get('/platform/throttled?processingTime=1800000', function(){
           client.get('/platform/throttled', function(error, response){
             nockDone();
             check(done, function(){
@@ -393,7 +393,8 @@ function apiClient(options){
 
 /**
  * Create an authenticate an API client
- * 
+ *
+ * @param {Object} [options] Optional client configuration options
  * @param {Function} callback function(client)
  */
 function authenticatedClient(options, callback){
@@ -403,7 +404,7 @@ function authenticatedClient(options, callback){
   }
   nockBack('oauthPassword.json', function(nockDone){
     var client = apiClient(options);
-    client.oauthPassword(sandbox.username, sandbox.password, function(error, response){
+    client.oauthPassword(sandbox.username, sandbox.password, function(){
       nockDone();
       callback(client);
     });

@@ -6,7 +6,7 @@
         "body": "",
         "status": 200,
         "response": "",
-        "headers": {
+        "rawHeaders": {
             "content-type": "application/x-fs-v1+json",
             "date": "Fri, 08 Dec 2017 19:52:54 GMT",
             "server": "Apache-Coyote/1.1",
@@ -14,9 +14,7 @@
             "x-processing-time": "144",
             "x-throttle-millis-left": "0",
             "x-throttle-millis-used": "1804896",
-            "x-throttle-window-size": "60000",
-            "content-length": "0",
-            "connection": "Close"
+            "x-throttle-window-size": "60000"
         }
     },
     {
@@ -25,22 +23,14 @@
         "path": "/platform/throttled",
         "body": "",
         "status": 429,
-        "response": {
-            "errors": [
-                {
-                    "code": 429
-                }
-            ]
-        },
-        "headers": {
+        "response": "{\"errors\":[{\"code\":429}]}",
+        "rawHeaders": {
             "content-type": "application/x-fs-v1+json",
             "date": "Fri, 08 Dec 2017 19:52:55 GMT",
             "retry-after": "10",
             "server": "Apache-Coyote/1.1",
             "vary": "Accept, Accept-Language, Accept-Encoding, Expect, Accept-Encoding",
-            "x-processing-time": "141",
-            "content-length": "43",
-            "connection": "Close"
+            "x-processing-time": "141"
         }
     },
     {
@@ -49,22 +39,14 @@
         "path": "/platform/throttled",
         "body": "",
         "status": 429,
-        "response": {
-            "errors": [
-                {
-                    "code": 429
-                }
-            ]
-        },
-        "headers": {
+        "response": "{\"errors\":[{\"code\":429}]}",
+        "rawHeaders": {
             "content-type": "application/x-fs-v1+json",
             "date": "Fri, 08 Dec 2017 19:52:57 GMT",
             "retry-after": "9",
             "server": "Apache-Coyote/1.1",
             "vary": "Accept, Accept-Language, Accept-Encoding, Expect, Accept-Encoding",
-            "x-processing-time": "164",
-            "content-length": "43",
-            "connection": "Close"
+            "x-processing-time": "164"
         }
     },
     {
@@ -73,22 +55,14 @@
         "path": "/platform/throttled",
         "body": "",
         "status": 429,
-        "response": {
-            "errors": [
-                {
-                    "code": 429
-                }
-            ]
-        },
-        "headers": {
+        "response": "{\"errors\":[{\"code\":429}]}",
+        "rawHeaders": {
             "content-type": "application/x-fs-v1+json",
             "date": "Fri, 08 Dec 2017 19:52:58 GMT",
             "retry-after": "7",
             "server": "Apache-Coyote/1.1",
             "vary": "Accept, Accept-Language, Accept-Encoding, Expect, Accept-Encoding",
-            "x-processing-time": "188",
-            "content-length": "43",
-            "connection": "Close"
+            "x-processing-time": "188"
         }
     },
     {
@@ -97,22 +71,14 @@
         "path": "/platform/throttled",
         "body": "",
         "status": 429,
-        "response": {
-            "errors": [
-                {
-                    "code": 429
-                }
-            ]
-        },
-        "headers": {
+        "response": "{\"errors\":[{\"code\":429}]}",
+        "rawHeaders": {
             "content-type": "application/x-fs-v1+json",
             "date": "Fri, 08 Dec 2017 19:52:59 GMT",
             "retry-after": "6",
             "server": "Apache-Coyote/1.1",
             "vary": "Accept, Accept-Language, Accept-Encoding, Expect, Accept-Encoding",
-            "x-processing-time": "166",
-            "content-length": "43",
-            "connection": "Close"
+            "x-processing-time": "166"
         }
     },
     {
@@ -121,22 +87,14 @@
         "path": "/platform/throttled",
         "body": "",
         "status": 429,
-        "response": {
-            "errors": [
-                {
-                    "code": 429
-                }
-            ]
-        },
-        "headers": {
+        "response": "{\"errors\":[{\"code\":429}]}",
+        "rawHeaders": {
             "content-type": "application/x-fs-v1+json",
             "date": "Fri, 08 Dec 2017 19:53:01 GMT",
             "retry-after": "5",
             "server": "Apache-Coyote/1.1",
             "vary": "Accept, Accept-Language, Accept-Encoding, Expect, Accept-Encoding",
-            "x-processing-time": "165",
-            "content-length": "43",
-            "connection": "Close"
+            "x-processing-time": "165"
         }
     },
     {
@@ -145,22 +103,14 @@
         "path": "/platform/throttled",
         "body": "",
         "status": 429,
-        "response": {
-            "errors": [
-                {
-                    "code": 429
-                }
-            ]
-        },
-        "headers": {
+        "response": "{\"errors\":[{\"code\":429}]}",
+        "rawHeaders": {
             "content-type": "application/x-fs-v1+json",
             "date": "Fri, 08 Dec 2017 19:53:02 GMT",
             "retry-after": "3",
             "server": "Apache-Coyote/1.1",
             "vary": "Accept, Accept-Language, Accept-Encoding, Expect, Accept-Encoding",
-            "x-processing-time": "142",
-            "content-length": "43",
-            "connection": "Close"
+            "x-processing-time": "142"
         }
     },
     {
@@ -169,22 +119,14 @@
         "path": "/platform/throttled",
         "body": "",
         "status": 429,
-        "response": {
-            "errors": [
-                {
-                    "code": 429
-                }
-            ]
-        },
-        "headers": {
+        "response": "{\"errors\":[{\"code\":429}]}",
+        "rawHeaders": {
             "content-type": "application/x-fs-v1+json",
             "date": "Fri, 08 Dec 2017 19:53:03 GMT",
             "retry-after": "2",
             "server": "Apache-Coyote/1.1",
             "vary": "Accept, Accept-Language, Accept-Encoding, Expect, Accept-Encoding",
-            "x-processing-time": "143",
-            "content-length": "43",
-            "connection": "Close"
+            "x-processing-time": "143"
         }
     },
     {
@@ -193,22 +135,14 @@
         "path": "/platform/throttled",
         "body": "",
         "status": 429,
-        "response": {
-            "errors": [
-                {
-                    "code": 429
-                }
-            ]
-        },
-        "headers": {
+        "response": "{\"errors\":[{\"code\":429}]}",
+        "rawHeaders": {
             "content-type": "application/x-fs-v1+json",
             "date": "Fri, 08 Dec 2017 19:53:04 GMT",
             "retry-after": "1",
             "server": "Apache-Coyote/1.1",
             "vary": "Accept, Accept-Language, Accept-Encoding, Expect, Accept-Encoding",
-            "x-processing-time": "188",
-            "content-length": "43",
-            "connection": "Close"
+            "x-processing-time": "188"
         }
     },
     {
@@ -218,7 +152,7 @@
         "body": "",
         "status": 200,
         "response": "",
-        "headers": {
+        "rawHeaders": {
             "content-type": "application/x-fs-v1+json",
             "date": "Fri, 08 Dec 2017 19:53:06 GMT",
             "server": "Apache-Coyote/1.1",
@@ -226,9 +160,7 @@
             "x-processing-time": "144",
             "x-throttle-millis-left": "59856",
             "x-throttle-millis-used": "144",
-            "x-throttle-window-size": "60000",
-            "content-length": "0",
-            "connection": "Close"
+            "x-throttle-window-size": "60000"
         }
     }
 ]
