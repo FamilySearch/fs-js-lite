@@ -399,8 +399,9 @@ FamilySearch.prototype.request = function(url, options, callback){
 
 /**
  * Execute a request
- * 
+ *
  * @param {Object} request
+ * @param {Function} callback - Callback function(error, response)
  */
 FamilySearch.prototype._execute = function(request, callback){
   var client = this;
@@ -446,9 +447,9 @@ FamilySearch.prototype._execute = function(request, callback){
 
 /**
  * Run request middleware
- * 
+ *
  * @param {Object} request
- * @param {Function} callback(error, response)
+ * @param {Function} callback - Callback function(error, response)
  */
 FamilySearch.prototype._runRequestMiddleware = function(request, callback){
   var client = this;
@@ -465,10 +466,10 @@ FamilySearch.prototype._runRequestMiddleware = function(request, callback){
 
 /**
  * Run response middleware
- * 
+ *
  * @param {Object} request
  * @param {Object} response
- * @param {Function} callback(error)
+ * @param {Function} callback - Callback function(error)
  */
 FamilySearch.prototype._runResponseMiddleware = function(request, response, callback){
   var client = this;
@@ -495,7 +496,7 @@ FamilySearch.prototype.identHost = function(){
     case 'beta':
       return 'https://identbeta.familysearch.org';
     default:
-      return 'https://identint.familysearch.org';
+      return 'https://integration.familysearch.org';
   }
 };
 

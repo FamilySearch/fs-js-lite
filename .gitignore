@@ -5,6 +5,13 @@ node_modules
 .nyc_output/
 coverage/
 
+# Test credentials (use sandbox.example.js as template)
+test/sandbox.js
+
+# Environment variables
+.env
+.env.local
+
 # IDE files
 .idea/
 .vscode/

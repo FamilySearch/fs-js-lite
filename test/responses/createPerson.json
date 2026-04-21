@@ -3,36 +3,10 @@
         "scope": "https://api-integ.familysearch.org:443",
         "method": "POST",
         "path": "/platform/tree/persons",
-        "body": {
-            "persons": [
-                {
-                    "living": true,
-                    "gender": {
-                        "type": "http://gedcomx.org/Male"
-                    },
-                    "names": [
-                        {
-                            "type": "http://gedcomx.org/BirthName",
-                            "preferred": true,
-                            "nameForms": [
-                                {
-                                    "fullText": "Jacob",
-                                    "parts": [
-                                        {
-                                            "value": "Jacob",
-                                            "type": "http://gedcomx.org/Given"
-                                        }
-                                    ]
-                                }
-                            ]
-                        }
-                    ]
-                }
-            ]
-        },
+        "body": "{\"persons\":[{\"living\":true,\"gender\":{\"type\":\"http://gedcomx.org/Male\"},\"names\":[{\"type\":\"http://gedcomx.org/BirthName\",\"preferred\":true,\"nameForms\":[{\"fullText\":\"Jacob\",\"parts\":[{\"value\":\"Jacob\",\"type\":\"http://gedcomx.org/Given\"}]}]}]}]}",
         "status": 201,
         "response": "",
-        "headers": {
+        "rawHeaders": {
             "cache-control": "no-cache, no-store, no-transform, must-revalidate, max-age=0",
             "content-type": "application/x-fs-v1+json",
             "date": "Fri, 08 Dec 2017 19:52:53 GMT",
@@ -44,9 +18,7 @@
             "x-processing-time": "141",
             "x-throttle-millis-left": "55883",
             "x-throttle-millis-used": "4117",
-            "x-throttle-window-size": "60000",
-            "content-length": "0",
-            "connection": "Close"
+            "x-throttle-window-size": "60000"
         }
     }
 ]

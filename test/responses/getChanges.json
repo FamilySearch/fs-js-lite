@@ -3,36 +3,10 @@
         "scope": "https://api-integ.familysearch.org:443",
         "method": "POST",
         "path": "/platform/tree/persons",
-        "body": {
-            "persons": [
-                {
-                    "living": true,
-                    "gender": {
-                        "type": "http://gedcomx.org/Male"
-                    },
-                    "names": [
-                        {
-                            "type": "http://gedcomx.org/BirthName",
-                            "preferred": true,
-                            "nameForms": [
-                                {
-                                    "fullText": "Jacob",
-                                    "parts": [
-                                        {
-                                            "value": "Jacob",
-                                            "type": "http://gedcomx.org/Given"
-                                        }
-                                    ]
-                                }
-                            ]
-                        }
-                    ]
-                }
-            ]
-        },
+        "body": "{\"persons\":[{\"living\":true,\"gender\":{\"type\":\"http://gedcomx.org/Male\"},\"names\":[{\"type\":\"http://gedcomx.org/BirthName\",\"preferred\":true,\"nameForms\":[{\"fullText\":\"Jacob\",\"parts\":[{\"value\":\"Jacob\",\"type\":\"http://gedcomx.org/Given\"}]}]}]}]}",
         "status": 201,
         "response": "",
-        "headers": {
+        "rawHeaders": {
             "cache-control": "no-cache, no-store, no-transform, must-revalidate, max-age=0",
             "content-type": "application/x-fs-v1+json",
             "date": "Fri, 08 Dec 2017 19:53:06 GMT",
@@ -44,9 +18,7 @@
             "x-processing-time": "144",
             "x-throttle-millis-left": "59712",
             "x-throttle-millis-used": "288",
-            "x-throttle-window-size": "60000",
-            "content-length": "0",
-            "connection": "Close"
+            "x-throttle-window-size": "60000"
         }
     },
     {
@@ -55,187 +27,8 @@
         "path": "/platform/tree/persons/L5FW-FRM/changes",
         "body": "",
         "status": 200,
-        "response": {
-            "updated": 1512762786620,
-            "links": {
-                "next": {
-                    "href": "https://api-integ.familysearch.org/platform/tree/persons/L5FW-FRM/changes?from=EMPTY_LAST_PAGE"
-                },
-                "person": {
-                    "href": "https://api-integ.familysearch.org/platform/tree/persons/L5FW-FRM"
-                },
-                "self": {
-                    "href": "https://api-integ.familysearch.org/platform/tree/persons/L5FW-FRM/changes"
-                }
-            },
-            "entries": [
-                {
-                    "content": {
-                        "gedcomx": {
-                            "persons": [
-                                {
-                                    "id": "68c397c0-dc51-11e7-b056-1d71af21be34_0_21188451502.resulting",
-                                    "gender": {
-                                        "id": "a2414bd1-59e4-47ea-a295-3af02ef8ba5f",
-                                        "attribution": {
-                                            "contributor": {
-                                                "resource": "https://api-integ.familysearch.org/platform/users/agents/MM6M-8QJ",
-                                                "resourceId": "MM6M-8QJ"
-                                            },
-                                            "modified": 1512762786620
-                                        },
-                                        "type": "http://gedcomx.org/Male"
-                                    },
-                                    "identifiers": {
-                                        "http://gedcomx.org/Primary": [
-                                            "https://integration.familysearch.org/ark:/61903/4:1:L5FW-FRM"
-                                        ]
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "id": "68c397c0-dc51-11e7-b056-1d71af21be34_0_2",
-                    "title": "Gender Added",
-                    "updated": 1512762786620,
-                    "contributors": [
-                        {
-                            "name": "sdk tester",
-                            "uri": "https://api-integ.familysearch.org/platform/users/agents/MM6M-8QJ"
-                        }
-                    ],
-                    "links": {
-                        "agent": {
-                            "href": "https://api-integ.familysearch.org/platform/users/agents/MM6M-8QJ"
-                        }
-                    },
-                    "changeInfo": [
-                        {
-                            "operation": "http://familysearch.org/v1/Create",
-                            "objectType": "http://gedcomx.org/Gender",
-                            "objectModifier": "http://gedcomx.org/Person",
-                            "resulting": {
-                                "resource": "#68c397c0-dc51-11e7-b056-1d71af21be34_0_21188451502.resulting",
-                                "resourceId": "68c397c0-dc51-11e7-b056-1d71af21be34_0_21188451502.resulting"
-                            }
-                        }
-                    ]
-                },
-                {
-                    "content": {
-                        "gedcomx": {
-                            "persons": [
-                                {
-                                    "id": "68c397c0-dc51-11e7-b056-1d71af21be34_0_11188451502.resulting",
-                                    "identifiers": {
-                                        "http://gedcomx.org/Primary": [
-                                            "https://integration.familysearch.org/ark:/61903/4:1:L5FW-FRM"
-                                        ]
-                                    },
-                                    "names": [
-                                        {
-                                            "id": "55bf038e-864d-4883-b298-be4e57add9f9",
-                                            "attribution": {
-                                                "contributor": {
-                                                    "resource": "https://api-integ.familysearch.org/platform/users/agents/MM6M-8QJ",
-                                                    "resourceId": "MM6M-8QJ"
-                                                },
-                                                "modified": 1512762786620
-                                            },
-                                            "type": "http://gedcomx.org/BirthName",
-                                            "preferred": true,
-                                            "nameForms": [
-                                                {
-                                                    "lang": "en",
-                                                    "fullText": "Jacob",
-                                                    "parts": [
-                                                        {
-                                                            "type": "http://gedcomx.org/Given",
-                                                            "value": "Jacob"
-                                                        }
-                                                    ],
-                                                    "nameFormInfo": [
-                                                        {
-                                                            "order": "http://familysearch.org/v1/Eurotypic"
-                                                        }
-                                                    ]
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                }
-                            ]
-                        }
-                    },
-                    "id": "68c397c0-dc51-11e7-b056-1d71af21be34_0_1",
-                    "title": "Birth Name Added",
-                    "updated": 1512762786620,
-                    "contributors": [
-                        {
-                            "name": "sdk tester",
-                            "uri": "https://api-integ.familysearch.org/platform/users/agents/MM6M-8QJ"
-                        }
-                    ],
-                    "links": {
-                        "agent": {
-                            "href": "https://api-integ.familysearch.org/platform/users/agents/MM6M-8QJ"
-                        }
-                    },
-                    "changeInfo": [
-                        {
-                            "operation": "http://familysearch.org/v1/Create",
-                            "objectType": "http://gedcomx.org/BirthName",
-                            "objectModifier": "http://gedcomx.org/Person",
-                            "resulting": {
-                                "resource": "#68c397c0-dc51-11e7-b056-1d71af21be34_0_11188451502.resulting",
-                                "resourceId": "68c397c0-dc51-11e7-b056-1d71af21be34_0_11188451502.resulting"
-                            }
-                        }
-                    ]
-                },
-                {
-                    "content": {
-                        "gedcomx": {
-                            "persons": [
-                                {
-                                    "id": "68c397c0-dc51-11e7-b056-1d71af21be34_0_01188451502.resulting",
-                                    "identifiers": {
-                                        "http://gedcomx.org/Primary": [
-                                            "https://integration.familysearch.org/ark:/61903/4:1:L5FW-FRM"
-                                        ]
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "id": "68c397c0-dc51-11e7-b056-1d71af21be34_0_0",
-                    "title": "Person Created",
-                    "updated": 1512762786620,
-                    "contributors": [
-                        {
-                            "name": "sdk tester",
-                            "uri": "https://api-integ.familysearch.org/platform/users/agents/MM6M-8QJ"
-                        }
-                    ],
-                    "links": {
-                        "agent": {
-                            "href": "https://api-integ.familysearch.org/platform/users/agents/MM6M-8QJ"
-                        }
-                    },
-                    "changeInfo": [
-                        {
-                            "operation": "http://familysearch.org/v1/Create",
-                            "objectType": "http://gedcomx.org/Person",
-                            "resulting": {
-                                "resource": "#68c397c0-dc51-11e7-b056-1d71af21be34_0_01188451502.resulting",
-                                "resourceId": "68c397c0-dc51-11e7-b056-1d71af21be34_0_01188451502.resulting"
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        "headers": {
+        "response": "{\"updated\":1512762786620,\"links\":{\"next\":{\"href\":\"https://api-integ.familysearch.org/platform/tree/persons/L5FW-FRM/changes?from=EMPTY_LAST_PAGE\"},\"person\":{\"href\":\"https://api-integ.familysearch.org/platform/tree/persons/L5FW-FRM\"},\"self\":{\"href\":\"https://api-integ.familysearch.org/platform/tree/persons/L5FW-FRM/changes\"}},\"entries\":[{\"content\":{\"gedcomx\":{\"persons\":[{\"id\":\"68c397c0-dc51-11e7-b056-1d71af21be34_0_21188451502.resulting\",\"gender\":{\"id\":\"a2414bd1-59e4-47ea-a295-3af02ef8ba5f\",\"attribution\":{\"contributor\":{\"resource\":\"https://api-integ.familysearch.org/platform/users/agents/MM6M-8QJ\",\"resourceId\":\"MM6M-8QJ\"},\"modified\":1512762786620},\"type\":\"http://gedcomx.org/Male\"},\"identifiers\":{\"http://gedcomx.org/Primary\":[\"https://integration.familysearch.org/ark:/61903/4:1:L5FW-FRM\"]}}]}},\"id\":\"68c397c0-dc51-11e7-b056-1d71af21be34_0_2\",\"title\":\"Gender Added\",\"updated\":1512762786620,\"contributors\":[{\"name\":\"sdk tester\",\"uri\":\"https://api-integ.familysearch.org/platform/users/agents/MM6M-8QJ\"}],\"links\":{\"agent\":{\"href\":\"https://api-integ.familysearch.org/platform/users/agents/MM6M-8QJ\"}},\"changeInfo\":[{\"operation\":\"http://familysearch.org/v1/Create\",\"objectType\":\"http://gedcomx.org/Gender\",\"objectModifier\":\"http://gedcomx.org/Person\",\"resulting\":{\"resource\":\"#68c397c0-dc51-11e7-b056-1d71af21be34_0_21188451502.resulting\",\"resourceId\":\"68c397c0-dc51-11e7-b056-1d71af21be34_0_21188451502.resulting\"}}]},{\"content\":{\"gedcomx\":{\"persons\":[{\"id\":\"68c397c0-dc51-11e7-b056-1d71af21be34_0_11188451502.resulting\",\"identifiers\":{\"http://gedcomx.org/Primary\":[\"https://integration.familysearch.org/ark:/61903/4:1:L5FW-FRM\"]},\"names\":[{\"id\":\"55bf038e-864d-4883-b298-be4e57add9f9\",\"attribution\":{\"contributor\":{\"resource\":\"https://api-integ.familysearch.org/platform/users/agents/MM6M-8QJ\",\"resourceId\":\"MM6M-8QJ\"},\"modified\":1512762786620},\"type\":\"http://gedcomx.org/BirthName\",\"preferred\":true,\"nameForms\":[{\"lang\":\"en\",\"fullText\":\"Jacob\",\"parts\":[{\"type\":\"http://gedcomx.org/Given\",\"value\":\"Jacob\"}],\"nameFormInfo\":[{\"order\":\"http://familysearch.org/v1/Eurotypic\"}]}]}]}]}},\"id\":\"68c397c0-dc51-11e7-b056-1d71af21be34_0_1\",\"title\":\"Birth Name Added\",\"updated\":1512762786620,\"contributors\":[{\"name\":\"sdk tester\",\"uri\":\"https://api-integ.familysearch.org/platform/users/agents/MM6M-8QJ\"}],\"links\":{\"agent\":{\"href\":\"https://api-integ.familysearch.org/platform/users/agents/MM6M-8QJ\"}},\"changeInfo\":[{\"operation\":\"http://familysearch.org/v1/Create\",\"objectType\":\"http://gedcomx.org/BirthName\",\"objectModifier\":\"http://gedcomx.org/Person\",\"resulting\":{\"resource\":\"#68c397c0-dc51-11e7-b056-1d71af21be34_0_11188451502.resulting\",\"resourceId\":\"68c397c0-dc51-11e7-b056-1d71af21be34_0_11188451502.resulting\"}}]},{\"content\":{\"gedcomx\":{\"persons\":[{\"id\":\"68c397c0-dc51-11e7-b056-1d71af21be34_0_01188451502.resulting\",\"identifiers\":{\"http://gedcomx.org/Primary\":[\"https://integration.familysearch.org/ark:/61903/4:1:L5FW-FRM\"]}}]}},\"id\":\"68c397c0-dc51-11e7-b056-1d71af21be34_0_0\",\"title\":\"Person Created\",\"updated\":1512762786620,\"contributors\":[{\"name\":\"sdk tester\",\"uri\":\"https://api-integ.familysearch.org/platform/users/agents/MM6M-8QJ\"}],\"links\":{\"agent\":{\"href\":\"https://api-integ.familysearch.org/platform/users/agents/MM6M-8QJ\"}},\"changeInfo\":[{\"operation\":\"http://familysearch.org/v1/Create\",\"objectType\":\"http://gedcomx.org/Person\",\"resulting\":{\"resource\":\"#68c397c0-dc51-11e7-b056-1d71af21be34_0_01188451502.resulting\",\"resourceId\":\"68c397c0-dc51-11e7-b056-1d71af21be34_0_01188451502.resulting\"}}]}]}",
+        "rawHeaders": {
             "cache-control": "no-transform, must-revalidate, max-age=0",
             "content-type": "application/x-gedcomx-atom+json",
             "date": "Fri, 08 Dec 2017 19:53:07 GMT",
@@ -243,9 +36,7 @@
             "last-modified": "Fri, 08 Dec 2017 19:53:06 GMT",
             "server": "Apache-Coyote/1.1",
             "vary": "Accept, Accept-Language, Accept-Encoding, Expect, Accept-Encoding",
-            "x-processing-time": "143",
-            "content-length": "4962",
-            "connection": "Close"
+            "x-processing-time": "143"
         }
     }
 ]

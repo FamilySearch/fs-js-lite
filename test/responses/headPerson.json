@@ -6,7 +6,7 @@
         "body": "",
         "status": 200,
         "response": "",
-        "headers": {
+        "rawHeaders": {
             "allow": "OPTIONS, HEAD, GET, POST, DELETE",
             "cache-control": "no-transform, must-revalidate, max-age=0",
             "content-location": "/tree/persons/L5C2-WYC",
@@ -19,8 +19,7 @@
             "x-processing-time": "165",
             "x-throttle-millis-left": "55718",
             "x-throttle-millis-used": "4282",
-            "x-throttle-window-size": "60000",
-            "connection": "Close"
+            "x-throttle-window-size": "60000"
         }
     }
 ]
