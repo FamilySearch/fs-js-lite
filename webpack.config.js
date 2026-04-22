@@ -15,5 +15,12 @@ module.exports = (env, argv) => {
       globalObject: 'this',
     },
     mode: argv.mode || 'production',
+    resolve: {
+      fallback: {
+        // Don't include Node.js crypto module in browser builds
+        // Our pkce.js uses window.crypto.subtle for browsers instead
+        crypto: false
+      }
+    }
   };
 };
