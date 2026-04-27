@@ -3,7 +3,8 @@ var cookies = require('js-cookie'),
     requestHandler = require('./nodeHandler'),
     utils = require('./utils'),
     requestMiddleware = require('./middleware/request'),
-    responseMiddleware = require('./middleware/response');
+    responseMiddleware = require('./middleware/response'),
+    pkce = require('./pkce');
 
 /**
  * Create an instance of the FamilySearch SDK Client
@@ -111,82 +112,212 @@ FamilySearch.prototype.oauthRedirect = function(state){
 };
 
 /**
- * Generate the OAuth 2 redirect URL
- * 
- * @param {String} state
+ * Generate the OAuth 2 redirect URL with PKCE support
+ *
+ * OAuth 2.1 requires PKCE (Proof Key for Code Exchange) for security.
+ * You must provide a code_challenge parameter for modern OAuth flows.
+ *
+ * @param {String|Object} options - Either a state string (legacy) or options object
+ * @param {String} options.state - CSRF protection token (recommended)
+ * @param {String} options.codeChallenge - PKCE code challenge (REQUIRED for OAuth 2.1)
+ * @param {String} options.scope - OAuth scopes (optional, defaults to standard scopes)
+ * @return {String} The authorization URL to redirect the user to
+ *
+ * @example
+ * // Modern usage with PKCE (RECOMMENDED)
+ * var verifier = client.generateCodeVerifier();
+ * var challenge = client.generateCodeChallenge(verifier);
+ * sessionStorage.setItem('pkce_verifier', verifier); // Save for later
+ * var url = client.oauthRedirectURL({
+ *   codeChallenge: challenge,
+ *   state: 'random-csrf-token'
+ * });
+ *
+ * @example
+ * // Legacy usage (deprecated, for backward compatibility)
+ * var url = client.oauthRedirectURL('csrf-token');
  */
-FamilySearch.prototype.oauthRedirectURL = function(state){
-  var url = this.identHost() + '/cis-web/oauth2/v3/authorization?response_type=code&scope=openid profile email qualifies_for_affiliate_account country' 
-    + '&client_id=' + this.appKey + '&redirect_uri=' + this.redirectUri;
-  if(state){
-    url +=  '&state=' + state;
+FamilySearch.prototype.oauthRedirectURL = function(options){
+  // Backward compatibility: if options is a string, treat it as the state parameter
+  var state, codeChallenge, scope;
+  if(typeof options === 'string'){
+    state = options;
+    codeChallenge = null;
+    scope = 'openid profile email qualifies_for_affiliate_account country';
+  } else if(typeof options === 'object' && options !== null){
+    state = options.state;
+    codeChallenge = options.codeChallenge;
+    scope = options.scope || 'openid profile email qualifies_for_affiliate_account country';
+  } else {
+    // No options provided
+    state = null;
+    codeChallenge = null;
+    scope = 'openid profile email qualifies_for_affiliate_account country';
   }
+
+  // Build the authorization URL
+  var url = this.identHost() + '/cis-web/oauth2/v3/authorization?response_type=code&scope=' + encodeURIComponent(scope)
+    + '&client_id=' + encodeURIComponent(this.appKey)
+    + '&redirect_uri=' + encodeURIComponent(this.redirectUri);
+
+  // Add PKCE parameters if provided (OAuth 2.1 requirement)
+  if(codeChallenge){
+    url += '&code_challenge=' + encodeURIComponent(codeChallenge);
+    url += '&code_challenge_method=S256'; // SHA256 hashing
+  }
+
+  // Add state parameter if provided (CSRF protection)
+  if(state){
+    url += '&state=' + encodeURIComponent(state);
+  }
+
   return url;
 };
 
 /**
  * Handle an OAuth2 redirect response by extracting the code from the query
- * and exchanging it for an access token. The token is automatically saved
- * in a cookie when that behavior is enabled.
- * 
- * @param {String=} state
- * @param {Function} callback that receives the access token response
- * @return {Boolean} true if a code was detected; false no code was found or if
- * a state param was given and it doesn't match the state param in the query. 
- * This does not indicate whether an access token was successfully requested, 
- * just whether a code was found in the query param and a request was sent to
- * exchange the code for a token.
+ * and exchanging it for an access token with PKCE support
+ *
+ * This is a convenience method for browser applications. It automatically:
+ * 1. Extracts the authorization code from the URL query parameters
+ * 2. Validates the state parameter (CSRF protection)
+ * 3. Exchanges the code (+ verifier) for an access token
+ * 4. Saves the token in a cookie if saveAccessToken is enabled
+ *
+ * @param {String|Object|Function} options - State string (legacy), options object, or callback
+ * @param {String} options.state - Expected state value for CSRF validation
+ * @param {String} options.codeVerifier - PKCE code verifier (REQUIRED for OAuth 2.1)
+ * @param {Function} callback - Callback function(error, response)
+ * @return {Boolean} true if a code was found and exchange was attempted
+ *
+ * @example
+ * // Modern usage with PKCE (RECOMMENDED)
+ * var verifier = sessionStorage.getItem('pkce_verifier');
+ * var state = sessionStorage.getItem('oauth_state');
+ * client.oauthResponse({
+ *   state: state,
+ *   codeVerifier: verifier
+ * }, function(error, response) {
+ *   if (!error) {
+ *     console.log('Authenticated!');
+ *   }
+ * });
+ *
+ * @example
+ * // Legacy usage (backward compatibility)
+ * client.oauthResponse('state-token', function(error, response) { });
  */
-FamilySearch.prototype.oauthResponse = function(state, callback){
-  
-  // Allow the state parameter to be optional
-  if(arguments.length === 1){
-    callback = state;
+FamilySearch.prototype.oauthResponse = function(options, callback){
+  var state, codeVerifier, cb;
+
+  // Handle different argument patterns for backward compatibility
+  if(typeof options === 'function'){
+    // oauthResponse(callback) - no state or verifier
+    cb = options;
     state = undefined;
+    codeVerifier = undefined;
+  } else if(typeof options === 'string'){
+    // oauthResponse(state, callback) - legacy with state string
+    state = options;
+    codeVerifier = undefined;
+    cb = callback;
+  } else if(typeof options === 'object' && options !== null){
+    // oauthResponse({ state, codeVerifier }, callback) - modern with options
+    state = options.state;
+    codeVerifier = options.codeVerifier;
+    cb = callback;
+  } else {
+    // oauthResponse(null/undefined, callback)
+    state = undefined;
+    codeVerifier = undefined;
+    cb = callback;
   }
-  
-  // Compare state params
+
+  // Validate state parameter if provided (CSRF protection)
   var stateQuery = utils.getParameterByName('state');
   if(state && state !== stateQuery){
     return false;
   }
-  
-  // Extract the code from the query params
+
+  // Extract the authorization code from the URL query parameters
   var code = utils.getParameterByName('code');
   if(code){
-  
-    // Exchange the code for an access token
-    this.oauthToken(code, callback);
+    // Exchange the code (+ verifier) for an access token
+    if(codeVerifier){
+      this.oauthToken(code, codeVerifier, cb);
+    } else {
+      this.oauthToken(code, cb);
+    }
     return true;
   }
-  
-  // Didn't have a code to exchange
+
+  // No code found in query parameters
   return false;
 };
 
 /**
- * Exchange an OAuth code for an access token. You don't need to call this in
- * the browser if you use oauthResponse() to automatically get the URL from the
- * query parameters.
- * 
- * @param {String} code
- * @param {Function} callback that receives the access token response
+ * Exchange an OAuth authorization code for an access token
+ *
+ * With PKCE (OAuth 2.1), you must provide the code_verifier that you generated
+ * earlier. This proves you're the same client that initiated the authorization.
+ *
+ * @param {String} code - The authorization code from the OAuth redirect
+ * @param {String|Function} codeVerifier - PKCE code verifier, or callback (legacy)
+ * @param {Function} callback - Callback function(error, response)
+ *
+ * @example
+ * // Modern usage with PKCE (RECOMMENDED)
+ * var verifier = sessionStorage.getItem('pkce_verifier');
+ * client.oauthToken(code, verifier, function(error, response) {
+ *   if (!error) {
+ *     console.log('Access token:', response.data.access_token);
+ *   }
+ * });
+ *
+ * @example
+ * // Legacy usage without PKCE (deprecated, for backward compatibility)
+ * client.oauthToken(code, function(error, response) {
+ *   // ...
+ * });
  */
-FamilySearch.prototype.oauthToken = function(code, callback){
+FamilySearch.prototype.oauthToken = function(code, codeVerifier, callback){
   var client = this;
+
+  // Backward compatibility: if codeVerifier is a function, it's actually the callback
+  var verifier, cb;
+  if(typeof codeVerifier === 'function'){
+    // Old signature: oauthToken(code, callback)
+    cb = codeVerifier;
+    verifier = null;
+  } else {
+    // New signature: oauthToken(code, codeVerifier, callback)
+    cb = callback;
+    verifier = codeVerifier;
+  }
+
+  // Build the request body
+  var body = {
+    grant_type: 'authorization_code',
+    code: code,
+    client_id: client.appKey
+  };
+
+  // Add code_verifier for PKCE if provided
+  if(verifier){
+    body.code_verifier = verifier;
+  }
+
   client.post(client.identHost() + '/cis-web/oauth2/v3/token?redirect_uri=' + this.redirectUri, {
-    body: {
-      grant_type: 'authorization_code',
-      code: code,
-      client_id: client.appKey
-    },
+    body: body,
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded'
     }
   }, function(error, response){
     // Save the OpenId Connect JWT
-    client.jwt = response.data.id_token;
-    client.processOauthResponse(error, response, callback);
+    if(response && response.data){
+      client.jwt = response.data.id_token;
+    }
+    client.processOauthResponse(error, response, cb);
   });
 };
 
@@ -204,30 +335,6 @@ FamilySearch.prototype.oauthUnauthenticatedToken = function(ipAddress, callback)
       grant_type: 'unauthenticated_session',
       ip_address: ipAddress,
       client_id: client.appKey
-    },
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded'
-    }
-  }, function(error, response){
-    client.processOauthResponse(error, response, callback);
-  });
-};
-
-/**
- * OAuth2 password authentication
- * 
- * @param {String} username
- * @param {String} password
- * @param {Function} callback
- */
-FamilySearch.prototype.oauthPassword = function(username, password, callback){
-  var client = this;
-  this.post(this.identHost() + '/cis-web/oauth2/v3/token', {
-    body: {
-      grant_type: 'password',
-      client_id: this.appKey,
-      username: username,
-      password: password
     },
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded'
@@ -279,7 +386,7 @@ FamilySearch.prototype.getAccessToken = function(){
 
 /**
  * Delete the access token
- * 
+ *
  * @return {FamilySearch} client
  */
 FamilySearch.prototype.deleteAccessToken = function(){
@@ -288,6 +395,44 @@ FamilySearch.prototype.deleteAccessToken = function(){
     cookies.remove(this.tokenCookie, { path: this.tokenCookiePath });
   }
   return this;
+};
+
+/**
+ * Generate a cryptographically random PKCE code verifier
+ *
+ * PKCE (Proof Key for Code Exchange) is required for OAuth 2.1. The code verifier
+ * is a secret random string that you generate and store securely on the client.
+ * You'll need this later to exchange the authorization code for an access token.
+ *
+ * Usage:
+ *   var verifier = client.generateCodeVerifier();
+ *   // Store verifier in sessionStorage (NEVER localStorage - security risk)
+ *   sessionStorage.setItem('pkce_verifier', verifier);
+ *
+ * @return {String} A cryptographically random 43-character code verifier
+ */
+FamilySearch.prototype.generateCodeVerifier = function(){
+  return pkce.generateCodeVerifier();
+};
+
+/**
+ * Generate a PKCE code challenge from a code verifier
+ *
+ * The code challenge is a SHA256 hash of the code verifier. You send this
+ * (not the verifier itself!) to FamilySearch in the authorization URL.
+ * Later, when you exchange the authorization code for a token, you send
+ * the original verifier, and FamilySearch verifies it matches the challenge.
+ *
+ * Usage:
+ *   var verifier = client.generateCodeVerifier();
+ *   var challenge = client.generateCodeChallenge(verifier);
+ *   // Use challenge in oauthRedirectURL()
+ *
+ * @param {String} verifier The code verifier string
+ * @return {String} The base64url-encoded SHA256 hash of the verifier
+ */
+FamilySearch.prototype.generateCodeChallenge = function(verifier){
+  return pkce.generateCodeChallenge(verifier);
 };
 
 /**
@@ -486,8 +631,11 @@ FamilySearch.prototype._runResponseMiddleware = function(request, response, call
 
 /**
  * Get the ident host name for OAuth
- * 
- * @return string
+ *
+ * Returns the appropriate OAuth/Identity server URL based on the environment.
+ * Note: Integration environment now uses identint.familysearch.org (updated 2026).
+ *
+ * @return {String} The OAuth server base URL
  */
 FamilySearch.prototype.identHost = function(){
   switch (this.environment) {
@@ -496,7 +644,8 @@ FamilySearch.prototype.identHost = function(){
     case 'beta':
       return 'https://identbeta.familysearch.org';
     default:
-      return 'https://integration.familysearch.org';
+      // Integration/sandbox environment
+      return 'https://identint.familysearch.org';
   }
 };
 

@@ -22,11 +22,13 @@ describe('node', function(){
     });
     
     it('oauthRedirectURL()', function(){
-      assert.equal(client.oauthRedirectURL(), 'https://integration.familysearch.org/cis-web/oauth2/v3/authorization?response_type=code&scope=openid profile email qualifies_for_affiliate_account country&client_id=' + sandbox.appkey + '&redirect_uri=http://foobaz.com/oauth-redirect');
+      // Updated to use identint.familysearch.org (modern OAuth URL) and URL-encoded parameters
+      assert.equal(client.oauthRedirectURL(), 'https://identint.familysearch.org/cis-web/oauth2/v3/authorization?response_type=code&scope=openid%20profile%20email%20qualifies_for_affiliate_account%20country&client_id=' + sandbox.appkey + '&redirect_uri=http%3A%2F%2Ffoobaz.com%2Foauth-redirect');
     });
 
     it('oauthRedirectURL(state)', function(){
-      assert.equal(client.oauthRedirectURL('state123'), 'https://integration.familysearch.org/cis-web/oauth2/v3/authorization?response_type=code&scope=openid profile email qualifies_for_affiliate_account country&client_id=' + sandbox.appkey + '&redirect_uri=http://foobaz.com/oauth-redirect&state=state123');
+      // Updated to use identint.familysearch.org (modern OAuth URL) and URL-encoded parameters
+      assert.equal(client.oauthRedirectURL('state123'), 'https://identint.familysearch.org/cis-web/oauth2/v3/authorization?response_type=code&scope=openid%20profile%20email%20qualifies_for_affiliate_account%20country&client_id=' + sandbox.appkey + '&redirect_uri=http%3A%2F%2Ffoobaz.com%2Foauth-redirect&state=state123');
     });
     
     it('oauthUnauthenticatedToken()', function(done){
@@ -42,21 +44,7 @@ describe('node', function(){
         });
       });
     });
-  
-    it('password', function(done){
-      nockBack('oauthPassword.json', function(nockDone){
-        client.oauthPassword(sandbox.username, sandbox.password, function(error, response){
-          nockDone();
-          check(done, function(){
-            assert.isDefined(response);
-            assert.equal(response.statusCode, 200);
-            assert.isDefined(response.data);
-            assert.isDefined(response.data.token);
-          });
-        });
-      });
-    });
-  
+
     it('get', function(done){
       nockBack('getPerson.json', function(nockDone){
         createPerson(client, function(personId){
@@ -237,8 +225,8 @@ describe('node', function(){
     });
     
     it('oauth response', function(done){
-      nockBack('oauthPassword.json', function(nockDone){
-        client.oauthPassword(sandbox.username, sandbox.password, function(error, response){
+      nockBack('unauthenticated.json', function(nockDone){
+        client.oauthUnauthenticatedToken('192.168.1.1', function(error, response){
           nockDone();
           check(done, function(){
             assert.isDefined(response);
@@ -402,13 +390,11 @@ function authenticatedClient(options, callback){
     callback = options;
     options = null;
   }
-  nockBack('oauthPassword.json', function(nockDone){
-    var client = apiClient(options);
-    client.oauthPassword(sandbox.username, sandbox.password, function(){
-      nockDone();
-      callback(client);
-    });
-  });
+  // For tests, we just set a mock access token directly
+  // No need to actually authenticate since responses are mocked
+  var client = apiClient(options);
+  client.setAccessToken('mock-access-token-for-testing');
+  callback(client);
 }
 
 /**
