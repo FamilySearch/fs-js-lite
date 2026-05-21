@@ -417,3 +417,6 @@ function gedcomxMiddleware(client, request, response, next){
   }
   next();
 }
+
+// Load PKCE tests
+require('./pkce');

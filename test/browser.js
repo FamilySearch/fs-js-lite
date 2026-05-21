@@ -102,7 +102,91 @@ describe('browser', function(){
   // These browser-specific tests focus on cookie handling and browser environment
   // API call tests have been removed since password grant no longer works
   // and re-recording fixtures would require valid OAuth credentials
-  
+
+  describe('PKCE in browser environment', function(){
+
+    it('generateCodeVerifier() uses browser crypto', function(done){
+      createClient({
+        url: 'http://test.testing'
+      }, null, function(error, client){
+        if(error){ done(error); }
+        check(done, function(){
+          var verifier = client.generateCodeVerifier();
+          assert.isString(verifier);
+          assert.equal(verifier.length, 43);
+          assert.match(verifier, /^[A-Za-z0-9\-_]+$/);
+        });
+      });
+    });
+
+    it('generateCodeVerifier() generates random values in browser', function(done){
+      createClient({
+        url: 'http://test.testing'
+      }, null, function(error, client){
+        if(error){ done(error); }
+        check(done, function(){
+          var verifier1 = client.generateCodeVerifier();
+          var verifier2 = client.generateCodeVerifier();
+          var verifier3 = client.generateCodeVerifier();
+          assert.notEqual(verifier1, verifier2);
+          assert.notEqual(verifier2, verifier3);
+          assert.notEqual(verifier1, verifier3);
+        });
+      });
+    });
+
+    it('generateCodeChallenge() throws error in browser (sync not supported)', function(done){
+      createClient({
+        url: 'http://test.testing'
+      }, null, function(error, client){
+        if(error){ done(error); }
+        check(done, function(){
+          var verifier = client.generateCodeVerifier();
+          try {
+            client.generateCodeChallenge(verifier);
+            assert.fail('Should have thrown error');
+          } catch (e) {
+            // JSDOM may not provide window.crypto.subtle, so accept either error
+            var validErrors = [
+              'Browser environment detected',
+              'No SHA256 implementation available'
+            ];
+            var hasValidError = validErrors.some(function(msg){
+              return e.message.includes(msg);
+            });
+            assert.isTrue(hasValidError, 'Expected browser crypto error, got: ' + e.message);
+          }
+        });
+      });
+    });
+
+    it('can use PKCE flow in browser with OAuth URL', function(done){
+      createClient({
+        url: 'http://test.testing'
+      }, {
+        redirectUri: 'http://test.testing/callback'
+      }, function(error, client){
+        if(error){ done(error); }
+        check(done, function(){
+          // Simulate real browser PKCE flow
+          var verifier = client.generateCodeVerifier();
+
+          // In real browser, you'd use generateCodeChallengeAsync
+          // For this test, we'll just verify the verifier works
+          assert.isString(verifier);
+          assert.equal(verifier.length, 43);
+
+          // Verify we can build OAuth URL (challenge would be async in real use)
+          var url = client.oauthRedirectURL({
+            state: 'test-state'
+          });
+          assert.include(url, 'state=test-state');
+        });
+      });
+    });
+
+  });
+
 });
 
 /**
