@@ -32,3 +32,12 @@ jobs:
 
       - name: Build distribution files
         run: npm run build
+
+      - name: Run tests with coverage
+        run: npm run coverage
+
+      - name: Upload coverage to Coveralls
+        if: matrix.node-version == '20.x'
+        uses: coverallsapp/github-action@v2
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
