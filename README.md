@@ -28,6 +28,9 @@ which is built using the SDK and a [Node.js sample app](https://github.com/Famil
       - [Default Middlware](#default-middlware)
     - [Objects Instead of Plain JSON](#objects-instead-of-plain-json)
   - [Migrating from v1 to v2](#migrating-from-v1-to-v2)
+  - [Testing](#testing)
+    - [Running Tests](#running-tests)
+    - [Re-recording Test Fixtures](#re-recording-test-fixtures)
 
 <a name="install"></a>
 
@@ -462,3 +465,83 @@ the `headers` object.
 v2 the response middleware is only called when a response is actually recieved.
 5. Redirects are not automatically followed. Use the `followRedirect: true`
 request option to have the SDK automatically follow a redirect response.
+
+<a name="testing"></a>
+
+## Testing
+
+The SDK includes a comprehensive test suite covering both Node.js and browser environments.
+
+<a name="running-tests"></a>
+
+### Running Tests
+
+```bash
+# Run all tests
+npm test
+
+# Run tests with coverage report
+npm run coverage
+
+# Run only Node.js tests
+npm run test:node
+
+# Run only browser environment tests
+npm run test:browser
+```
+
+The test suite uses:
+- **Mocha** - Test framework
+- **Chai** - Assertion library
+- **Nock** - HTTP mocking for Node.js tests
+- **jsdom** - Browser environment simulation
+
+Tests are located in the `test/` directory:
+- `test/node.js` - Node.js environment tests
+- `test/browser.js` - Browser environment tests
+- `test/pkce.js` - PKCE (OAuth 2.0 security extension) tests
+- `test/responses/` - Pre-recorded API response fixtures
+
+<a name="re-recording-test-fixtures"></a>
+
+### Re-recording Test Fixtures
+
+Test fixtures in `test/responses/` are pre-recorded API responses. To re-record them (for example, after API changes):
+
+**Prerequisites:**
+
+1. Create `test/sandbox.js` from the template:
+   ```bash
+   cp test/sandbox.example.js test/sandbox.js
+   ```
+
+2. Get a valid FamilySearch access token:
+   - Go to https://integration.familysearch.org
+   - Sign in with your test account
+   - Open DevTools > Application > Cookies
+   - Copy the `fssessionid` cookie value
+
+3. Add the token to `test/sandbox.js`:
+   ```js
+   module.exports = {
+     appkey: 'YOUR_APP_KEY',
+     accessToken: 'YOUR_ACCESS_TOKEN_HERE'
+   };
+   ```
+
+   Or use an environment variable:
+   ```bash
+   export FS_ACCESS_TOKEN='your-token-here'
+   ```
+
+**Re-record fixtures:**
+
+```bash
+# Re-record all fixtures (requires valid access token)
+npm run test:record
+
+# Re-record in "wild" mode (allows unmocked requests)
+npm run test:wild
+```
+
+**Note:** Access tokens expire after ~1 hour, so get a fresh token each time you re-record fixtures.

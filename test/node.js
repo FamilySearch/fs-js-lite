@@ -390,11 +390,29 @@ function authenticatedClient(options, callback){
     callback = options;
     options = null;
   }
-  // For tests, we just set a mock access token directly
-  // No need to actually authenticate since responses are mocked
+
   var client = apiClient(options);
-  client.setAccessToken('mock-access-token-for-testing');
-  callback(client);
+
+  // When recording fixtures, we need real authentication
+  // Set accessToken in test/sandbox.js or use FS_ACCESS_TOKEN environment variable
+  // Get a token by:
+  //   1. Go to https://integration.familysearch.org
+  //   2. Sign in with test credentials
+  //   3. Open browser dev tools > Application > Cookies
+  //   4. Copy the value of 'fssessionid' cookie
+  //   5. Either: set in test/sandbox.js OR export FS_ACCESS_TOKEN='<your-token>'
+  if(process.env.NOCK_BACK_MODE === 'record' || process.env.NOCK_BACK_MODE === 'wild'){
+    var accessToken = sandbox.accessToken || process.env.FS_ACCESS_TOKEN;
+    if(!accessToken){
+      throw new Error('Recording fixtures requires accessToken. Set in test/sandbox.js or FS_ACCESS_TOKEN environment variable.');
+    }
+    client.setAccessToken(accessToken);
+    callback(client);
+  } else {
+    // For playback, use a mock access token (responses are mocked anyway)
+    client.setAccessToken('mock-access-token-for-testing');
+    callback(client);
+  }
 }
 
 /**
