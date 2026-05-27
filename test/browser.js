@@ -3,9 +3,17 @@ var assert = require('chai').assert,
     fs = require('fs'),
     path = require('path'),
     nockBack = require('./nockback'),
-    sandbox = require('./sandbox'),
     createPerson = require('./createperson'),
     check = require('./check');
+
+// Load sandbox config with fallback to example file
+// This allows tests to run out-of-the-box in CI without requiring sandbox.js
+var sandbox;
+try {
+  sandbox = require('./sandbox');
+} catch (e) {
+  sandbox = require('./sandbox.example');
+}
 
 describe('browser', function(){
   
