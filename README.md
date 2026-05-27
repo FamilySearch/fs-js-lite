@@ -490,6 +490,8 @@ npm run test:node
 npm run test:browser
 ```
 
+**Note:** Tests work out-of-the-box with no setup required. They use pre-recorded API responses (fixtures) and don't need credentials. The test suite automatically uses sensible defaults from `test/sandbox.example.js`. You only need to configure credentials if you want to re-record fixtures (see below).
+
 The test suite uses:
 - **Mocha** - Test framework
 - **Chai** - Assertion library

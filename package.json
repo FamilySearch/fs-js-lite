@@ -13,11 +13,12 @@
     "test:record": "NOCK_BACK_MODE=record npm test",
     "test:record:browser": "NOCK_BACK_MODE=record npm run test:browser",
     "test:record:node": "NOCK_BACK_MODE=record npm run test:node",
+    "test:wild": "NOCK_BACK_MODE=wild npm test",
     "prepare": "npm run build",
     "build": "mkdir -p dist && npm run build:full && npm run build:min",
     "build:full": "webpack --mode development",
     "build:min": "webpack --mode production",
-    "coverage": "nyc mocha test/node.js",
+    "coverage": "nyc --reporter=text --reporter=lcov mocha test/node.js",
     "coveralls": "nyc --reporter=lcov mocha test/node.js && cat ./coverage/lcov.info | coveralls && rm -rf ./coverage"
   },
   "repository": {
