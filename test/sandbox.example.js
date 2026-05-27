@@ -9,7 +9,8 @@
 
 module.exports = {
   // Get your app key from: https://www.familysearch.org/developers/
-  appkey: process.env.FS_APPKEY || 'YOUR_APP_KEY_HERE',
+  // This default matches the app key used in pre-recorded test fixtures
+  appkey: process.env.FS_APPKEY || 'a02j000000JBxOxAAL',
 
   // Sandbox test account credentials (not currently used)
   username: process.env.FS_USERNAME || 'YOUR_USERNAME_HERE',

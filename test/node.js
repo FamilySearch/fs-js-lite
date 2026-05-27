@@ -2,9 +2,17 @@ var FamilySearch = require('../src/FamilySearch'),
     assert = require('chai').assert,
     nockBack = require('./nockback'),
     GedcomX = require('gedcomx-js'),
-    sandbox = require('./sandbox'),
     createPerson = require('./createperson'),
     check = require('./check');
+
+// Load sandbox config with fallback to example file
+// This allows tests to run out-of-the-box in CI without requiring sandbox.js
+var sandbox;
+try {
+  sandbox = require('./sandbox');
+} catch (e) {
+  sandbox = require('./sandbox.example');
+}
 
 GedcomX.addExtensions(require('gedcomx-fs-js'));
 
