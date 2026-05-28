@@ -119,45 +119,93 @@ describe('browser', function(){
   describe('Cookie security flags', function(){
 
     it('sets secure and sameSite flags by default', function(done){
+      var cookieJar = new CookieJar();
       createClient({
         url: 'https://test.testing',
-        cookieJar: new CookieJar()
-      }, null, function(error, client){
+        cookieJar: cookieJar
+      }, {
+        saveAccessToken: true
+      }, function(error, client){
         if(error){ done(error); }
         check(done, function(){
           // Verify defaults are secure
           assert.equal(client.secureCookies, true);
           assert.equal(client.sameSite, 'strict');
           assert.equal(client.tokenCookiePath, '/');
+
+          // Set a token and verify actual cookie attributes
+          client.setAccessToken('test-token-secure');
+          var cookies = cookieJar.getCookiesSync('https://test.testing/');
+          var authCookie = cookies.find(function(c){ return c.key === 'FS_AUTH_TOKEN'; });
+
+          assert.ok(authCookie, 'Cookie should be set');
+          assert.equal(authCookie.value, 'test-token-secure');
+          assert.equal(authCookie.secure, true, 'Cookie should have secure flag');
+          assert.equal(authCookie.sameSite, 'strict', 'Cookie should have sameSite=strict');
+          assert.equal(authCookie.path, '/', 'Cookie should have path=/');
         });
       });
     });
 
     it('allows disabling secure cookies for local development', function(done){
+      var cookieJar = new CookieJar();
       createClient({
         url: 'http://localhost:3000',
-        cookieJar: new CookieJar()
+        cookieJar: cookieJar
       }, {
-        secureCookies: false
+        secureCookies: false,
+        saveAccessToken: true
       }, function(error, client){
         if(error){ done(error); }
         check(done, function(){
           assert.equal(client.secureCookies, false);
+
+          // Set a token and verify cookie is NOT secure
+          client.setAccessToken('test-token-insecure');
+          var cookies = cookieJar.getCookiesSync('http://localhost:3000/');
+          var authCookie = cookies.find(function(c){ return c.key === 'FS_AUTH_TOKEN'; });
+
+          assert.ok(authCookie, 'Cookie should be set');
+          assert.equal(authCookie.secure, false, 'Cookie should NOT have secure flag');
         });
       });
     });
 
     it('allows configuring sameSite attribute', function(done){
+      var cookieJar = new CookieJar();
       createClient({
         url: 'https://test.testing',
-        cookieJar: new CookieJar()
+        cookieJar: cookieJar
       }, {
-        sameSite: 'lax'
+        sameSite: 'lax',
+        saveAccessToken: true
       }, function(error, client){
         if(error){ done(error); }
         check(done, function(){
           assert.equal(client.sameSite, 'lax');
+
+          // Set a token and verify sameSite attribute
+          client.setAccessToken('test-token-lax');
+          var cookies = cookieJar.getCookiesSync('https://test.testing/');
+          var authCookie = cookies.find(function(c){ return c.key === 'FS_AUTH_TOKEN'; });
+
+          assert.ok(authCookie, 'Cookie should be set');
+          assert.equal(authCookie.sameSite, 'lax', 'Cookie should have sameSite=lax');
         });
+      });
+    });
+
+    it('validates sameSite values', function(done){
+      createClient({
+        url: 'https://test.testing',
+        cookieJar: new CookieJar()
+      }, {
+        sameSite: 'invalid-value'
+      }, function(error, client){
+        // Should fail validation
+        assert.ok(error, 'Should throw error for invalid sameSite value');
+        assert.include(error.message.toLowerCase(), 'samesite');
+        done();
       });
     });
 

@@ -60,7 +60,7 @@ var client = new FamilySearch({
 1. **Always use HTTPS in production** - Never set `secureCookies: false` in production
 2. **Use `strict` sameSite when possible** - Provides strongest CSRF protection
 3. **Keep tokens short-lived** - Tokens automatically expire after 24 hours maximum
-4. **Use PKCE for OAuth** - Required in v3.0.0, provides protection against authorization code interception
+4. **Use PKCE for OAuth** - Strongly recommended in v3.0.0+, provides protection against authorization code interception
 5. **Don't store tokens in localStorage** - Use cookies with httpOnly when possible (requires server-side implementation)
 
 ### What's NOT Protected
@@ -88,7 +88,7 @@ Please include:
 ### Security Updates
 
 - **v3.0.0** - Added secure cookie defaults (secure, sameSite, path)
-- **v3.0.0** - Made PKCE mandatory for OAuth flows
+- **v3.0.0** - PKCE strongly recommended for OAuth flows (optional for backward compatibility)
 - **v2.7.0** - Added PKCE support for OAuth 2.1 compliance
 
 ### Additional Resources

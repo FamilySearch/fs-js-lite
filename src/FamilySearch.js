@@ -82,6 +82,12 @@ FamilySearch.prototype.config = function(options){
   this.secureCookies = (options.secureCookies !== undefined) ? options.secureCookies : this.secureCookies;
   this.sameSite = options.sameSite || this.sameSite;
   this.maxThrottledRetries = options.maxThrottledRetries || this.maxThrottledRetries;
+
+  // Validate sameSite value
+  var validSameSiteValues = ['strict', 'lax', 'none'];
+  if (validSameSiteValues.indexOf(this.sameSite) === -1) {
+    throw new Error('Invalid sameSite value: ' + this.sameSite + '. Must be one of: ' + validSameSiteValues.join(', '));
+  }
   this.saveAccessToken = (options.saveAccessToken === true) || this.saveAccessToken;
   
   if(options.accessToken){

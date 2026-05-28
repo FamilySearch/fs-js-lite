@@ -252,7 +252,7 @@ var client = new FamilySearch({
   saveAccessToken: true,
   tokenCookiePath: window.location.pathname,  // v2.x default
   secureCookies: false,                       // v2.x had no secure flag
-  sameSite: 'none'                            // v2.x had no sameSite
+  sameSite: 'lax'                             // v2.x had no sameSite (note: 'none' requires secure: true)
 });
 ```
 
