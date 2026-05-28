@@ -601,7 +601,7 @@ Test fixtures in `test/responses/` are pre-recorded API responses. To re-record 
    ```
 
 2. Get a valid FamilySearch access token:
-   - Go to https://integration.familysearch.org
+   - Go to https://beta.familysearch.org
    - Sign in with your test account
    - Open DevTools > Application > Cookies
    - Copy the `fssessionid` cookie value

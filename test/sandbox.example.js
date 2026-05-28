@@ -18,7 +18,7 @@ module.exports = {
 
   // Access token for re-recording fixtures (OPTIONAL - only needed for npm run test:record)
   // Get token by:
-  //   1. Go to https://integration.familysearch.org
+  //   1. Go to https://beta.familysearch.org
   //   2. Sign in with test account
   //   3. DevTools > Application > Cookies > Copy 'fssessionid' value
   // Note: Tokens expire after ~1 hour, so get a fresh one each time you record

@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>PKCE Flow Test - FamilySearch SDK</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+      max-width: 900px;
+      margin: 50px auto;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    h1 { color: #333; }
+    h2 { color: #666; margin-top: 30px; }
+    .status {
+      padding: 15px;
+      margin: 15px 0;
+      border-radius: 5px;
+      font-family: monospace;
+    }
+    .success { background: #d4edda; border: 1px solid #c3e6cb; color: #155724; }
+    .error { background: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; }
+    .info { background: #d1ecf1; border: 1px solid #bee5eb; color: #0c5460; }
+    .warning { background: #fff3cd; border: 1px solid #ffeaa7; color: #856404; }
+    button {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 5px;
+      margin: 10px 5px;
+    }
+    button:hover { background: #0056b3; }
+    button:disabled { background: #ccc; cursor: not-allowed; }
+    code {
+      background: #f4f4f4;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-family: 'Monaco', 'Courier New', monospace;
+    }
+    .code-block {
+      background: #f4f4f4;
+      padding: 15px;
+      border-radius: 5px;
+      overflow-x: auto;
+      margin: 10px 0;
+      font-family: 'Monaco', 'Courier New', monospace;
+      font-size: 12px;
+    }
+    #log {
+      max-height: 300px;
+      overflow-y: auto;
+      background: #f9f9f9;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-family: monospace;
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+  <h1>🔐 PKCE Flow Test</h1>
+  <p>This page tests whether FamilySearch OAuth Beta endpoint supports PKCE (Proof Key for Code Exchange).</p>
+
+  <div class="info status">
+    <label><strong>Environment:</strong> <select id="environment" onchange="updateEnvironment()">
+      <option value="production">Production</option>
+      <option value="beta" selected>Beta</option>
+      <option value="integration">Integration</option>
+    </select></label><br>
+    <strong>Purpose:</strong> Verify PKCE works before enforcing in v3.0.0
+  </div>
+
+  <h2>Step 1: Configure</h2>
+  <p>Enter your app key and redirect URI:</p>
+  <div>
+    <label>App Key: <input type="text" id="appKey" value="a02j000000JBxOxAAL" size="30"></label><br><br>
+    <label>Redirect URI: <input type="text" id="redirectUri" value="" size="50"></label>
+    <p style="color: #666; font-size: 14px;">
+      💡 Redirect URI should be this page's URL or a registered callback URL for your app key
+    </p>
+  </div>
+
+  <h2>Step 2: Start OAuth with PKCE</h2>
+  <button onclick="startPKCEFlow()">Start PKCE OAuth Flow</button>
+
+  <div id="pkceInfo" style="display: none;" class="code-block">
+    <strong>Generated PKCE Parameters:</strong><br>
+    Verifier: <span id="verifier"></span><br>
+    Challenge: <span id="challenge"></span><br>
+    State: <span id="state"></span>
+  </div>
+
+  <h2>Step 3: Handle OAuth Callback</h2>
+  <button onclick="handleCallback()">Handle OAuth Callback (PKCE)</button>
+  <button onclick="clearStorage()">Clear Session</button>
+
+  <h2>Results</h2>
+  <div id="results"></div>
+
+  <h2>Debug Log</h2>
+  <div id="log"></div>
+
+  <!-- Load the SDK from dist -->
+  <script src="dist/FamilySearch.min.js"></script>
+
+  <script>
+    var client;
+
+    // Initialize on page load
+    window.onload = function() {
+      log('Page loaded');
+
+      // Set default redirect URI to current page (no trailing slash)
+      var origin = window.location.origin;
+      var pathname = window.location.pathname;
+      // Remove trailing slash if it exists
+      if (pathname.endsWith('/')) {
+        pathname = pathname.slice(0, -1);
+      }
+      document.getElementById('redirectUri').value = origin + pathname;
+
+      // Check if we're returning from OAuth
+      var urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.has('code')) {
+        log('⚠️ OAuth callback detected in URL - click "Handle OAuth Callback" to complete flow');
+        showResult('Click "Handle OAuth Callback (PKCE)" button to exchange code for token', 'warning');
+      }
+    };
+
+    function log(message) {
+      var logDiv = document.getElementById('log');
+      var time = new Date().toLocaleTimeString();
+      logDiv.innerHTML += '[' + time + '] ' + message + '<br>';
+      logDiv.scrollTop = logDiv.scrollHeight;
+    }
+
+    function showResult(message, type) {
+      var resultsDiv = document.getElementById('results');
+      resultsDiv.innerHTML = '<div class="status ' + type + '">' + message + '</div>';
+    }
+
+    function updateEnvironment() {
+      log('Environment changed to: ' + document.getElementById('environment').value);
+    }
+
+    function startPKCEFlow() {
+      try {
+        log('Starting PKCE flow...');
+
+        var appKey = document.getElementById('appKey').value;
+        var redirectUri = document.getElementById('redirectUri').value;
+        var environment = document.getElementById('environment').value;
+
+        if (!appKey || !redirectUri) {
+          showResult('❌ Please enter App Key and Redirect URI', 'error');
+          return;
+        }
+
+        // Create client
+        client = new FamilySearch({
+          appKey: appKey,
+          environment: environment,
+          redirectUri: redirectUri
+        });
+        log('✓ Client created');
+
+        // Generate PKCE parameters
+        var verifier = client.generateCodeVerifier();
+        log('✓ Generated verifier: ' + verifier);
+
+        // For browser, we need async challenge generation
+        // But the SDK might throw an error for sync version
+        var challenge;
+        try {
+          challenge = client.generateCodeChallenge(verifier);
+          log('✓ Generated challenge (sync): ' + challenge);
+        } catch (e) {
+          log('⚠️ Sync challenge failed (expected in browser): ' + e.message);
+          // Manually compute challenge using Web Crypto API
+          var encoder = new TextEncoder();
+          var data = encoder.encode(verifier);
+
+          window.crypto.subtle.digest('SHA-256', data).then(function(hashBuffer) {
+            var hashArray = new Uint8Array(hashBuffer);
+            challenge = base64UrlEncode(hashArray);
+            log('✓ Generated challenge (async): ' + challenge);
+
+            continueFlow(verifier, challenge);
+          });
+          return; // Wait for async
+        }
+
+        continueFlow(verifier, challenge);
+
+      } catch (error) {
+        log('❌ Error: ' + error.message);
+        showResult('❌ Error: ' + error.message, 'error');
+      }
+    }
+
+    function continueFlow(verifier, challenge) {
+      // Generate state
+      var state = 'pkce-test-' + Date.now();
+
+      // Store verifier and state for later
+      sessionStorage.setItem('pkce_verifier', verifier);
+      sessionStorage.setItem('oauth_state', state);
+      log('✓ Stored verifier and state in sessionStorage');
+
+      // Display PKCE info
+      document.getElementById('verifier').textContent = verifier;
+      document.getElementById('challenge').textContent = challenge;
+      document.getElementById('state').textContent = state;
+      document.getElementById('pkceInfo').style.display = 'block';
+
+      // Build OAuth URL with PKCE
+      var oauthUrl = client.oauthRedirectURL({
+        state: state,
+        codeChallenge: challenge
+      });
+
+      log('✓ Built OAuth URL with PKCE');
+      log('URL: ' + oauthUrl);
+
+      // Verify PKCE parameters in URL
+      if (oauthUrl.includes('code_challenge=') && oauthUrl.includes('code_challenge_method=S256')) {
+        showResult('✅ PKCE parameters added to OAuth URL! Redirecting...', 'success');
+        log('✓ Verified PKCE parameters in URL');
+
+        // Redirect after 2 seconds
+        setTimeout(function() {
+          log('🔄 Redirecting to FamilySearch OAuth...');
+          window.location.href = oauthUrl;
+        }, 2000);
+      } else {
+        showResult('❌ PKCE parameters missing from URL!', 'error');
+        log('❌ PKCE parameters not found in URL');
+      }
+    }
+
+    function handleCallback() {
+      try {
+        log('Handling OAuth callback...');
+
+        // Get URL parameters
+        var urlParams = new URLSearchParams(window.location.search);
+        var code = urlParams.get('code');
+        var state = urlParams.get('state');
+
+        if (!code) {
+          showResult('❌ No authorization code found in URL', 'error');
+          log('❌ No code parameter in URL');
+          return;
+        }
+
+        log('✓ Found authorization code: ' + code.substring(0, 20) + '...');
+
+        // Retrieve stored PKCE verifier
+        var verifier = sessionStorage.getItem('pkce_verifier');
+        var storedState = sessionStorage.getItem('oauth_state');
+
+        if (!verifier) {
+          showResult('❌ No PKCE verifier found in session. Did you start the flow first?', 'error');
+          log('❌ No verifier in sessionStorage');
+          return;
+        }
+
+        log('✓ Retrieved verifier from session: ' + verifier.substring(0, 20) + '...');
+
+        // Validate state
+        if (state !== storedState) {
+          showResult('❌ State mismatch! Possible CSRF attack.', 'error');
+          log('❌ State validation failed');
+          return;
+        }
+
+        log('✓ State validated');
+
+        // Recreate client
+        var appKey = document.getElementById('appKey').value;
+        var redirectUri = document.getElementById('redirectUri').value;
+        var environment = document.getElementById('environment').value;
+
+        client = new FamilySearch({
+          appKey: appKey,
+          environment: environment,
+          redirectUri: redirectUri
+        });
+
+        // Exchange code for token with PKCE verifier
+        log('🔄 Exchanging code for token with PKCE verifier...');
+        showResult('⏳ Exchanging authorization code for access token with PKCE...', 'info');
+
+        client.oauthToken(code, verifier, function(error, response) {
+          if (error) {
+            log('❌ Token exchange failed: ' + error.message);
+            showResult('❌ Token Exchange Failed: ' + error.message, 'error');
+            return;
+          }
+
+          if (response && response.statusCode === 200 && response.data && response.data.access_token) {
+            log('✅ Token exchange successful!');
+            log('Access token: ' + response.data.access_token.substring(0, 30) + '...');
+
+            showResult(
+              '<strong>🎉 PKCE FLOW SUCCESSFUL!</strong><br><br>' +
+              '✅ FamilySearch OAuth Integration supports PKCE<br>' +
+              '✅ Code exchange with verifier worked<br>' +
+              '✅ Access token received: ' + response.data.access_token.substring(0, 30) + '...<br><br>' +
+              '<strong>Conclusion: Safe to enforce PKCE in v3.0.0!</strong>',
+              'success'
+            );
+
+            // Clean up
+            sessionStorage.removeItem('pkce_verifier');
+            sessionStorage.removeItem('oauth_state');
+
+            // Clean URL
+            window.history.replaceState({}, document.title, window.location.pathname);
+          } else {
+            log('❌ Unexpected response: ' + response.statusCode);
+            log('Response body: ' + response.body);
+            showResult(
+              '❌ Token Exchange Failed<br>' +
+              'Status: ' + response.statusCode + '<br>' +
+              'Body: ' + response.body,
+              'error'
+            );
+          }
+        });
+
+      } catch (error) {
+        log('❌ Error: ' + error.message);
+        showResult('❌ Error: ' + error.message, 'error');
+      }
+    }
+
+    function clearStorage() {
+      sessionStorage.clear();
+      log('✓ Session storage cleared');
+      showResult('Session cleared', 'info');
+
+      // Clean URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+      location.reload();
+    }
+
+    // Helper: Base64url encode for browser
+    function base64UrlEncode(buffer) {
+      var binary = '';
+      var bytes = new Uint8Array(buffer);
+      for (var i = 0; i < bytes.length; i++) {
+        binary += String.fromCharCode(bytes[i]);
+      }
+      var base64 = btoa(binary);
+      return base64
+        .replace(/\+/g, '-')
+        .replace(/\//g, '_')
+        .replace(/=/g, '');
+    }
+  </script>
+</body>
+</html>
