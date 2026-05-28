@@ -142,7 +142,12 @@
 
     function showResult(message, type) {
       var resultsDiv = document.getElementById('results');
-      resultsDiv.innerHTML = '<div class="status ' + type + '">' + message + '</div>';
+      var statusDiv = document.createElement('div');
+      var safeType = (type === 'error' || type === 'success' || type === 'info') ? type : 'info';
+      statusDiv.className = 'status ' + safeType;
+      statusDiv.textContent = message;
+      resultsDiv.innerHTML = '';
+      resultsDiv.appendChild(statusDiv);
     }
 
     function updateEnvironment() {
