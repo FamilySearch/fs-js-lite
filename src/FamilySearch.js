@@ -18,6 +18,9 @@ var FamilySearch = function(options){
   this.environment = 'integration';
   this.redirectUri = '';
   this.tokenCookie = 'FS_AUTH_TOKEN';
+  this.tokenCookiePath = '/';
+  this.secureCookies = true;
+  this.sameSite = 'strict';
   this.maxThrottledRetries = 10;
   this.saveAccessToken = false;
   this.accessToken = '';
@@ -55,7 +58,11 @@ var FamilySearch = function(options){
  * @param {String} options.tokenCookie Name of the cookie that the access token
  * will be saved in when `saveAccessToken` is true. Defaults to 'FS_AUTH_TOKEN'.
  * @param {String} options.tokenCookiePath Path value of the access token cookie.
- * Defaults to current path (which is probably not what you want).
+ * Defaults to '/' (recommended for most applications).
+ * @param {Boolean} options.secureCookies Set the Secure flag on cookies (HTTPS only).
+ * Defaults to true. Only set to false for local development over HTTP.
+ * @param {String} options.sameSite SameSite cookie attribute for CSRF protection.
+ * Defaults to 'strict'. Options: 'strict', 'lax', or 'none'.
  * @param {String} options.maxThrottledRetries Maximum number of a times a 
  * throttled request should be retried. Defaults to 10.
  * @param {Array} options.pendingModifications List of pending modifications
@@ -72,7 +79,15 @@ FamilySearch.prototype.config = function(options){
   this.redirectUri = options.redirectUri || this.redirectUri;
   this.tokenCookie = options.tokenCookie || this.tokenCookie;
   this.tokenCookiePath = options.tokenCookiePath || this.tokenCookiePath;
+  this.secureCookies = (options.secureCookies !== undefined) ? options.secureCookies : this.secureCookies;
+  this.sameSite = options.sameSite || this.sameSite;
   this.maxThrottledRetries = options.maxThrottledRetries || this.maxThrottledRetries;
+
+  // Validate sameSite value
+  var validSameSiteValues = ['strict', 'lax', 'none'];
+  if (validSameSiteValues.indexOf(this.sameSite) === -1) {
+    throw new Error('Invalid sameSite value: ' + this.sameSite + '. Must be one of: ' + validSameSiteValues.join(', '));
+  }
   this.saveAccessToken = (options.saveAccessToken === true) || this.saveAccessToken;
   
   if(options.accessToken){
@@ -370,7 +385,12 @@ FamilySearch.prototype.setAccessToken = function(accessToken){
   if(this.saveAccessToken){
     // Expire in 24 hours because tokens never last longer than that, though
     // they can expire before that after 1 hour of inactivity.
-    cookies.set(this.tokenCookie, accessToken, { expires: 1, path: this.tokenCookiePath });
+    cookies.set(this.tokenCookie, accessToken, {
+      expires: 1,
+      path: this.tokenCookiePath,
+      secure: this.secureCookies,
+      sameSite: this.sameSite
+    });
   }
   return this;
 };
@@ -392,7 +412,11 @@ FamilySearch.prototype.getAccessToken = function(){
 FamilySearch.prototype.deleteAccessToken = function(){
   this.accessToken = undefined;
   if(this.saveAccessToken){
-    cookies.remove(this.tokenCookie, { path: this.tokenCookiePath });
+    cookies.remove(this.tokenCookie, {
+      path: this.tokenCookiePath,
+      secure: this.secureCookies,
+      sameSite: this.sameSite
+    });
   }
   return this;
 };
