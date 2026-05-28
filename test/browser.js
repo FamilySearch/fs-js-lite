@@ -20,11 +20,12 @@ describe('browser', function(){
   it('load an access token from cookies', function(done){
     var cookieJar = new CookieJar();
     cookieJar.setCookieSync('FS_AUTH_TOKEN=loaded', 'http://test.testing/');
-    createClient({ 
+    createClient({
       url: 'http://test.testing',
       cookieJar: cookieJar
-    }, { 
-      saveAccessToken: true
+    }, {
+      saveAccessToken: true,
+      secureCookies: false  // HTTP test environment
     }, function(error, client){
       if(error){ done(error); }
       check(done, function(){
@@ -35,7 +36,7 @@ describe('browser', function(){
   
   it('save an access token to the cookie', function(done){
     var cookieJar = new CookieJar();
-    createClient({ 
+    createClient({
       url: 'http://test.testing',
       cookieJar: cookieJar
     }, null, function(error, client){
@@ -43,7 +44,8 @@ describe('browser', function(){
       check(done, function(){
         client.config({
           accessToken: 'loaded',
-          saveAccessToken: true
+          saveAccessToken: true,
+          secureCookies: false  // HTTP test environment
         });
         assert.equal(cookieJar.getCookieStringSync('http://test.testing/'), 'FS_AUTH_TOKEN=loaded');
       });
@@ -53,11 +55,12 @@ describe('browser', function(){
   it('delete an access token cookie', function(done){
     var cookieJar = new CookieJar();
     cookieJar.setCookieSync('FS_AUTH_TOKEN=loaded', 'http://test.testing/');
-    createClient({ 
+    createClient({
       url: 'http://test.testing',
       cookieJar: cookieJar
-    }, { 
-      saveAccessToken: true
+    }, {
+      saveAccessToken: true,
+      secureCookies: false  // HTTP test environment
     }, function(error, client){
       if(error){ done(error); }
       check(done, function(){
@@ -72,12 +75,13 @@ describe('browser', function(){
   it('load an access token with a cookie path', function(done){
     var cookieJar = new CookieJar();
     cookieJar.setCookieSync('FS_AUTH_TOKEN=loaded', 'http://test.testing/path');
-    createClient({ 
+    createClient({
       url: 'http://test.testing/path',
       cookieJar: cookieJar
-    }, { 
+    }, {
       saveAccessToken: true,
-      tokenCookiePath: '/path'
+      tokenCookiePath: '/path',
+      secureCookies: false  // HTTP test environment
     }, function(error, client){
       if(error){ done(error); }
       check(done, function(){
@@ -89,12 +93,13 @@ describe('browser', function(){
   it('delete an access token cookie with a cookie path', function(done){
     var cookieJar = new CookieJar();
     cookieJar.setCookieSync('FS_AUTH_TOKEN=loaded;path=/path', 'http://test.testing/path');
-    createClient({ 
+    createClient({
       url: 'http://test.testing/path',
       cookieJar: cookieJar
-    }, { 
+    }, {
       saveAccessToken: true,
-      tokenCookiePath: '/path'
+      tokenCookiePath: '/path',
+      secureCookies: false  // HTTP test environment
     }, function(error, client){
       if(error){ done(error); }
       check(done, function(){
@@ -110,6 +115,53 @@ describe('browser', function(){
   // These browser-specific tests focus on cookie handling and browser environment
   // API call tests have been removed since password grant no longer works
   // and re-recording fixtures would require valid OAuth credentials
+
+  describe('Cookie security flags', function(){
+
+    it('sets secure and sameSite flags by default', function(done){
+      createClient({
+        url: 'https://test.testing',
+        cookieJar: new CookieJar()
+      }, null, function(error, client){
+        if(error){ done(error); }
+        check(done, function(){
+          // Verify defaults are secure
+          assert.equal(client.secureCookies, true);
+          assert.equal(client.sameSite, 'strict');
+          assert.equal(client.tokenCookiePath, '/');
+        });
+      });
+    });
+
+    it('allows disabling secure cookies for local development', function(done){
+      createClient({
+        url: 'http://localhost:3000',
+        cookieJar: new CookieJar()
+      }, {
+        secureCookies: false
+      }, function(error, client){
+        if(error){ done(error); }
+        check(done, function(){
+          assert.equal(client.secureCookies, false);
+        });
+      });
+    });
+
+    it('allows configuring sameSite attribute', function(done){
+      createClient({
+        url: 'https://test.testing',
+        cookieJar: new CookieJar()
+      }, {
+        sameSite: 'lax'
+      }, function(error, client){
+        if(error){ done(error); }
+        check(done, function(){
+          assert.equal(client.sameSite, 'lax');
+        });
+      });
+    });
+
+  });
 
   describe('PKCE in browser environment', function(){
 

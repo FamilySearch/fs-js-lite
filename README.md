@@ -14,6 +14,7 @@ which is built using the SDK and a [Node.js sample app](https://github.com/Famil
   - [Install](#install)
   - [Usage](#usage)
     - [Initialization Options](#initialization-options)
+    - [Security](#security)
     - [Authentication](#authentication)
       - [Authentication in the Browser](#authentication-in-the-browser)
       - [Authentication in Node.js](#authentication-in-nodejs)
@@ -27,6 +28,7 @@ which is built using the SDK and a [Node.js sample app](https://github.com/Famil
       - [Response Middleware](#response-middleware)
       - [Default Middlware](#default-middlware)
     - [Objects Instead of Plain JSON](#objects-instead-of-plain-json)
+  - [Migrating from v2 to v3](#migrating-from-v2-to-v3)
   - [Migrating from v1 to v2](#migrating-from-v1-to-v2)
   - [Testing](#testing)
     - [Running Tests](#running-tests)
@@ -103,8 +105,18 @@ var fs = new FamilySearch({
   tokenCookie: 'FS_AUTH_TOKEN',
   
   // Path value of the access token cookie.
-  // Defaults to the current path (which is probably not what you want).
+  // Defaults to '/' (available to entire domain). Recommended for most applications.
   tokenCookiePath: '/',
+  
+  // Set the Secure flag on cookies (HTTPS only). Defaults to true.
+  // Only set to false for local development over HTTP.
+  // See SECURITY.md for security best practices.
+  secureCookies: true,
+  
+  // SameSite cookie attribute for CSRF protection. Defaults to 'strict'.
+  // Options: 'strict' (most secure), 'lax', or 'none' (requires secure: true)
+  // See SECURITY.md for details on when to use each option.
+  sameSite: 'strict',
   
   // Maximum number of times that a throttled request will be retried. Defaults to 10.
   maxThrottledRetries: 10,
@@ -128,6 +140,38 @@ fs.config({
   appKey: 'mynewappkey'
 })
 ```
+
+<a name="security"></a>
+
+### Security
+
+⚠️ **v3.0.0 Breaking Change:** Secure cookie defaults are now enabled. See [MIGRATION-v3.md](./MIGRATION-v3.md) for upgrade instructions.
+
+Starting with v3.0.0, fs-js-lite sets secure cookie defaults to protect against common web vulnerabilities:
+
+- **`secure: true`** - Cookies only sent over HTTPS (prevents network eavesdropping)
+- **`sameSite: 'strict'`** - Cookies not sent with cross-site requests (CSRF protection)
+- **`path: '/'`** - Cookies available across your entire domain
+
+**Production (HTTPS) - No changes needed:**
+```js
+var fs = new FamilySearch({
+  appKey: 'your-app-key',
+  saveAccessToken: true
+  // Secure defaults automatically applied
+});
+```
+
+**Local Development (HTTP) - Disable secure cookies:**
+```js
+var fs = new FamilySearch({
+  appKey: 'your-app-key',
+  saveAccessToken: true,
+  secureCookies: false  // Required for http://localhost
+});
+```
+
+**See [SECURITY.md](./SECURITY.md)** for complete security documentation and best practices.
 
 <a name="authentication"></a>
 
@@ -449,6 +493,45 @@ fs.addResponseMiddleware(function(client, request, response, next){
   next();
 });
 ```
+
+<a name="v3-migration"></a>
+
+## Migrating from v2 to v3
+
+Version 3.0.0 introduces secure cookie defaults that may affect your application.
+
+**Breaking Changes:**
+
+1. **Secure cookies now default to `true`** - Cookies require HTTPS by default
+   - ✅ **Production apps on HTTPS:** No changes needed!
+   - ⚠️ **Local development on HTTP:** Add `secureCookies: false`
+   
+2. **Cookie path now defaults to `'/'`** instead of current path
+   - This is an improvement for most apps - tokens now available across entire domain
+   
+3. **New `sameSite: 'strict'` default** - CSRF protection enabled by default
+   - Most apps benefit from this security improvement
+   - Set to `'lax'` if you need cross-site top-level navigation
+
+**Quick Migration:**
+
+```js
+// Production (HTTPS) - No changes needed!
+var fs = new FamilySearch({
+  appKey: 'your-app-key',
+  saveAccessToken: true
+  // Secure defaults applied automatically
+});
+
+// Local Development (HTTP) - Add secureCookies: false
+var fs = new FamilySearch({
+  appKey: 'your-app-key',
+  saveAccessToken: true,
+  secureCookies: false  // Required for http://localhost
+});
+```
+
+**See [MIGRATION-v3.md](./MIGRATION-v3.md) for the complete migration guide** with detailed scenarios, troubleshooting, and rollback instructions.
 
 <a name="v2-migration"></a>
 
