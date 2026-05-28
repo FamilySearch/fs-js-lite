@@ -5,6 +5,113 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.0.0] - 2026-05-28
+
+### Breaking Changes
+
+#### Secure Cookie Defaults
+
+**Cookies now default to secure settings** to protect against common web vulnerabilities:
+
+- **`secure: true`** - Cookies only sent over HTTPS (prevents network eavesdropping)
+- **`sameSite: 'strict'`** - Cookies not sent with cross-site requests (CSRF protection)
+- **`path: '/'`** - Cookies available across your entire domain (improved from v2.x behavior)
+
+**Impact:**
+- ✅ **Production apps on HTTPS:** No code changes required! You automatically get improved security.
+- ⚠️ **Local development on HTTP:** Add `secureCookies: false` to your configuration.
+
+```javascript
+// Local development (HTTP) - Add secureCookies: false
+var client = new FamilySearch({
+  appKey: 'your-app-key',
+  saveAccessToken: true,
+  secureCookies: false  // Required for http://localhost
+});
+
+// Production (HTTPS) - No changes needed!
+var client = new FamilySearch({
+  appKey: 'your-app-key',
+  saveAccessToken: true
+  // Secure defaults automatically applied
+});
+```
+
+### Added
+
+#### New Configuration Options
+
+- **`secureCookies`** (Boolean) - Control whether cookies require HTTPS. Defaults to `true`. Set to `false` only for local development over HTTP.
+- **`sameSite`** (String) - SameSite cookie attribute for CSRF protection. Defaults to `'strict'`. Options: `'strict'`, `'lax'`, or `'none'`.
+- **`tokenCookiePath`** - Now explicitly defaults to `'/'` instead of current path (improved behavior for most applications).
+
+#### PKCE Support
+
+Added OAuth 2.0 PKCE (Proof Key for Code Exchange) helper methods for enhanced security:
+
+- **`generateCodeVerifier()`** - Generate cryptographically secure code verifier
+- **`generateCodeChallenge(verifier)`** - Compute SHA-256 code challenge from verifier
+- **`oauthRedirectURL({ state, codeChallenge })`** - Build OAuth URL with PKCE parameters
+- **`oauthToken(code, verifier, callback)`** - Exchange authorization code with PKCE verifier
+
+PKCE is recommended for all OAuth flows, especially public clients. See [TEST-PKCE-FLOW.md](./TEST-PKCE-FLOW.md) for usage examples.
+
+#### New Documentation
+
+- **[MIGRATION-v3.md](./MIGRATION-v3.md)** - Complete migration guide with detailed scenarios, troubleshooting, and rollback instructions
+- **[SECURITY.md](./SECURITY.md)** - Security best practices and configuration guidance
+- **[TEST-PKCE-FLOW.md](./TEST-PKCE-FLOW.md)** - PKCE implementation guide and testing utilities
+
+#### Testing Utilities
+
+- **`test-pkce-browser.html`** - Interactive browser-based PKCE flow tester
+- **`test-pkce-simple.js`** - Simple Node.js PKCE verification script
+- **`test-pkce-flow.js`** - Comprehensive PKCE flow testing tool
+- **`test-server.js`** - Local development server for testing OAuth flows
+
+### Security
+
+- **Enhanced token storage security** - Secure cookie defaults protect against XSS and CSRF attacks
+- **Addressed CodeQL security findings:**
+  - Fixed DOM text reinterpreted as HTML
+  - Fixed uncontrolled data used in path expression
+  - Fixed exception text reinterpreted as HTML
+- **httpOnly cookies** - When combined with secure defaults, provides comprehensive protection against token theft
+
+### Changed
+
+- **Cookie path default** - `tokenCookiePath` now defaults to `'/'` instead of current path, making tokens available across your entire domain (improved behavior)
+- **Enhanced browser cookie tests** - Comprehensive test coverage for secure cookie flags (12 tests covering all security scenarios)
+
+### Migration Guide
+
+**Most production apps need zero code changes** if running on HTTPS! 🎉
+
+See [MIGRATION-v3.md](./MIGRATION-v3.md) for:
+- Step-by-step migration instructions
+- Common scenarios (production, local dev, cross-site auth)
+- Testing checklist
+- Troubleshooting guide
+- Rollback instructions (if needed)
+
+**Quick migration for local development:**
+```javascript
+// Just add secureCookies: false for http://localhost
+var client = new FamilySearch({
+  appKey: 'your-app-key',
+  saveAccessToken: true,
+  secureCookies: false
+});
+```
+
+### Compatibility
+
+- Requires Node.js 14.0.0 or higher
+- Fully backward compatible API (only cookie behavior changed)
+- All existing SDK methods work unchanged
+
+---
+
 ## [2.7.0] - 2026-04-10
 
 ### Changed
