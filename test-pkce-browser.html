@@ -134,7 +134,9 @@
     function log(message) {
       var logDiv = document.getElementById('log');
       var time = new Date().toLocaleTimeString();
-      logDiv.innerHTML += '[' + time + '] ' + message + '<br>';
+      var logLine = document.createTextNode('[' + time + '] ' + message);
+      logDiv.appendChild(logLine);
+      logDiv.appendChild(document.createElement('br'));
       logDiv.scrollTop = logDiv.scrollHeight;
     }
 
