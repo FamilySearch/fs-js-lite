@@ -107,8 +107,8 @@ var client = new FamilySearch({
 ### Compatibility
 
 - Requires Node.js 14.0.0 or higher
-- Fully backward compatible API (only cookie behavior changed)
-- All existing SDK methods work unchanged
+- Existing SDK methods remain available, but some applications may require configuration updates due to the new secure cookie defaults
+- No SDK method removals are introduced in this release; review the migration guidance above for local HTTP development and PKCE recommendations
 
 ---
 
