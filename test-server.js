@@ -42,8 +42,24 @@ const server = http.createServer((req, res) => {
     urlPath = '/test-pkce-browser.html';
   }
 
-  // Build full file path
-  let filePath = path.join(__dirname, urlPath);
+  // Decode and normalize user input, then resolve against server root
+  const safeRoot = path.resolve(__dirname);
+  let decodedPath;
+  try {
+    decodedPath = decodeURIComponent(urlPath);
+  } catch (e) {
+    res.writeHead(400, { 'Content-Type': 'text/plain' });
+    res.end('Bad Request', 'utf-8');
+    return;
+  }
+
+  const filePath = path.resolve(safeRoot, `.${decodedPath}`);
+  const relativePath = path.relative(safeRoot, filePath);
+  if (relativePath.startsWith('..') || path.isAbsolute(relativePath)) {
+    res.writeHead(403, { 'Content-Type': 'text/plain' });
+    res.end('Forbidden', 'utf-8');
+    return;
+  }
 
   // Get file extension
   const extname = String(path.extname(filePath)).toLowerCase();
