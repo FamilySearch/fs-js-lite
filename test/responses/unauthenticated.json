@@ -1,20 +1,34 @@
 [
     {
-        "scope": "https://identint.familysearch.org:443",
+        "scope": "https://identbeta.familysearch.org:443",
         "method": "POST",
         "path": "/cis-web/oauth2/v3/token",
-        "body": "grant_type=unauthenticated_session&ip_address=192.168.1.1&client_id=a02j000000JBxOxAAL",
+        "body": "grant_type=unauthenticated_session&ip_address=192.168.1.1&client_id=a02j000000KRNxqAAH",
         "status": 200,
-        "response": "{\"access_token\":\"USYSC60F9C9767873ECF266E02BF0BD5C2A1_idses-int01.a.fsglobal.net\",\"token_type\":\"family_search\",\"token\":\"USYSC60F9C9767873ECF266E02BF0BD5C2A1_idses-int01.a.fsglobal.net\"}",
+        "response": [
+            "1f8b08000000000000ffab564a4c4e4e2d2e8e2fc9cf4ecd53b2524a32d04d75f5290a4df32a2b2db3d0f3f074f375770c0c892a4b54d251022b8a2fa92c4805aa4c4bcccdcca98c2f4e4d2c4ace8049e237a11600518ee0606f000000"
+        ],
         "rawHeaders": {
-            "server": "Apache-Coyote/1.1",
-            "expires": "Tue, 03 Jul 2001 06:00:00 GMT",
-            "last-modified": "Fri Dec 08 19:52:52 GMT 2017",
-            "cache-control": "no-store, no-cache, must-revalidate, max-age=0, post-check=0, pre-check=0",
-            "pragma": "no-cache",
-            "content-type": "application/json;charset=ISO-8859-1",
+            "cache-control": "no-store",
+            "connection": "close",
+            "content-encoding": "gzip",
             "content-language": "en-US",
-            "date": "Fri, 08 Dec 2017 19:52:51 GMT"
-        }
+            "content-security-policy": "frame-ancestors 'self' https://*.familysearch.org https://*.familysearch.psdops.com https://*.church.brightspot.cloud",
+            "content-type": "application/json;charset=UTF-8",
+            "date": "Fri, 29 May 2026 17:46:35 GMT",
+            "server": "nginx",
+            "set-cookie": "incap_ses_2110_2870893=27RZU/ZU/g9Y0KeSVDpIHfrQGWoAAAAAbtPzpmO5AaUnI2MDXFuBgA==; path=/; Domain=.familysearch.org; Secure; SameSite=None",
+            "strict-transport-security": "max-age=31536000; includeSubDomains",
+            "transfer-encoding": "chunked",
+            "via": "1.1 da32b45f2cc22dc818960285c4e91b66.cloudfront.net (CloudFront)",
+            "x-amz-cf-id": "xSEgYHx5hjAENJCsOOZXLN6PpUCzQet9CXqvbjSlQn41CbQH464QDQ==",
+            "x-amz-cf-pop": "SEA900-P10",
+            "x-cache": "Miss from cloudfront",
+            "x-cdn": "Imperva",
+            "x-frame-options": "SAMEORIGIN",
+            "x-iinfo": "9-28711422-28711426 NNYN CT(1013 6 0) RT(1780076794110 49) q(0 0 10 -1) r(10 13) U6",
+            "x-robots-tag": "noindex, nofollow, noarchive, nosnippet, notranslate, noimageindex"
+        },
+        "responseIsBinary": false
     }
 ]

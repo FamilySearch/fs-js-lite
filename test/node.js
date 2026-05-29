@@ -30,13 +30,13 @@ describe('node', function(){
     });
     
     it('oauthRedirectURL()', function(){
-      // Updated to use identint.familysearch.org (modern OAuth URL) and URL-encoded parameters
-      assert.equal(client.oauthRedirectURL(), 'https://identint.familysearch.org/cis-web/oauth2/v3/authorization?response_type=code&scope=openid%20profile%20email%20qualifies_for_affiliate_account%20country&client_id=' + sandbox.appkey + '&redirect_uri=http%3A%2F%2Ffoobaz.com%2Foauth-redirect');
+      // Updated to use identbeta.familysearch.org (beta environment OAuth URL) and URL-encoded parameters
+      assert.equal(client.oauthRedirectURL(), 'https://identbeta.familysearch.org/cis-web/oauth2/v3/authorization?response_type=code&scope=openid%20profile%20email%20qualifies_for_affiliate_account%20country&client_id=' + sandbox.appkey + '&redirect_uri=http%3A%2F%2Ffoobaz.com%2Foauth-redirect');
     });
 
     it('oauthRedirectURL(state)', function(){
-      // Updated to use identint.familysearch.org (modern OAuth URL) and URL-encoded parameters
-      assert.equal(client.oauthRedirectURL('state123'), 'https://identint.familysearch.org/cis-web/oauth2/v3/authorization?response_type=code&scope=openid%20profile%20email%20qualifies_for_affiliate_account%20country&client_id=' + sandbox.appkey + '&redirect_uri=http%3A%2F%2Ffoobaz.com%2Foauth-redirect&state=state123');
+      // Updated to use identbeta.familysearch.org (beta environment OAuth URL) and URL-encoded parameters
+      assert.equal(client.oauthRedirectURL('state123'), 'https://identbeta.familysearch.org/cis-web/oauth2/v3/authorization?response_type=code&scope=openid%20profile%20email%20qualifies_for_affiliate_account%20country&client_id=' + sandbox.appkey + '&redirect_uri=http%3A%2F%2Ffoobaz.com%2Foauth-redirect&state=state123');
     });
     
     it('oauthUnauthenticatedToken()', function(done){
@@ -82,13 +82,20 @@ describe('node', function(){
     });
     
     it('head', function(done){
+      this.timeout(10000); // Increase timeout for recording mode
       nockBack('headPerson.json', function(nockDone){
-        client.head('/platform/tree/persons/L5C2-WYC', function(error, response){
-          nockDone();
-          check(done, function(){
-            assert.isDefined(response);
-            assert.equal(response.statusCode, 200);
-            assert.isUndefined(response.data);
+        createPerson(client, function(personId){
+          if (!personId) {
+            nockDone();
+            return done(new Error('Failed to create person for HEAD test'));
+          }
+          client.head('/platform/tree/persons/' + personId, function(error, response){
+            nockDone();
+            check(done, function(){
+              assert.isDefined(response);
+              assert.equal(response.statusCode, 200);
+              assert.isUndefined(response.data);
+            });
           });
         });
       });
@@ -267,8 +274,13 @@ describe('node', function(){
     });
     
     it('atom response', function(done){
+      this.timeout(10000); // Increase timeout for recording mode
       nockBack('getChanges.json', function(nockDone){
         createPerson(client, function(personId){
+          if (!personId) {
+            nockDone();
+            return done(new Error('Failed to create person for atom response test'));
+          }
           client.get('/platform/tree/persons/' + personId + '/changes', {
             headers: {
               Accept: 'application/x-gedcomx-atom+json'
@@ -294,7 +306,8 @@ describe('node', function(){
           nockDone();
           check(done, function(){
             assert.isDefined(response);
-            assert.equal(response.statusCode, 404);
+            // Beta returns 400 (Bad Request) for invalid person IDs
+            assert.equal(response.statusCode, 400);
             assert.isDefined(response.gedcomx);
             assert.equal(response.gedcomx.getErrors().length, 1);
           });
@@ -377,6 +390,7 @@ describe('node', function(){
 function apiClient(options){
   var defaults = {
     appKey: sandbox.appkey,
+    environment: 'beta',
     redirectUri: 'http://foobaz.com/oauth-redirect'
   };
   if(options){
@@ -404,11 +418,10 @@ function authenticatedClient(options, callback){
   // When recording fixtures, we need real authentication
   // Set accessToken in test/sandbox.js or use FS_ACCESS_TOKEN environment variable
   // Get a token by:
-  //   1. Go to https://integration.familysearch.org
-  //   2. Sign in with test credentials
-  //   3. Open browser dev tools > Application > Cookies
-  //   4. Copy the value of 'fssessionid' cookie
-  //   5. Either: set in test/sandbox.js OR export FS_ACCESS_TOKEN='<your-token>'
+  //   1. Go to https://beta.familysearch.org/platform
+  //   2. Click the "Authenticate" button
+  //   3. Click the clipboard icon next to the access token to copy it
+  //   4. Either: set in test/sandbox.js OR export FS_ACCESS_TOKEN='<your-token>'
   if(process.env.NOCK_BACK_MODE === 'record' || process.env.NOCK_BACK_MODE === 'wild'){
     var accessToken = sandbox.accessToken || process.env.FS_ACCESS_TOKEN;
     if(!accessToken){

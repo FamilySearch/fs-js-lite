@@ -643,10 +643,9 @@ Test fixtures in `test/responses/` are pre-recorded API responses. To re-record 
    ```
 
 2. Get a valid FamilySearch access token:
-   - Go to https://beta.familysearch.org
-   - Sign in with your test account
-   - Open DevTools > Application > Cookies
-   - Copy the `fssessionid` cookie value
+   - Go to https://beta.familysearch.org/platform
+   - Click the "Authenticate" button
+   - Click the clipboard icon next to the access token to copy it
 
 3. Add the token to `test/sandbox.js`:
    ```js

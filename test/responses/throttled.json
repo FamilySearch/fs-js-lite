@@ -1,166 +1,58 @@
 [
     {
-        "scope": "https://api-integ.familysearch.org:443",
+        "scope": "https://apibeta.familysearch.org:443",
         "method": "GET",
         "path": "/platform/throttled?processingTime=1800000",
         "body": "",
         "status": 200,
         "response": "",
         "rawHeaders": {
-            "content-type": "application/x-fs-v1+json",
-            "date": "Fri, 08 Dec 2017 19:52:54 GMT",
-            "server": "Apache-Coyote/1.1",
-            "vary": "Accept, Accept-Language, Accept-Encoding, Expect, Accept-Encoding",
-            "x-processing-time": "144",
-            "x-throttle-millis-left": "0",
-            "x-throttle-millis-used": "1804896",
-            "x-throttle-window-size": "60000"
-        }
+            "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+            "connection": "close",
+            "content-length": "0",
+            "date": "Fri, 29 May 2026 17:45:23 GMT",
+            "server": "nginx",
+            "vary": "Accept,Accept-Language,Accept-Encoding,Expect",
+            "x-processing-time": "7",
+            "x-robots-tag": "noindex, nofollow, noarchive, nosnippet, notranslate, noimageindex"
+        },
+        "responseIsBinary": false
     },
     {
-        "scope": "https://api-integ.familysearch.org:443",
+        "scope": "https://apibeta.familysearch.org:443",
         "method": "GET",
         "path": "/platform/throttled",
         "body": "",
         "status": 429,
-        "response": "{\"errors\":[{\"code\":429}]}",
+        "response": "",
         "rawHeaders": {
-            "content-type": "application/x-fs-v1+json",
-            "date": "Fri, 08 Dec 2017 19:52:55 GMT",
-            "retry-after": "10",
-            "server": "Apache-Coyote/1.1",
-            "vary": "Accept, Accept-Language, Accept-Encoding, Expect, Accept-Encoding",
-            "x-processing-time": "141"
-        }
+            "connection": "close",
+            "content-length": "0",
+            "date": "Fri, 29 May 2026 17:45:23 GMT",
+            "retry-after": "49",
+            "server": "nginx",
+            "x-processing-time": "8",
+            "x-robots-tag": "noindex, nofollow, noarchive, nosnippet, notranslate, noimageindex"
+        },
+        "responseIsBinary": false
     },
     {
-        "scope": "https://api-integ.familysearch.org:443",
-        "method": "GET",
-        "path": "/platform/throttled",
-        "body": "",
-        "status": 429,
-        "response": "{\"errors\":[{\"code\":429}]}",
-        "rawHeaders": {
-            "content-type": "application/x-fs-v1+json",
-            "date": "Fri, 08 Dec 2017 19:52:57 GMT",
-            "retry-after": "9",
-            "server": "Apache-Coyote/1.1",
-            "vary": "Accept, Accept-Language, Accept-Encoding, Expect, Accept-Encoding",
-            "x-processing-time": "164"
-        }
-    },
-    {
-        "scope": "https://api-integ.familysearch.org:443",
-        "method": "GET",
-        "path": "/platform/throttled",
-        "body": "",
-        "status": 429,
-        "response": "{\"errors\":[{\"code\":429}]}",
-        "rawHeaders": {
-            "content-type": "application/x-fs-v1+json",
-            "date": "Fri, 08 Dec 2017 19:52:58 GMT",
-            "retry-after": "7",
-            "server": "Apache-Coyote/1.1",
-            "vary": "Accept, Accept-Language, Accept-Encoding, Expect, Accept-Encoding",
-            "x-processing-time": "188"
-        }
-    },
-    {
-        "scope": "https://api-integ.familysearch.org:443",
-        "method": "GET",
-        "path": "/platform/throttled",
-        "body": "",
-        "status": 429,
-        "response": "{\"errors\":[{\"code\":429}]}",
-        "rawHeaders": {
-            "content-type": "application/x-fs-v1+json",
-            "date": "Fri, 08 Dec 2017 19:52:59 GMT",
-            "retry-after": "6",
-            "server": "Apache-Coyote/1.1",
-            "vary": "Accept, Accept-Language, Accept-Encoding, Expect, Accept-Encoding",
-            "x-processing-time": "166"
-        }
-    },
-    {
-        "scope": "https://api-integ.familysearch.org:443",
-        "method": "GET",
-        "path": "/platform/throttled",
-        "body": "",
-        "status": 429,
-        "response": "{\"errors\":[{\"code\":429}]}",
-        "rawHeaders": {
-            "content-type": "application/x-fs-v1+json",
-            "date": "Fri, 08 Dec 2017 19:53:01 GMT",
-            "retry-after": "5",
-            "server": "Apache-Coyote/1.1",
-            "vary": "Accept, Accept-Language, Accept-Encoding, Expect, Accept-Encoding",
-            "x-processing-time": "165"
-        }
-    },
-    {
-        "scope": "https://api-integ.familysearch.org:443",
-        "method": "GET",
-        "path": "/platform/throttled",
-        "body": "",
-        "status": 429,
-        "response": "{\"errors\":[{\"code\":429}]}",
-        "rawHeaders": {
-            "content-type": "application/x-fs-v1+json",
-            "date": "Fri, 08 Dec 2017 19:53:02 GMT",
-            "retry-after": "3",
-            "server": "Apache-Coyote/1.1",
-            "vary": "Accept, Accept-Language, Accept-Encoding, Expect, Accept-Encoding",
-            "x-processing-time": "142"
-        }
-    },
-    {
-        "scope": "https://api-integ.familysearch.org:443",
-        "method": "GET",
-        "path": "/platform/throttled",
-        "body": "",
-        "status": 429,
-        "response": "{\"errors\":[{\"code\":429}]}",
-        "rawHeaders": {
-            "content-type": "application/x-fs-v1+json",
-            "date": "Fri, 08 Dec 2017 19:53:03 GMT",
-            "retry-after": "2",
-            "server": "Apache-Coyote/1.1",
-            "vary": "Accept, Accept-Language, Accept-Encoding, Expect, Accept-Encoding",
-            "x-processing-time": "143"
-        }
-    },
-    {
-        "scope": "https://api-integ.familysearch.org:443",
-        "method": "GET",
-        "path": "/platform/throttled",
-        "body": "",
-        "status": 429,
-        "response": "{\"errors\":[{\"code\":429}]}",
-        "rawHeaders": {
-            "content-type": "application/x-fs-v1+json",
-            "date": "Fri, 08 Dec 2017 19:53:04 GMT",
-            "retry-after": "1",
-            "server": "Apache-Coyote/1.1",
-            "vary": "Accept, Accept-Language, Accept-Encoding, Expect, Accept-Encoding",
-            "x-processing-time": "188"
-        }
-    },
-    {
-        "scope": "https://api-integ.familysearch.org:443",
+        "scope": "https://apibeta.familysearch.org:443",
         "method": "GET",
         "path": "/platform/throttled",
         "body": "",
         "status": 200,
         "response": "",
         "rawHeaders": {
-            "content-type": "application/x-fs-v1+json",
-            "date": "Fri, 08 Dec 2017 19:53:06 GMT",
-            "server": "Apache-Coyote/1.1",
-            "vary": "Accept, Accept-Language, Accept-Encoding, Expect, Accept-Encoding",
-            "x-processing-time": "144",
-            "x-throttle-millis-left": "59856",
-            "x-throttle-millis-used": "144",
-            "x-throttle-window-size": "60000"
-        }
+            "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+            "connection": "close",
+            "content-length": "0",
+            "date": "Fri, 29 May 2026 17:46:12 GMT",
+            "server": "nginx",
+            "vary": "Accept,Accept-Language,Accept-Encoding,Expect",
+            "x-processing-time": "7",
+            "x-robots-tag": "noindex, nofollow, noarchive, nosnippet, notranslate, noimageindex"
+        },
+        "responseIsBinary": false
     }
 ]

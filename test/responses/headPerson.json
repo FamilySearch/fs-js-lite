@@ -1,25 +1,62 @@
 [
     {
-        "scope": "https://api-integ.familysearch.org:443",
+        "scope": "https://apibeta.familysearch.org:443",
+        "method": "POST",
+        "path": "/platform/tree/persons",
+        "body": {
+            "persons": [
+                {
+                    "living": true,
+                    "gender": {
+                        "type": "http://gedcomx.org/Male"
+                    },
+                    "names": [
+                        {
+                            "type": "http://gedcomx.org/BirthName",
+                            "preferred": true,
+                            "nameForms": [
+                                {
+                                    "fullText": "Jacob",
+                                    "parts": [
+                                        {
+                                            "value": "Jacob",
+                                            "type": "http://gedcomx.org/Given"
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        "status": 201,
+        "response": "",
+        "rawHeaders": {
+            "location": "https://apibeta.familysearch.org/platform/tree/persons/TEST-HEAD",
+            "x-entity-id": "TEST-HEAD",
+            "content-type": "application/x-fs-v1+json",
+            "date": "Fri, 29 May 2026 17:56:09 GMT"
+        }
+    },
+    {
+        "scope": "https://apibeta.familysearch.org:443",
         "method": "HEAD",
-        "path": "/platform/tree/persons/L5C2-WYC",
+        "path": "/platform/tree/persons/TEST-HEAD",
         "body": "",
         "status": 200,
         "response": "",
         "rawHeaders": {
             "allow": "OPTIONS, HEAD, GET, POST, DELETE",
-            "cache-control": "no-transform, must-revalidate, max-age=0",
-            "content-location": "/tree/persons/L5C2-WYC",
+            "cache-control": "max-age=0, must-revalidate, no-transform",
+            "content-location": "/tree/persons/TEST-HEAD",
             "content-type": "application/x-fs-v1+json",
-            "date": "Fri, 08 Dec 2017 19:52:53 GMT",
-            "etag": "\"136900632758820000\"",
-            "last-modified": "Tue, 09 Aug 2016 19:21:15 GMT",
-            "server": "Apache-Coyote/1.1",
-            "vary": "Accept, Accept-Language, Accept-Encoding, Expect, Accept-Encoding",
-            "x-processing-time": "165",
-            "x-throttle-millis-left": "55718",
-            "x-throttle-millis-used": "4282",
-            "x-throttle-window-size": "60000"
+            "date": "Fri, 29 May 2026 17:56:09 GMT",
+            "etag": "W/\"139515252975470000\"",
+            "last-modified": "Thu, 21 Nov 2024 23:41:37 GMT",
+            "server": "nginx",
+            "vary": "Accept,Accept-Language,Accept-Encoding,Expect",
+            "x-processing-time": "30"
         }
     }
 ]
