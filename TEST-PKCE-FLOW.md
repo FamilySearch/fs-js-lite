@@ -6,14 +6,11 @@ This test verifies that FamilySearch OAuth supports PKCE (Proof Key for Code Exc
 
 - Node.js installed
 - Access to FamilySearch test account
-- This branch checked out: `DATAEX-3954-token-storage-security`
 
 ## Quick Start
 
-### 1. Get the Code
+### 1. Install dependencies
 ```bash
-git fetch
-git checkout DATAEX-3954-token-storage-security
 npm install
 ```
 
@@ -138,4 +135,4 @@ We need to verify that FamilySearch OAuth supports PKCE before enforcing it in v
 
 ## Questions?
 
-Contact the DATAEX team or check JIRA ticket: **DATAEX-3954**
+For questions or issues, please [open an issue on GitHub](https://github.com/FamilySearch/fs-js-lite/issues).

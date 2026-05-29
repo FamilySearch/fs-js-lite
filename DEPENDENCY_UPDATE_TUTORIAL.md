@@ -60,9 +60,6 @@ This tutorial documents the complete process of updating an SDK's dependencies, 
 
 ## Subtask 1.1: Audit Current State
 
-**Estimated Time:** 2 hours
-**Actual Time:** 30 minutes
-
 ### Why This Matters
 You need a baseline to prove your improvements and identify problems before changing anything.
 
@@ -129,9 +126,6 @@ git checkout -b sdk-update
 ---
 
 ## Subtask 1.2: Update Build Tools
-
-**Estimated Time:** 4 hours
-**Actual Time:** 2 hours
 
 ### Why Start with Build Tools?
 If the build breaks, nothing else matters. Fix this first.
@@ -254,9 +248,6 @@ webpack 5.106.1 compiled successfully
 ---
 
 ## Subtask 1.3: Update Testing Dependencies
-
-**Estimated Time:** 4 hours
-**Actual Time:** 3 hours (jsdom migration took iterations)
 
 ### Strategy: One at a Time
 
@@ -510,9 +501,6 @@ All files            |   87.76 |    75.81 |   89.18 |   87.76 |
 
 ## Subtask 1.4: Update Production Dependencies
 
-**Estimated Time:** 3 hours
-**Actual Time:** 1 hour
-
 ### Why Production Deps Are Different
 
 **Dev dependencies:**
@@ -630,9 +618,6 @@ const response = await fetch('https://api.example.com');
 
 ## Subtask 1.5: Security Audit Fix
 
-**Estimated Time:** 2 hours
-**Actual Time:** 1 hour
-
 ### Understanding npm audit fix
 
 **Two modes:**
@@ -743,9 +728,6 @@ npm audit --json > audit-final.json
 ---
 
 ## Subtask 1.6: Update Documentation
-
-**Estimated Time:** 1 hour
-**Actual Time:** 1.5 hours
 
 ### Why Documentation Matters
 - Users need to know how to upgrade
@@ -1324,11 +1306,3 @@ This document captures the complete dependency update process. Use it as:
 - Reference for future updates
 - Training material for team members
 - Template for similar projects
-
-**Next Update:** Plan for Q3 2026, including request library migration.
-
----
-
-*Generated from SDK update session on April 10, 2026*
-*Author: Tiffany Voorhees*
-*Reviewed by: [Team members]*
