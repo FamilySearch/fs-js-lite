@@ -1,5 +1,5 @@
 [![npm](https://img.shields.io/npm/v/fs-js-lite.svg)](https://www.npmjs.com/package/fs-js-lite)
-[![Build Status](https://travis-ci.org/FamilySearch/fs-js-lite.svg?branch=master)](https://travis-ci.org/FamilySearch/fs-js-lite)
+[![CI](https://github.com/FamilySearch/fs-js-lite/workflows/CI/badge.svg)](https://github.com/FamilySearch/fs-js-lite/actions/workflows/ci.yml)
 [![Coverage Status](https://coveralls.io/repos/github/FamilySearch/fs-js-lite/badge.svg?branch=master)](https://coveralls.io/github/FamilySearch/fs-js-lite?branch=master)
 
 # FamilySearch Lite JavaScript SDK
@@ -16,6 +16,7 @@ which is built using the SDK and a [Node.js sample app](https://github.com/Famil
     - [Initialization Options](#initialization-options)
     - [Security](#security)
     - [Authentication](#authentication)
+      - [PKCE Support (Recommended for Enhanced Security)](#pkce-support-recommended-for-enhanced-security)
       - [Authentication in the Browser](#authentication-in-the-browser)
       - [Authentication in Node.js](#authentication-in-nodejs)
     - [Requests](#requests)
@@ -53,7 +54,7 @@ npm install --save fs-js-lite
 ### Requirements
 
 - **Browser**: All modern browsers (Chrome, Firefox, Safari, Edge)
-- **Node.js**: Version 14.0.0 or higher (for server-side usage and development)
+- **Node.js**: Version 20.0.0 or higher (for server-side usage and development)
 <a name="usage"></a>
 
 ## Usage
@@ -189,10 +190,51 @@ __`oauthRedirect([state])`__ - Begin OAuth 2 by automatically redirecting the us
 login screen on familysearch.org. This only works in the browser as a shortcut
 for `window.location.href = fs.oauthRedirectURL();`.
 
-__`oauthToken(code, callback)`__ - In the second step of OAuth 2, exchange the code
+__`oauthToken(code, [verifier,] callback)`__ - In the second step of OAuth 2, exchange the code
 for an access token. The access token will be saved if that behavior is enabled.
+Optionally accepts a PKCE `verifier` parameter for enhanced security (recommended).
 The `callback` is a normal request callback that recieves `error` and `response`
 parameters.
+
+#### PKCE Support (Recommended for Enhanced Security)
+
+PKCE (Proof Key for Code Exchange) is an OAuth 2.0 security extension that protects against authorization code interception attacks. We recommend using PKCE for all OAuth flows, especially in public clients (browser apps, mobile apps).
+
+__`generateCodeVerifier()`__ - Generate a cryptographically secure code verifier string for PKCE flow.
+
+__`generateCodeChallenge(verifier)`__ - Compute the SHA-256 code challenge from a verifier.
+
+**PKCE Flow Example:**
+
+```js
+// Step 1: Generate PKCE parameters
+var verifier = fs.generateCodeVerifier();
+var challenge = fs.generateCodeChallenge(verifier);
+
+// Store verifier for later (sessionStorage in browser, secure storage in mobile)
+sessionStorage.setItem('pkce_verifier', verifier);
+
+// Step 2: Start OAuth with PKCE challenge
+var oauthUrl = fs.oauthRedirectURL({
+  state: 'my-state-value',
+  codeChallenge: challenge
+});
+window.location.href = oauthUrl;
+
+// Step 3: Exchange code with verifier (after OAuth redirect)
+var code = getCodeFromURL();  // Extract from query parameter
+var verifier = sessionStorage.getItem('pkce_verifier');
+
+fs.oauthToken(code, verifier, function(error, response) {
+  if (error) {
+    console.error('Authentication failed:', error);
+  } else {
+    console.log('Authenticated! Token:', fs.getAccessToken());
+  }
+});
+```
+
+**Testing PKCE:** Use the included `test-pkce-browser.html` tool to verify PKCE works with your app key. See [TEST-PKCE-FLOW.md](./TEST-PKCE-FLOW.md) for details.
 
 __`oauthUnauthenticatedToken(ipAddress, callback)`__ - Request an 
 [unauthenticated access token](https://familysearch.org/developers/docs/guides/authentication#unauthenticated-access-tokens).
