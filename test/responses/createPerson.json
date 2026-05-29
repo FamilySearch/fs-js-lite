@@ -1,24 +1,50 @@
 [
     {
-        "scope": "https://api-integ.familysearch.org:443",
+        "scope": "https://apibeta.familysearch.org:443",
         "method": "POST",
         "path": "/platform/tree/persons",
-        "body": "{\"persons\":[{\"living\":true,\"gender\":{\"type\":\"http://gedcomx.org/Male\"},\"names\":[{\"type\":\"http://gedcomx.org/BirthName\",\"preferred\":true,\"nameForms\":[{\"fullText\":\"Jacob\",\"parts\":[{\"value\":\"Jacob\",\"type\":\"http://gedcomx.org/Given\"}]}]}]}]}",
+        "body": {
+            "persons": [
+                {
+                    "living": true,
+                    "gender": {
+                        "type": "http://gedcomx.org/Male"
+                    },
+                    "names": [
+                        {
+                            "type": "http://gedcomx.org/BirthName",
+                            "preferred": true,
+                            "nameForms": [
+                                {
+                                    "fullText": "Jacob",
+                                    "parts": [
+                                        {
+                                            "value": "Jacob",
+                                            "type": "http://gedcomx.org/Given"
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
         "status": 201,
         "response": "",
         "rawHeaders": {
-            "cache-control": "no-cache, no-store, no-transform, must-revalidate, max-age=0",
-            "content-type": "application/x-fs-v1+json",
-            "date": "Fri, 08 Dec 2017 19:52:53 GMT",
-            "link": "<https://api-integ.familysearch.org/platform/tree/ancestry?person=L5FW-NT1>; rel=\"ancestry\", <https://api-integ.familysearch.org/platform/tree/persons/L5FW-NT1/child-relationships>; rel=\"child-relationships\", <https://api-integ.familysearch.org/platform/tree/descendancy?person=L5FW-NT1>; rel=\"descendancy\", <https://api-integ.familysearch.org/platform/tree/persons/L5FW-NT1/discussion-references>; rel=\"discussion-references\", <https://api-integ.familysearch.org/platform/tree/persons/L5FW-NT1/matches>; rel=\"matches\", <https://api-integ.familysearch.org/platform/tree/persons/L5FW-NT1/notes>; rel=\"notes\", <https://api-integ.familysearch.org/platform/tree/persons/L5FW-NT1/parent-relationships>; rel=\"parent-relationships\", <https://api-integ.familysearch.org/platform/tree/persons>; rel=\"persons\", <https://api-integ.familysearch.org/platform/tree/persons/L5FW-NT1/source-references>; rel=\"source-references\", <https://api-integ.familysearch.org/platform/tree/persons/L5FW-NT1/spouse-relationships>; rel=\"spouse-relationships\"",
-            "location": "https://api-integ.familysearch.org/platform/tree/persons/L5FW-NT1",
-            "server": "Apache-Coyote/1.1",
-            "vary": "Accept, Accept-Language, Accept-Encoding, Expect, Accept-Encoding",
-            "x-entity-id": "L5FW-NT1",
-            "x-processing-time": "141",
-            "x-throttle-millis-left": "55883",
-            "x-throttle-millis-used": "4117",
-            "x-throttle-window-size": "60000"
-        }
+            "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+            "connection": "close",
+            "content-length": "0",
+            "date": "Fri, 29 May 2026 17:44:39 GMT",
+            "link": "<https://apibeta.familysearch.org/platform/tree/ancestry?flag=fsh&person=BMZ6-68S>; rel=\"ancestry\", <https://apibeta.familysearch.org/platform/tree/descendancy?flag=fsh&person=BMZ6-68S>; rel=\"descendancy\", <https://apibeta.familysearch.org/platform/tree/persons/BMZ6-68S/matches?flag=fsh>; rel=\"matches\", <https://apibeta.familysearch.org/platform/tree/persons/BMZ6-68S/notes?flag=fsh>; rel=\"notes\", <https://apibeta.familysearch.org/platform/tree/persons?flag=fsh>; rel=\"persons\"",
+            "location": "https://apibeta.familysearch.org/platform/tree/persons/BMZ6-68S",
+            "server": "nginx",
+            "vary": "Accept,Accept-Language,Accept-Encoding,Expect",
+            "x-entity-id": "BMZ6-68S",
+            "x-processing-time": "113",
+            "x-robots-tag": "noindex, nofollow, noarchive, nosnippet, notranslate, noimageindex"
+        },
+        "responseIsBinary": false
     }
 ]

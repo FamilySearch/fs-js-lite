@@ -1,20 +1,27 @@
 [
     {
-        "scope": "https://api-integ.familysearch.org:443",
+        "scope": "https://apibeta.familysearch.org:443",
         "method": "GET",
         "path": "/platform/tree/persons/PPPPPP",
         "body": "",
-        "status": 404,
-        "response": "{\"errors\":[{\"code\":404,\"message\":\"Unable to  read tf person.\",\"stacktrace\":\"GET http://tf.integ.us-east-1.dev.fslocal.org/tf/person/PPPPPP?oneHops=none returned a response status of 404 Not Found:\\n{\\n\\\"404\\\": \\\"Not Found\\\"\\n}\"}]}",
+        "status": 400,
+        "response": [
+            "1f8b08000000000000ff3ccdb10ec2300c04d0bd5f71f204124307a68e0ccc08890975701b0b557213b093a9eabf9302627de73b2f0d406296cc091dee582a541a53900d8e6d7bf88af220ba119d38e02aaf229ee917cee2ce8f4f83ce3c6931c114519e9e4d78c6c8aa1d6e910715e4848a0117314f11bbff557db6a73ab8a26fd637000000ffff0300899c965c9a000000"
+        ],
         "rawHeaders": {
-            "cache-control": "no-cache, no-store, no-transform, must-revalidate, max-age=0",
+            "cache-control": "max-age=0, must-revalidate, no-transform",
+            "connection": "close",
+            "content-encoding": "gzip",
             "content-location": "/tree/persons/PPPPPP",
             "content-type": "application/x-fs-v1+json",
-            "date": "Fri, 08 Dec 2017 19:53:07 GMT",
-            "server": "Apache-Coyote/1.1",
-            "vary": "Accept, Accept-Language, Accept-Encoding, Expect, Accept-Encoding",
-            "warning": "400 FamilySearch \"Unable to  read tf person.\"",
-            "x-processing-time": "164"
-        }
+            "date": "Fri, 29 May 2026 17:46:36 GMT",
+            "server": "nginx",
+            "transfer-encoding": "chunked",
+            "vary": "accept,accept-language,accept-encoding,expect",
+            "warning": "400 FamilySearch \"Failure in upstream call: Unable to read Person (upstream 400)\", 400 FamilySearch \"{\"error\":\"Invalid entity id: PPPPPP\"}\"",
+            "x-processing-time": "15",
+            "x-robots-tag": "noindex, nofollow, noarchive, nosnippet, notranslate, noimageindex"
+        },
+        "responseIsBinary": false
     }
 ]
