@@ -9,7 +9,7 @@ This test verifies that FamilySearch OAuth supports PKCE (Proof Key for Code Exc
 
 ## Quick Start
 
-### 1. Get the Code
+### 1. Install dependencies
 ```bash
 npm install
 ```
