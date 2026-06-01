@@ -18,7 +18,7 @@
 <body>
   <div class="container">
     <header>
-      <h1>🌳 FamilySearch SDK Demo</h1>
+      <h1><span aria-hidden="true">🌳</span> FamilySearch SDK Demo</h1>
       <p class="subtitle">Interactive demonstration of fs-js-lite features</p>
     </header>
 
@@ -377,12 +377,33 @@
     function displayUser(user) {
       const userInfo = document.getElementById('user-info');
 
-      userInfo.innerHTML = `
-        <h3>${user.displayName || 'Unknown User'}</h3>
-        <p><strong>User ID:</strong> ${user.personId}</p>
-        <p><strong>Email:</strong> ${user.email || 'Not provided'}</p>
-        <p><strong>Tree User ID:</strong> ${user.treeUserId || 'N/A'}</p>
-      `;
+      // Use textContent to prevent XSS from API data
+      const h3 = document.createElement('h3');
+      h3.textContent = user.displayName || 'Unknown User';
+
+      const personIdP = document.createElement('p');
+      const personIdLabel = document.createElement('strong');
+      personIdLabel.textContent = 'User ID:';
+      personIdP.appendChild(personIdLabel);
+      personIdP.appendChild(document.createTextNode(' ' + user.personId));
+
+      const emailP = document.createElement('p');
+      const emailLabel = document.createElement('strong');
+      emailLabel.textContent = 'Email:';
+      emailP.appendChild(emailLabel);
+      emailP.appendChild(document.createTextNode(' ' + (user.email || 'Not provided')));
+
+      const treeUserIdP = document.createElement('p');
+      const treeUserIdLabel = document.createElement('strong');
+      treeUserIdLabel.textContent = 'Tree User ID:';
+      treeUserIdP.appendChild(treeUserIdLabel);
+      treeUserIdP.appendChild(document.createTextNode(' ' + (user.treeUserId || 'N/A')));
+
+      userInfo.innerHTML = '';
+      userInfo.appendChild(h3);
+      userInfo.appendChild(personIdP);
+      userInfo.appendChild(emailP);
+      userInfo.appendChild(treeUserIdP);
     }
 
     function displayPerson(person) {
@@ -394,12 +415,33 @@
       const gender = person.display?.gender || 'Unknown';
       const lifespan = person.display?.lifespan || 'Unknown';
 
-      personInfo.innerHTML = `
-        <h3>${name}</h3>
-        <p><strong>Person ID:</strong> ${id}</p>
-        <p><strong>Gender:</strong> ${gender}</p>
-        <p><strong>Lifespan:</strong> ${lifespan}</p>
-      `;
+      // Use textContent to prevent XSS from API data
+      const h3 = document.createElement('h3');
+      h3.textContent = name;
+
+      const personIdP = document.createElement('p');
+      const personIdLabel = document.createElement('strong');
+      personIdLabel.textContent = 'Person ID:';
+      personIdP.appendChild(personIdLabel);
+      personIdP.appendChild(document.createTextNode(' ' + id));
+
+      const genderP = document.createElement('p');
+      const genderLabel = document.createElement('strong');
+      genderLabel.textContent = 'Gender:';
+      genderP.appendChild(genderLabel);
+      genderP.appendChild(document.createTextNode(' ' + gender));
+
+      const lifespanP = document.createElement('p');
+      const lifespanLabel = document.createElement('strong');
+      lifespanLabel.textContent = 'Lifespan:';
+      lifespanP.appendChild(lifespanLabel);
+      lifespanP.appendChild(document.createTextNode(' ' + lifespan));
+
+      personInfo.innerHTML = '';
+      personInfo.appendChild(h3);
+      personInfo.appendChild(personIdP);
+      personInfo.appendChild(genderP);
+      personInfo.appendChild(lifespanP);
 
       personInfo.style.display = 'block';
 
@@ -414,25 +456,41 @@
       // The sources endpoint returns sourceDescriptions
       const sources = data.sourceDescriptions || [];
 
+      // Clear existing content
+      sourcesInfo.innerHTML = '';
+
       if (sources.length === 0) {
-        sourcesInfo.innerHTML = '<p>No sources found for this person.</p>';
+        const p = document.createElement('p');
+        p.textContent = 'No sources found for this person.';
+        sourcesInfo.appendChild(p);
       } else {
-        let html = '<h3>Sources (' + sources.length + ')</h3><ul>';
+        // Use textContent to prevent XSS from API data
+        const h3 = document.createElement('h3');
+        h3.textContent = 'Sources (' + sources.length + ')';
+        sourcesInfo.appendChild(h3);
+
+        const ul = document.createElement('ul');
 
         sources.forEach(function(source) {
           const title = source.titles?.[0]?.value || 'Untitled Source';
           const citation = source.citations?.[0]?.value || 'No citation';
 
-          html += `
-            <li>
-              <strong>${title}</strong><br>
-              <small>${citation}</small>
-            </li>
-          `;
+          const li = document.createElement('li');
+
+          const titleStrong = document.createElement('strong');
+          titleStrong.textContent = title;
+          li.appendChild(titleStrong);
+
+          li.appendChild(document.createElement('br'));
+
+          const citationSmall = document.createElement('small');
+          citationSmall.textContent = citation;
+          li.appendChild(citationSmall);
+
+          ul.appendChild(li);
         });
 
-        html += '</ul>';
-        sourcesInfo.innerHTML = html;
+        sourcesInfo.appendChild(ul);
       }
 
       sourcesInfo.style.display = 'block';
@@ -488,7 +546,16 @@
     // EVENT HANDLERS
     // ============================================================================
 
+    var listenersSetup = false;
+
     function setupEventListeners() {
+      // Guard against duplicate event listeners
+      // (init() can be called multiple times when environment changes)
+      if (listenersSetup) {
+        return;
+      }
+      listenersSetup = true;
+
       // Login button
       document.getElementById('login-btn').addEventListener('click', startLogin);
 
@@ -527,7 +594,7 @@
       });
 
       // Allow Enter key in person ID input
-      document.getElementById('person-id').addEventListener('keypress', function(e) {
+      document.getElementById('person-id').addEventListener('keydown', function(e) {
         if (e.key === 'Enter') {
           document.getElementById('get-person-btn').click();
         }
