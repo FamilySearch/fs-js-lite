@@ -103,7 +103,8 @@
       appKey: 'YOUR_APP_KEY_HERE',
 
       // IMPORTANT: This must match exactly what you registered in the developer portal
-      redirectUri: window.location.href.split('?')[0], // Current page URL without query params
+      // Strip both query params (?...) and hash fragments (#...)
+      redirectUri: window.location.href.split('?')[0].split('#')[0],
 
       // Store access token in a cookie so it persists across page reloads
       saveAccessToken: true,
@@ -129,6 +130,8 @@
     let fs; // FamilySearch SDK instance
     let currentUser = null;
     let currentPerson = null;
+    let errorTimer = null; // Track error auto-hide timer
+    let isLoading = false; // Track loading state to prevent concurrent requests
 
     // ============================================================================
     // INITIALIZATION
@@ -158,10 +161,11 @@
       // Check if we're returning from OAuth redirect
       const urlParams = new URLSearchParams(window.location.search);
       const code = urlParams.get('code');
+      const state = urlParams.get('state');
 
       if (code) {
         // We have an authorization code! Exchange it for an access token
-        handleOAuthCallback(code);
+        handleOAuthCallback(code, state);
       } else if (fs.getAccessToken()) {
         // We already have a token from a previous session
         showLoading('Verifying authentication...');
@@ -180,30 +184,39 @@
     // ============================================================================
 
     /*
-      TEACHING POINT: OAuth 2.0 with PKCE Flow
+      TEACHING POINT: OAuth 2.0 with PKCE and State
 
       Step 1: User clicks "Login"
       - Generate a random code_verifier (long random string)
       - Create code_challenge by hashing the verifier
-      - Store verifier in sessionStorage (we'll need it later)
-      - Redirect user to FamilySearch with the challenge
+      - Generate a random state parameter
+      - Store verifier and state in sessionStorage (we'll need them later)
+      - Redirect user to FamilySearch with the challenge and state
 
       Step 2: FamilySearch redirects back with an authorization code
+      - Validate the state parameter matches (CSRF protection)
       - Retrieve the stored verifier
       - Send code + verifier to FamilySearch
       - Receive access token
 
-      Why? This prevents attackers from stealing the authorization code.
-      Without the verifier, the code is useless!
+      Why?
+      - PKCE: Prevents attackers from stealing the authorization code.
+        Without the verifier, the code is useless!
+      - State: Prevents CSRF attacks where an attacker tricks you into
+        logging in with their account instead of yours.
     */
 
     async function startLogin() {
+      // Prevent multiple concurrent login attempts
+      if (isLoading) return;
+
       // Validate app key is configured
       if (CONFIG.appKey === 'YOUR_APP_KEY_HERE') {
         showError('Please configure your app key in the code. See README for instructions.');
         return;
       }
 
+      isLoading = true;
       showLoading('Redirecting to FamilySearch...');
 
       try {
@@ -212,45 +225,65 @@
         const verifier = fs.generateCodeVerifier();
         const challenge = await fs.generateCodeChallengeAsync(verifier);
 
-        // Store verifier for when we return from OAuth
+        // Generate state parameter for CSRF protection
+        // State protects against authorization code injection attacks
+        const state = fs.generateCodeVerifier(); // Reuse verifier generation for random string
+
+        // Store verifier and state for when we return from OAuth
         // sessionStorage is perfect for this - it clears when browser closes
         sessionStorage.setItem('pkce_verifier', verifier);
+        sessionStorage.setItem('oauth_state', state);
 
-        // Redirect to FamilySearch login page with PKCE challenge
+        // Redirect to FamilySearch login page with PKCE challenge and state
         fs.oauthRedirect({
-          codeChallenge: challenge
+          codeChallenge: challenge,
+          state: state
         });
+        // Note: page will redirect, so we don't reset isLoading here
       } catch (error) {
+        isLoading = false;
         hideLoading();
         showError('Failed to generate PKCE challenge: ' + error.message);
       }
     }
 
-    function handleOAuthCallback(code) {
+    function handleOAuthCallback(code, state) {
       showLoading('Completing authentication...');
 
-      // Retrieve the PKCE verifier we stored before redirecting
+      // Retrieve the PKCE verifier and state we stored before redirecting
       const verifier = sessionStorage.getItem('pkce_verifier');
+      const expectedState = sessionStorage.getItem('oauth_state');
 
       if (!verifier) {
-        showError('Authentication error: PKCE verifier not found. Please try logging in again.');
+        showErrorWithRetry('Authentication error: PKCE verifier not found.', startLogin);
+        showLoginSection();
+        return;
+      }
+
+      // Validate state parameter (CSRF protection)
+      // Both state values must exist AND match
+      if (!state || !expectedState || state !== expectedState) {
+        sessionStorage.removeItem('pkce_verifier');
+        sessionStorage.removeItem('oauth_state');
+        showError('Authentication error: Invalid state parameter. Possible CSRF attack detected.');
         showLoginSection();
         return;
       }
 
       // Exchange authorization code + verifier for access token
       fs.oauthToken(code, verifier, function(error, response) {
-        // Clean up the verifier - we don't need it anymore
+        // Clean up the verifier and state - we don't need them anymore
         sessionStorage.removeItem('pkce_verifier');
+        sessionStorage.removeItem('oauth_state');
 
-        // Clean up URL (remove ?code= parameter for cleaner appearance)
+        // Clean up URL (remove ?code= and ?state= parameters for cleaner appearance)
         window.history.replaceState({}, document.title, CONFIG.redirectUri);
 
         if (error) {
-          showError('Network error during authentication: ' + error.message);
+          showErrorWithRetry('Network error during authentication: ' + error.message, startLogin);
           showLoginSection();
         } else if (response.statusCode !== 200) {
-          showError('Authentication failed: ' + (response.data?.error_description || response.statusText));
+          showErrorWithRetry('Authentication failed: ' + (response.data?.error_description || response.statusText), startLogin);
           showLoginSection();
         } else {
           // Success! The SDK automatically saved the token
@@ -263,8 +296,9 @@
       // Clear the access token
       fs.deleteAccessToken();
 
-      // Clear session storage
-      sessionStorage.clear();
+      // Clear only our session storage keys (don't remove unrelated keys)
+      sessionStorage.removeItem('pkce_verifier');
+      sessionStorage.removeItem('oauth_state');
 
       // Reset state
       currentUser = null;
@@ -294,22 +328,34 @@
     */
 
     function fetchCurrentUser() {
+      if (isLoading) return;
+      isLoading = true;
       showLoading('Loading user info...');
 
       fs.get('/platform/users/current', function(error, response) {
+        isLoading = false;
         hideLoading();
 
         if (error) {
-          showError('Network error: ' + error.message);
+          showErrorWithRetry('Network error: ' + error.message, fetchCurrentUser);
           return;
         }
 
         if (response.statusCode >= 400) {
-          showError('Failed to fetch user: ' + response.statusCode + ' ' + response.statusText);
-          // If unauthorized, token might be expired
+          // If unauthorized, token might be expired - don't offer retry
           if (response.statusCode === 401) {
+            showError('Session expired. Please log in again.');
             logout();
+          } else {
+            showErrorWithRetry('Failed to fetch user: ' + response.statusCode + ' ' + response.statusText, fetchCurrentUser);
           }
+          return;
+        }
+
+        // Validate response structure before accessing
+        if (!response.data?.users?.[0]) {
+          showError('Invalid user data returned from API');
+          logout();
           return;
         }
 
@@ -321,9 +367,12 @@
     }
 
     function fetchPerson(personId) {
+      if (isLoading) return;
+      isLoading = true;
       showLoading('Loading person...');
 
       fs.get('/platform/tree/persons/' + personId, function(error, response) {
+        isLoading = false;
         hideLoading();
 
         if (error) {
@@ -336,6 +385,12 @@
           return;
         }
 
+        // Validate response structure before accessing
+        if (!response.data?.persons?.[0]) {
+          showError('Invalid person data returned from API');
+          return;
+        }
+
         // Success! Parse person data
         currentPerson = response.data.persons[0];
         displayPerson(currentPerson);
@@ -343,9 +398,12 @@
     }
 
     function fetchSources(personId) {
+      if (isLoading) return;
+      isLoading = true;
       showLoading('Loading sources...');
 
       fs.get('/platform/tree/persons/' + personId + '/sources', function(error, response) {
+        isLoading = false;
         hideLoading();
 
         if (error) {
@@ -355,6 +413,12 @@
 
         if (response.statusCode >= 400) {
           showError('Failed to fetch sources: ' + response.statusCode + ' ' + response.statusText);
+          return;
+        }
+
+        // Validate response structure before accessing
+        if (!response.data) {
+          showError('Invalid sources data returned from API');
           return;
         }
 
@@ -521,24 +585,86 @@
         loading.querySelector('p').textContent = message;
       }
       loading.style.display = 'flex';
+
+      // Disable environment selector during loading to prevent state corruption
+      const envSelector = document.getElementById('environment');
+      if (envSelector) {
+        envSelector.disabled = true;
+      }
     }
 
     function hideLoading() {
       document.getElementById('loading').style.display = 'none';
+
+      // Re-enable environment selector
+      const envSelector = document.getElementById('environment');
+      if (envSelector) {
+        envSelector.disabled = false;
+      }
     }
 
     function showError(message) {
       const errorBox = document.getElementById('error-box');
+      // Use aria-label for accessibility (screen readers will announce "Error:")
+      errorBox.setAttribute('role', 'alert');
+      errorBox.setAttribute('aria-label', 'Error: ' + message);
       errorBox.textContent = '❌ ' + message;
       errorBox.style.display = 'block';
 
+      // Clear any previous auto-hide timer
+      if (errorTimer) {
+        clearTimeout(errorTimer);
+      }
+
       // Auto-hide after 10 seconds
-      setTimeout(function() {
+      errorTimer = setTimeout(function() {
         hideError();
+        errorTimer = null;
       }, 10000);
     }
 
+    function showErrorWithRetry(message, retryCallback) {
+      const errorBox = document.getElementById('error-box');
+      errorBox.setAttribute('role', 'alert');
+      errorBox.setAttribute('aria-label', 'Error: ' + message);
+      errorBox.innerHTML = '';
+
+      // Add error message
+      const messageSpan = document.createElement('span');
+      messageSpan.textContent = '❌ ' + message;
+      errorBox.appendChild(messageSpan);
+
+      // Add retry button
+      const retryBtn = document.createElement('button');
+      retryBtn.textContent = 'Try Again';
+      retryBtn.className = 'btn btn-secondary';
+      retryBtn.style.marginLeft = '15px';
+      retryBtn.onclick = function() {
+        hideError();
+        retryCallback();
+      };
+      errorBox.appendChild(retryBtn);
+
+      errorBox.style.display = 'block';
+
+      // Clear any previous auto-hide timer
+      if (errorTimer) {
+        clearTimeout(errorTimer);
+      }
+
+      // Auto-hide after 15 seconds (longer than regular errors due to button)
+      errorTimer = setTimeout(function() {
+        hideError();
+        errorTimer = null;
+      }, 15000);
+    }
+
     function hideError() {
+      // Clear any pending auto-hide timer
+      if (errorTimer) {
+        clearTimeout(errorTimer);
+        errorTimer = null;
+      }
       document.getElementById('error-box').style.display = 'none';
     }
 
@@ -546,7 +672,7 @@
     // EVENT HANDLERS
     // ============================================================================
 
-    var listenersSetup = false;
+    let listenersSetup = false;
 
     function setupEventListeners() {
       // Guard against duplicate event listeners
@@ -609,7 +735,7 @@
             init();
           } else {
             // Revert selection
-            this.value = fs.settings.environment;
+            this.value = fs.environment;
           }
         } else {
           init();

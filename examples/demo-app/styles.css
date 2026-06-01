@@ -378,16 +378,7 @@ select:focus {
    SUCCESS INDICATORS
    ============================================================================ */
 
-/* Green checkmark for authenticated state */
-.card h2::before {
-  content: '';
-}
-
-#user-section h2::before {
-  content: '✓ ';
-  color: var(--fs-green);
-  font-weight: bold;
-}
+/* The authenticated heading already includes a checkmark in the HTML */
 
 /* ============================================================================
    UTILITY CLASSES

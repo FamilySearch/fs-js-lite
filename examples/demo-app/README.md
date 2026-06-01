@@ -92,9 +92,9 @@ The `index.html` file is heavily commented with explanations of WHY we do things
 
 ## Learning Points
 
-### 1. PKCE Flow (Proof Key for Code Exchange)
+### 1. PKCE Flow with State Parameter
 
-This demo uses PKCE for security. Here's what happens:
+This demo uses PKCE and state parameter for security. Here's what happens:
 
 ```javascript
 // Generate a random verifier
@@ -104,24 +104,42 @@ const verifier = fs.generateCodeVerifier();
 // Note: Use the ASYNC version in browsers (uses Web Crypto API)
 const challenge = await fs.generateCodeChallengeAsync(verifier);
 
-// Store verifier for later (OAuth callback needs it)
-sessionStorage.setItem('pkce_verifier', verifier);
+// Generate state parameter for CSRF protection
+const state = fs.generateCodeVerifier();
 
-// Start OAuth with the challenge
-fs.oauthRedirect({ codeChallenge: challenge });
+// Store verifier and state for later (OAuth callback needs them)
+sessionStorage.setItem('pkce_verifier', verifier);
+sessionStorage.setItem('oauth_state', state);
+
+// Start OAuth with the challenge and state
+fs.oauthRedirect({ 
+  codeChallenge: challenge,
+  state: state 
+});
 ```
 
-**Why PKCE matters:** It prevents authorization code interception attacks. Even if someone steals your auth code, they can't use it without the verifier.
+**Why these matter:**
+- **PKCE**: Prevents authorization code interception attacks. Even if someone steals your auth code, they can't use it without the verifier.
+- **State**: Prevents CSRF attacks where an attacker tricks you into logging in with their account.
 
 ### 2. Handling OAuth Callbacks
 
 After FamilySearch redirects back, we need to:
-1. Extract the authorization code from the URL
-2. Retrieve the PKCE verifier we stored earlier
-3. Exchange the code + verifier for an access token
+1. Extract the authorization code and state from the URL
+2. Validate the state parameter matches (CSRF protection)
+3. Retrieve the PKCE verifier we stored earlier
+4. Exchange the code + verifier for an access token
 
 ```javascript
 const verifier = sessionStorage.getItem('pkce_verifier');
+const expectedState = sessionStorage.getItem('oauth_state');
+
+// Validate state parameter
+if (state !== expectedState) {
+  console.error('Invalid state - possible CSRF attack');
+  return;
+}
+
 fs.oauthToken(code, verifier, callback);
 ```
 
