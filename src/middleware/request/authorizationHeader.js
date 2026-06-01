@@ -1,7 +1,7 @@
 // Set the Authorization header if we have an access token
-module.exports = function(client, request, next){
+export default (client, request, next) => {
   if(!request.hasHeader('Authorization') && client.getAccessToken() && request.isPlatform()){
-    request.setHeader('Authorization', 'Bearer ' + client.getAccessToken());
+    request.setHeader('Authorization', `Bearer ${client.getAccessToken()}`);
   }
   next();
 };

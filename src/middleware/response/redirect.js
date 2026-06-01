@@ -1,21 +1,21 @@
 /**
  * Automatically follow a redirect. This behavior is optional because you don't
  * allways want to follow redirects such as when requesting a person's profile.
- * 
- * This middleware is enabled per request by setting the `followRedirect` request 
+ *
+ * This middleware is enabled per request by setting the `followRedirect` request
  * option to true.
  */
-module.exports = function(client, request, response, next){
-  var location = response.headers['location'];
+export default (client, request, response, next) => {
+  const location = response.headers['location'];
   if(request.options.followRedirect && location && location !== request.url ){
-    var originalUrl = request.url;
+    const originalUrl = request.url;
     request.url = response.headers['location'];
-    client._execute(request, function(error, response){
+    client._execute(request, (error, response) => {
       if(response){
         response.originalUrl = originalUrl;
         response.redirected = true;
       }
-      setTimeout(function(){
+      setTimeout(() => {
         request.callback(error, response);
       });
     });

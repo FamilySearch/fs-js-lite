@@ -1,26 +1,27 @@
-var FamilySearch = require('../src/FamilySearch'),
-    assert = require('chai').assert,
-    nockBack = require('./nockback'),
-    GedcomX = require('gedcomx-js'),
-    createPerson = require('./createperson'),
-    check = require('./check');
+import FamilySearch from '../src/FamilySearch.js';
+import { assert } from 'chai';
+import nockBack from './nockback.js';
+import GedcomX from 'gedcomx-js';
+import createPerson from './createperson.js';
+import check from './check.js';
+import gedcomxFsJs from 'gedcomx-fs-js';
 
 // Load sandbox config with fallback to example file
 // This allows tests to run out-of-the-box in CI without requiring sandbox.js
-var sandbox;
+let sandbox;
 try {
-  sandbox = require('./sandbox');
+  sandbox = (await import('./sandbox.js')).default;
 } catch (e) {
-  sandbox = require('./sandbox.example');
+  sandbox = (await import('./sandbox.example.js')).default;
 }
 
-GedcomX.addExtensions(require('gedcomx-fs-js'));
+GedcomX.addExtensions(gedcomxFsJs);
 
 describe('node', function(){
   
   describe('basic', function(){
   
-    var client;
+    let client;
   
     before(function(done){
       authenticatedClient(function(c){
@@ -200,7 +201,7 @@ describe('node', function(){
   
   describe('response middleware', function(){
     
-    var client;
+    let client;
     
     before(function(done){
       authenticatedClient(function(c){
@@ -383,18 +384,18 @@ describe('node', function(){
 
 /**
  * Create an API client
- * 
+ *
  * @param {Object} options
  * @return {FamilySearch} client
  */
 function apiClient(options){
-  var defaults = {
+  const defaults = {
     appKey: sandbox.appkey,
     environment: 'beta',
     redirectUri: 'http://foobaz.com/oauth-redirect'
   };
   if(options){
-    for(var o in options){
+    for(const o of Object.keys(options)){
       defaults[o] = options[o];
     }
   }
@@ -413,7 +414,7 @@ function authenticatedClient(options, callback){
     options = null;
   }
 
-  var client = apiClient(options);
+  const client = apiClient(options);
 
   // When recording fixtures, we need real authentication
   // Set accessToken in test/sandbox.js or use FS_ACCESS_TOKEN environment variable
@@ -423,7 +424,7 @@ function authenticatedClient(options, callback){
   //   3. Click the clipboard icon next to the access token to copy it
   //   4. Either: set in test/sandbox.js OR export FS_ACCESS_TOKEN='<your-token>'
   if(process.env.NOCK_BACK_MODE === 'record' || process.env.NOCK_BACK_MODE === 'wild'){
-    var accessToken = sandbox.accessToken || process.env.FS_ACCESS_TOKEN;
+    const accessToken = sandbox.accessToken || process.env.FS_ACCESS_TOKEN;
     if(!accessToken){
       throw new Error('Recording fixtures requires accessToken. Set in test/sandbox.js or FS_ACCESS_TOKEN environment variable.');
     }
@@ -458,4 +459,4 @@ function gedcomxMiddleware(client, request, response, next){
 }
 
 // Load PKCE tests
-require('./pkce');
+await import('./pkce.js');

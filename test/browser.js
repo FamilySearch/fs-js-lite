@@ -1,24 +1,29 @@
-var assert = require('chai').assert,
-    { JSDOM, VirtualConsole, CookieJar } = require('jsdom'),
-    fs = require('fs'),
-    path = require('path'),
-    nockBack = require('./nockback'),
-    createPerson = require('./createperson'),
-    check = require('./check');
+import { assert } from 'chai';
+import { JSDOM, VirtualConsole, CookieJar } from 'jsdom';
+import fs from 'fs';
+import path from 'path';
+import nockBack from './nockback.js';
+import createPerson from './createperson.js';
+import check from './check.js';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 // Load sandbox config with fallback to example file
 // This allows tests to run out-of-the-box in CI without requiring sandbox.js
-var sandbox;
+let sandbox;
 try {
-  sandbox = require('./sandbox');
+  sandbox = (await import('./sandbox.js')).default;
 } catch (e) {
-  sandbox = require('./sandbox.example');
+  sandbox = (await import('./sandbox.example.js')).default;
 }
 
 describe('browser', function(){
   
   it('load an access token from cookies', function(done){
-    var cookieJar = new CookieJar();
+    const cookieJar = new CookieJar();
     cookieJar.setCookieSync('FS_AUTH_TOKEN=loaded', 'http://test.testing/');
     createClient({
       url: 'http://test.testing',
@@ -35,7 +40,7 @@ describe('browser', function(){
   });
   
   it('save an access token to the cookie', function(done){
-    var cookieJar = new CookieJar();
+    const cookieJar = new CookieJar();
     createClient({
       url: 'http://test.testing',
       cookieJar: cookieJar
@@ -53,7 +58,7 @@ describe('browser', function(){
   });
   
   it('delete an access token cookie', function(done){
-    var cookieJar = new CookieJar();
+    const cookieJar = new CookieJar();
     cookieJar.setCookieSync('FS_AUTH_TOKEN=loaded', 'http://test.testing/');
     createClient({
       url: 'http://test.testing',
@@ -73,7 +78,7 @@ describe('browser', function(){
   });
   
   it('load an access token with a cookie path', function(done){
-    var cookieJar = new CookieJar();
+    const cookieJar = new CookieJar();
     cookieJar.setCookieSync('FS_AUTH_TOKEN=loaded', 'http://test.testing/path');
     createClient({
       url: 'http://test.testing/path',
@@ -91,7 +96,7 @@ describe('browser', function(){
   });
   
   it('delete an access token cookie with a cookie path', function(done){
-    var cookieJar = new CookieJar();
+    const cookieJar = new CookieJar();
     cookieJar.setCookieSync('FS_AUTH_TOKEN=loaded;path=/path', 'http://test.testing/path');
     createClient({
       url: 'http://test.testing/path',
@@ -119,7 +124,7 @@ describe('browser', function(){
   describe('Cookie security flags', function(){
 
     it('sets secure and sameSite flags by default', function(done){
-      var cookieJar = new CookieJar();
+      const cookieJar = new CookieJar();
       createClient({
         url: 'https://test.testing',
         cookieJar: cookieJar
@@ -148,7 +153,7 @@ describe('browser', function(){
     });
 
     it('allows disabling secure cookies for local development', function(done){
-      var cookieJar = new CookieJar();
+      const cookieJar = new CookieJar();
       createClient({
         url: 'http://localhost:3000',
         cookieJar: cookieJar
@@ -172,7 +177,7 @@ describe('browser', function(){
     });
 
     it('allows configuring sameSite attribute', function(done){
-      var cookieJar = new CookieJar();
+      const cookieJar = new CookieJar();
       createClient({
         url: 'https://test.testing',
         cookieJar: cookieJar

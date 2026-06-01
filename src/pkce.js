@@ -8,6 +8,13 @@
  * These functions work in both Node.js and browser environments.
  */
 
+// Import crypto for Node.js - in browsers webpack will replace this with false
+// due to the fallback configuration in webpack.config.js
+import crypto from 'crypto';
+
+// Check if crypto is actually available (will be false/undefined/empty object in browsers)
+const nodeCrypto = (crypto && typeof crypto.randomBytes === 'function') ? crypto : null;
+
 /**
  * Generate a cryptographically random code verifier for PKCE
  *
@@ -23,18 +30,17 @@
  */
 function generateCodeVerifier() {
   // We need 32 random bytes, which when base64url-encoded gives us 43 characters
-  var randomBytes;
+  let randomBytes;
 
   // Check if we're in Node.js environment
-  if (typeof require !== 'undefined' && typeof process !== 'undefined' && process.versions && process.versions.node) {
+  if (nodeCrypto) {
     // Node.js: use crypto.randomBytes()
-    var crypto = require('crypto');
-    randomBytes = crypto.randomBytes(32);
+    randomBytes = nodeCrypto.randomBytes(32);
   }
   // Check if we're in a browser with Web Crypto API
   else if (typeof window !== 'undefined' && window.crypto && window.crypto.getRandomValues) {
     // Browser: use window.crypto.getRandomValues()
-    var array = new Uint8Array(32);
+    const array = new Uint8Array(32);
     window.crypto.getRandomValues(array);
     randomBytes = array;
   }
@@ -61,10 +67,9 @@ function generateCodeVerifier() {
  */
 function generateCodeChallenge(verifier) {
   // Check if we're in Node.js environment
-  if (typeof require !== 'undefined' && typeof process !== 'undefined' && process.versions && process.versions.node) {
+  if (nodeCrypto) {
     // Node.js: use crypto.createHash()
-    var crypto = require('crypto');
-    var hash = crypto.createHash('sha256').update(verifier).digest();
+    const hash = nodeCrypto.createHash('sha256').update(verifier).digest();
     return base64UrlEncode(hash);
   }
   // Check if we're in a browser with Web Crypto API
@@ -90,20 +95,20 @@ function generateCodeChallenge(verifier) {
  */
 function generateCodeChallengeAsync(verifier) {
   // Check if we're in Node.js environment
-  if (typeof require !== 'undefined' && typeof process !== 'undefined' && process.versions && process.versions.node) {
+  if (nodeCrypto) {
     // Node.js: just call the sync version and wrap in a Promise
     return Promise.resolve(generateCodeChallenge(verifier));
   }
   // Browser: use async SubtleCrypto API
   else if (typeof window !== 'undefined' && window.crypto && window.crypto.subtle) {
     // Convert string to Uint8Array for hashing
-    var encoder = new TextEncoder();
-    var data = encoder.encode(verifier);
+    const encoder = new TextEncoder();
+    const data = encoder.encode(verifier);
 
     // Hash with SHA-256
-    return window.crypto.subtle.digest('SHA-256', data).then(function(hashBuffer) {
+    return window.crypto.subtle.digest('SHA-256', data).then((hashBuffer) => {
       // Convert ArrayBuffer to Uint8Array
-      var hashArray = new Uint8Array(hashBuffer);
+      const hashArray = new Uint8Array(hashBuffer);
       return base64UrlEncode(hashArray);
     });
   }
@@ -128,16 +133,16 @@ function generateCodeChallengeAsync(verifier) {
  */
 function base64UrlEncode(buffer) {
   // Convert buffer to base64
-  var base64;
+  let base64;
 
   if (typeof Buffer !== 'undefined' && buffer instanceof Buffer) {
     // Node.js Buffer
     base64 = buffer.toString('base64');
   } else {
     // Browser Uint8Array - convert to string then base64
-    var binary = '';
-    var bytes = new Uint8Array(buffer);
-    for (var i = 0; i < bytes.length; i++) {
+    let binary = '';
+    const bytes = new Uint8Array(buffer);
+    for (let i = 0; i < bytes.length; i++) {
       binary += String.fromCharCode(bytes[i]);
     }
     base64 = btoa(binary);
@@ -151,8 +156,8 @@ function base64UrlEncode(buffer) {
 }
 
 // Export functions
-module.exports = {
-  generateCodeVerifier: generateCodeVerifier,
-  generateCodeChallenge: generateCodeChallenge,
-  generateCodeChallengeAsync: generateCodeChallengeAsync
+export {
+  generateCodeVerifier,
+  generateCodeChallenge,
+  generateCodeChallengeAsync
 };

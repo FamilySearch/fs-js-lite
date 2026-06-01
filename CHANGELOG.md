@@ -5,6 +5,32 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.0.0] - 2026-06-01
+
+### Changed
+
+#### ES6 Module Syntax
+
+**Codebase upgraded from ES5 to ES6** for modern JavaScript standards:
+
+- **`const`/`let`** instead of `var`
+- **ES6 `import`/`export`** instead of CommonJS `require`/`module.exports`
+- **Arrow functions** for cleaner syntax
+- **Template literals** for string interpolation
+- **ES6 classes** instead of prototype-based constructors
+- **Destructuring** and other modern JavaScript features
+
+**Impact:**
+- ✅ **SDK users:** No breaking changes - UMD bundle still works in browsers and Node.js
+- ✅ **Node.js:** Requires Node.js 20+ (already required by v3.0.0)
+- ✅ **Build:** Webpack configuration updated for ES6 modules
+- ✅ **Tests:** All 55 tests passing (42 Node.js + 13 browser)
+
+**For developers:**
+- Source code now uses modern ES6 syntax
+- `package.json` includes `"type": "module"` for ES6 modules
+- Better compatibility with modern tooling and linting standards
+
 ## [3.0.0] - 2026-05-28
 
 ### Breaking Changes

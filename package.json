@@ -2,6 +2,7 @@
   "name": "fs-js-lite",
   "version": "3.0.0",
   "description": "Lite JS SDK for the FamilySearch API",
+  "type": "module",
   "main": "src/FamilySearch.js",
   "browser": {
     "./src/nodeHandler.js": "./src/xhrHandler.js"
