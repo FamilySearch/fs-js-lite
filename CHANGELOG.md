@@ -29,6 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 **For developers:**
 - Source code now uses modern ES6 syntax
 - `package.json` includes `"type": "module"` for ES6 modules
+- Switched from `nyc` to `c8` for code coverage (ES6 module support)
 - Better compatibility with modern tooling and linting standards
 
 ## [3.0.0] - 2026-05-28
