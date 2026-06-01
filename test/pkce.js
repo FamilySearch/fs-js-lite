@@ -136,6 +136,52 @@ describe('PKCE (Proof Key for Code Exchange)', function(){
 
   });
 
+  describe('generateCodeChallengeAsync()', function(){
+
+    it('returns a Promise', function(){
+      var verifier = pkce.generateCodeVerifier();
+      var result = pkce.generateCodeChallengeAsync(verifier);
+      assert.instanceOf(result, Promise);
+    });
+
+    it('resolves to a string', async function(){
+      var verifier = pkce.generateCodeVerifier();
+      var challenge = await pkce.generateCodeChallengeAsync(verifier);
+      assert.isString(challenge);
+    });
+
+    it('resolves to a 43-character string', async function(){
+      var verifier = pkce.generateCodeVerifier();
+      var challenge = await pkce.generateCodeChallengeAsync(verifier);
+      assert.equal(challenge.length, 43);
+    });
+
+    it('resolves to the same output as generateCodeChallenge()', async function(){
+      // Critical test: async and sync versions must produce identical output
+      var verifier = pkce.generateCodeVerifier();
+      var syncChallenge = pkce.generateCodeChallenge(verifier);
+      var asyncChallenge = await pkce.generateCodeChallengeAsync(verifier);
+      assert.equal(asyncChallenge, syncChallenge,
+        'Async and sync PKCE methods must produce identical challenges');
+    });
+
+    it('is deterministic (same verifier produces same challenge)', async function(){
+      var verifier = 'test-verifier-async-12345-abcdef';
+      var challenge1 = await pkce.generateCodeChallengeAsync(verifier);
+      var challenge2 = await pkce.generateCodeChallengeAsync(verifier);
+      assert.equal(challenge1, challenge2);
+    });
+
+    it('produces different challenges for different verifiers', async function(){
+      var verifier1 = pkce.generateCodeVerifier();
+      var verifier2 = pkce.generateCodeVerifier();
+      var challenge1 = await pkce.generateCodeChallengeAsync(verifier1);
+      var challenge2 = await pkce.generateCodeChallengeAsync(verifier2);
+      assert.notEqual(challenge1, challenge2);
+    });
+
+  });
+
   describe('FamilySearch client integration', function(){
 
     var client;
@@ -158,6 +204,26 @@ describe('PKCE (Proof Key for Code Exchange)', function(){
       var challenge = client.generateCodeChallenge(verifier);
       assert.isString(challenge);
       assert.equal(challenge.length, 43);
+    });
+
+    it('client.generateCodeChallengeAsync() returns a Promise', function(){
+      var verifier = client.generateCodeVerifier();
+      var result = client.generateCodeChallengeAsync(verifier);
+      assert.instanceOf(result, Promise);
+    });
+
+    it('client.generateCodeChallengeAsync() works', async function(){
+      var verifier = client.generateCodeVerifier();
+      var challenge = await client.generateCodeChallengeAsync(verifier);
+      assert.isString(challenge);
+      assert.equal(challenge.length, 43);
+    });
+
+    it('client async and sync methods produce identical output', async function(){
+      var verifier = client.generateCodeVerifier();
+      var syncChallenge = client.generateCodeChallenge(verifier);
+      var asyncChallenge = await client.generateCodeChallengeAsync(verifier);
+      assert.equal(asyncChallenge, syncChallenge);
     });
 
     it('can use PKCE in OAuth flow (verifier and challenge)', function(){

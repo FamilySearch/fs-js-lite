@@ -1,0 +1,433 @@
+/*
+  FamilySearch SDK Demo - Styles
+
+  TEACHING POINT: CSS Organization
+  - Global styles first (resets, typography)
+  - Layout components (container, cards)
+  - Interactive elements (buttons, inputs)
+  - State-specific styles (loading, errors)
+
+  This makes it easy to find and modify styles later!
+*/
+
+/* ============================================================================
+   FAMILYSEARCH BRAND COLORS
+   ============================================================================ */
+
+:root {
+  --fs-green: #7ab800;
+  --fs-green-dark: #6a9f00;
+  --fs-green-light: #8ac500;
+  --fs-gray: #666666;
+  --fs-gray-light: #f5f5f5;
+  --fs-gray-border: #dddddd;
+  --fs-text: #333333;
+  --fs-error: #d32f2f;
+  --fs-error-bg: #ffebee;
+}
+
+/* ============================================================================
+   GLOBAL STYLES & RESETS
+   ============================================================================ */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/*
+  TEACHING POINT: System Font Stack
+  - Uses fonts already on user's device (faster loading)
+  - Looks native to each platform (better UX)
+  - Falls back gracefully if fonts aren't available
+*/
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  line-height: 1.6;
+  color: var(--fs-text);
+  background: var(--fs-gray-light);
+  min-height: 100vh;
+  padding: 20px;
+}
+
+/* ============================================================================
+   LAYOUT
+   ============================================================================ */
+
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 40px;
+}
+
+/*
+  TEACHING POINT: Responsive Design
+  - On small screens (< 600px), reduce padding
+  - Mobile-first thinking: What's the minimum usable experience?
+*/
+@media (max-width: 600px) {
+  .container {
+    padding: 20px;
+  }
+
+  body {
+    padding: 10px;
+  }
+}
+
+/* ============================================================================
+   HEADER
+   ============================================================================ */
+
+header {
+  text-align: center;
+  margin-bottom: 40px;
+  padding-bottom: 30px;
+  border-bottom: 3px solid var(--fs-green);
+}
+
+header h1 {
+  color: var(--fs-green);
+  font-size: 2.5em;
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+
+.subtitle {
+  color: var(--fs-gray);
+  font-size: 1.1em;
+}
+
+/* ============================================================================
+   CARD SECTIONS
+   ============================================================================ */
+
+/*
+  TEACHING POINT: Visual Hierarchy
+  - Cards create clear boundaries between sections
+  - Subtle shadows add depth without being distracting
+  - Consistent spacing creates rhythm
+*/
+.card {
+  background: white;
+  border-radius: 6px;
+  padding: 30px;
+  margin-bottom: 25px;
+  border: 1px solid var(--fs-gray-border);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.card h2 {
+  color: var(--fs-green);
+  margin-bottom: 15px;
+  font-size: 1.5em;
+  font-weight: 600;
+}
+
+.card h3 {
+  color: var(--fs-text);
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+
+.card p {
+  margin-bottom: 15px;
+  color: var(--fs-gray);
+  line-height: 1.7;
+}
+
+/* ============================================================================
+   BUTTONS
+   ============================================================================ */
+
+/*
+  TEACHING POINT: Button Design
+  - Clear hover states show it's interactive
+  - Disabled state prevents accidental clicks
+  - Active state provides tactile feedback
+  - Consistent sizing creates visual harmony
+*/
+.btn {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 4px;
+  font-size: 1em;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-block;
+  text-align: center;
+}
+
+/* Primary button - FamilySearch green for main actions */
+.btn-primary {
+  background: var(--fs-green);
+  color: white;
+}
+
+.btn-primary:hover {
+  background: var(--fs-green-dark);
+  box-shadow: 0 2px 8px rgba(122, 184, 0, 0.3);
+}
+
+.btn-primary:active {
+  background: var(--fs-green-dark);
+  transform: translateY(1px);
+}
+
+/* Secondary button - alternative actions */
+.btn-secondary {
+  background: white;
+  color: var(--fs-green);
+  border: 2px solid var(--fs-green);
+}
+
+.btn-secondary:hover {
+  background: var(--fs-green-light);
+  color: white;
+  border-color: var(--fs-green-light);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* ============================================================================
+   FORM ELEMENTS
+   ============================================================================ */
+
+.input-group {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+input[type="text"],
+select {
+  padding: 12px;
+  border: 2px solid var(--fs-gray-border);
+  border-radius: 4px;
+  font-size: 1em;
+  transition: border-color 0.3s ease;
+  flex: 1;
+  min-width: 200px;
+}
+
+/*
+  TEACHING POINT: Focus States
+  - Essential for keyboard navigation (accessibility!)
+  - Shows which field is active
+  - Remove default outline, replace with custom style
+*/
+input[type="text"]:focus,
+select:focus {
+  outline: none;
+  border-color: var(--fs-green);
+  box-shadow: 0 0 0 3px rgba(122, 184, 0, 0.1);
+}
+
+.env-selector {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid var(--fs-gray-border);
+}
+
+.env-selector label {
+  display: inline-block;
+  margin-right: 10px;
+  font-weight: 600;
+  color: var(--fs-gray);
+}
+
+.env-selector select {
+  flex: none;
+  width: auto;
+  min-width: 150px;
+}
+
+/* ============================================================================
+   INFO BOXES
+   ============================================================================ */
+
+/*
+  TEACHING POINT: Content Presentation
+  - Light background makes content stand out
+  - Proper line-height improves readability
+  - Lists with spacing are easier to scan
+*/
+.info-box {
+  background: var(--fs-gray-light);
+  padding: 20px;
+  border-radius: 4px;
+  border-left: 4px solid var(--fs-green);
+  margin-top: 20px;
+}
+
+.info-box h3 {
+  color: var(--fs-green);
+  margin-bottom: 15px;
+  font-size: 1.2em;
+}
+
+.info-box p {
+  margin-bottom: 10px;
+  color: var(--fs-text);
+}
+
+.info-box strong {
+  color: var(--fs-text);
+  font-weight: 600;
+}
+
+.info-box ul {
+  list-style: none;
+  padding: 0;
+}
+
+.info-box li {
+  padding: 15px;
+  background: white;
+  border-radius: 4px;
+  border: 1px solid var(--fs-gray-border);
+  margin-bottom: 10px;
+}
+
+.info-box li:last-child {
+  margin-bottom: 0;
+}
+
+.info-box small {
+  color: var(--fs-gray);
+  font-size: 0.9em;
+}
+
+/* ============================================================================
+   ERROR & LOADING STATES
+   ============================================================================ */
+
+/*
+  TEACHING POINT: Feedback Mechanisms
+  - Users need to know when something is wrong (errors)
+  - Users need to know when something is happening (loading)
+  - Clear visual distinction helps users understand state
+*/
+
+/* Error messages */
+.error-box {
+  background: var(--fs-error-bg);
+  color: var(--fs-error);
+  padding: 15px 20px;
+  border-radius: 4px;
+  border-left: 4px solid var(--fs-error);
+  margin-bottom: 20px;
+  font-weight: 500;
+}
+
+/* Loading overlay */
+.loading {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.95);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.loading p {
+  color: var(--fs-green);
+  font-size: 1.2em;
+  margin-top: 20px;
+  font-weight: 600;
+}
+
+/* Animated spinner - FamilySearch green */
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid var(--fs-gray-light);
+  border-top-color: var(--fs-green);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+/*
+  TEACHING POINT: CSS Animations
+  - @keyframes defines the animation sequence
+  - animation property applies it to an element
+  - Simple spinner provides visual feedback without being distracting
+*/
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ============================================================================
+   SUCCESS INDICATORS
+   ============================================================================ */
+
+/* The authenticated heading already includes a checkmark in the HTML */
+
+/* ============================================================================
+   UTILITY CLASSES
+   ============================================================================ */
+
+/*
+  TEACHING POINT: Utility Classes
+  - Sometimes you need simple, reusable styles
+  - Better than inline styles (easier to maintain)
+  - Common in modern CSS frameworks (Tailwind, Bootstrap)
+*/
+
+.text-center {
+  text-align: center;
+}
+
+.mt-20 {
+  margin-top: 20px;
+}
+
+.mb-20 {
+  margin-bottom: 20px;
+}
+
+/* Hide elements visually and from accessibility tree */
+.hidden {
+  visibility: hidden;
+  height: 0;
+  overflow: hidden;
+}
+
+/* ============================================================================
+   FAMILYSEARCH BRANDING FOOTER
+   ============================================================================ */
+
+.fs-branding {
+  text-align: center;
+  margin-top: 40px;
+  padding-top: 20px;
+  border-top: 1px solid var(--fs-gray-border);
+  color: var(--fs-gray);
+  font-size: 0.9em;
+}
+
+.fs-branding a {
+  color: var(--fs-green);
+  text-decoration: none;
+}
+
+.fs-branding a:hover {
+  text-decoration: underline;
+}

@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FamilySearch SDK Demo</title>
+  <link rel="stylesheet" href="styles.css">
+
+  <!--
+    TEACHING POINT: Loading the SDK
+    - During development: Load from local ../../dist/ folder
+    - In production: Users would load from CDN (unpkg.com) or npm install
+    - For production docs, change to: https://unpkg.com/fs-js-lite@3.0.0/dist/FamilySearch.min.js
+    - This makes FamilySearch available as a global variable
+  -->
+  <script src="../../dist/FamilySearch.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1><span aria-hidden="true">🌳</span> FamilySearch SDK Demo</h1>
+      <p class="subtitle">Interactive demonstration of fs-js-lite features</p>
+    </header>
+
+    <!--
+      TEACHING POINT: Application States
+      We'll show/hide different sections based on authentication state:
+      - Not logged in? Show login button
+      - Logged in? Show user info and API features
+    -->
+
+    <!-- Login Section: Shown when user is NOT authenticated -->
+    <section id="login-section" class="card">
+      <h2>Step 1: Authenticate</h2>
+      <p>Click the button below to log in with your FamilySearch account using OAuth 2.0 with PKCE.</p>
+      <button id="login-btn" class="btn btn-primary">Login with FamilySearch</button>
+
+      <!-- Environment selector -->
+      <div class="env-selector">
+        <label for="environment">Environment:</label>
+        <select id="environment">
+          <option value="beta" selected>Beta (Testing)</option>
+          <option value="production">Production</option>
+        </select>
+      </div>
+    </section>
+
+    <!-- User Info Section: Shown after successful authentication -->
+    <section id="user-section" class="card" style="display: none;">
+      <h2>✓ Authenticated</h2>
+      <div id="user-info" class="info-box"></div>
+      <button id="logout-btn" class="btn btn-secondary">Logout</button>
+    </section>
+
+    <!-- Person Lookup Section -->
+    <section id="person-section" class="card" style="display: none;">
+      <h2>Step 2: Get Person from Tree</h2>
+      <p>Enter a Person ID to fetch their information from the FamilySearch tree.</p>
+
+      <div class="input-group">
+        <input
+          type="text"
+          id="person-id"
+          placeholder="e.g., KWQS-BBQ"
+          aria-label="Person ID">
+        <button id="get-person-btn" class="btn btn-primary">Get Person</button>
+        <button id="use-my-id-btn" class="btn btn-secondary">Use My Person ID</button>
+      </div>
+
+      <div id="person-info" class="info-box" style="display: none;"></div>
+
+      <!-- Sources button appears after person is loaded -->
+      <div id="sources-section" style="display: none;">
+        <button id="get-sources-btn" class="btn btn-primary">Get Sources for This Person</button>
+        <div id="sources-info" class="info-box" style="display: none;"></div>
+      </div>
+    </section>
+
+    <!-- Error Display -->
+    <div id="error-box" class="error-box" style="display: none;"></div>
+
+    <!-- Loading Indicator -->
+    <div id="loading" class="loading" style="display: none;">
+      <div class="spinner"></div>
+      <p>Loading...</p>
+    </div>
+  </div>
+
+  <script>
+    // ============================================================================
+    // CONFIGURATION
+    // ============================================================================
+
+    /*
+      TEACHING POINT: Configuration Management
+      - Keep all config in one place at the top
+      - Makes it easy for users to customize
+      - In a real app, this might come from environment variables
+    */
+
+    const CONFIG = {
+      // TODO: Replace with your actual app key from https://familysearch.org/developers/
+      appKey: 'YOUR_APP_KEY_HERE',
+
+      // IMPORTANT: This must match exactly what you registered in the developer portal
+      // Strip both query params (?...) and hash fragments (#...)
+      redirectUri: window.location.href.split('?')[0].split('#')[0],
+
+      // Store access token in a cookie so it persists across page reloads
+      saveAccessToken: true,
+
+      // For local development over HTTP, set to false
+      // For production HTTPS, keep as true
+      secureCookies: window.location.protocol === 'https:',
+
+      // Default environment (can be changed by user)
+      defaultEnvironment: 'beta'
+    };
+
+    // ============================================================================
+    // STATE MANAGEMENT
+    // ============================================================================
+
+    /*
+      TEACHING POINT: Application State
+      - We track the current user and person to avoid redundant API calls
+      - This is a simple approach; larger apps might use Redux or similar
+    */
+
+    let fs; // FamilySearch SDK instance
+    let currentUser = null;
+    let currentPerson = null;
+    let errorTimer = null; // Track error auto-hide timer
+    let isLoading = false; // Track loading state to prevent concurrent requests
+
+    // ============================================================================
+    // INITIALIZATION
+    // ============================================================================
+
+    /*
+      TEACHING POINT: Initialization Order
+      1. Create SDK instance with config
+      2. Check if we're returning from OAuth (code in URL)
+      3. Check if we already have a token (from previous session)
+      4. Update UI based on authentication state
+    */
+
+    function init() {
+      // Get selected environment (or default)
+      const environment = document.getElementById('environment')?.value || CONFIG.defaultEnvironment;
+
+      // Create FamilySearch SDK instance
+      fs = new FamilySearch({
+        environment: environment,
+        appKey: CONFIG.appKey,
+        redirectUri: CONFIG.redirectUri,
+        saveAccessToken: CONFIG.saveAccessToken,
+        secureCookies: CONFIG.secureCookies
+      });
+
+      // Check if we're returning from OAuth redirect
+      const urlParams = new URLSearchParams(window.location.search);
+      const code = urlParams.get('code');
+      const state = urlParams.get('state');
+
+      if (code) {
+        // We have an authorization code! Exchange it for an access token
+        handleOAuthCallback(code, state);
+      } else if (fs.getAccessToken()) {
+        // We already have a token from a previous session
+        showLoading('Verifying authentication...');
+        fetchCurrentUser();
+      } else {
+        // Not authenticated - show login screen
+        showLoginSection();
+      }
+
+      // Set up event listeners
+      setupEventListeners();
+    }
+
+    // ============================================================================
+    // AUTHENTICATION
+    // ============================================================================
+
+    /*
+      TEACHING POINT: OAuth 2.0 with PKCE and State
+
+      Step 1: User clicks "Login"
+      - Generate a random code_verifier (long random string)
+      - Create code_challenge by hashing the verifier
+      - Generate a random state parameter
+      - Store verifier and state in sessionStorage (we'll need them later)
+      - Redirect user to FamilySearch with the challenge and state
+
+      Step 2: FamilySearch redirects back with an authorization code
+      - Validate the state parameter matches (CSRF protection)
+      - Retrieve the stored verifier
+      - Send code + verifier to FamilySearch
+      - Receive access token
+
+      Why?
+      - PKCE: Prevents attackers from stealing the authorization code.
+        Without the verifier, the code is useless!
+      - State: Prevents CSRF attacks where an attacker tricks you into
+        logging in with their account instead of yours.
+    */
+
+    async function startLogin() {
+      // Prevent multiple concurrent login attempts
+      if (isLoading) return;
+
+      // Validate app key is configured
+      if (CONFIG.appKey === 'YOUR_APP_KEY_HERE') {
+        showError('Please configure your app key in the code. See README for instructions.');
+        return;
+      }
+
+      isLoading = true;
+      showLoading('Redirecting to FamilySearch...');
+
+      try {
+        // Generate PKCE parameters
+        // Note: In browsers, we use the ASYNC version (uses Web Crypto API)
+        const verifier = fs.generateCodeVerifier();
+        const challenge = await fs.generateCodeChallengeAsync(verifier);
+
+        // Generate state parameter for CSRF protection
+        // State protects against authorization code injection attacks
+        const state = fs.generateCodeVerifier(); // Reuse verifier generation for random string
+
+        // Store verifier and state for when we return from OAuth
+        // sessionStorage is perfect for this - it clears when browser closes
+        sessionStorage.setItem('pkce_verifier', verifier);
+        sessionStorage.setItem('oauth_state', state);
+
+        // Redirect to FamilySearch login page with PKCE challenge and state
+        fs.oauthRedirect({
+          codeChallenge: challenge,
+          state: state
+        });
+        // Note: page will redirect, so we don't reset isLoading here
+      } catch (error) {
+        isLoading = false;
+        hideLoading();
+        showError('Failed to generate PKCE challenge: ' + error.message);
+      }
+    }
+
+    function handleOAuthCallback(code, state) {
+      showLoading('Completing authentication...');
+
+      // Retrieve the PKCE verifier and state we stored before redirecting
+      const verifier = sessionStorage.getItem('pkce_verifier');
+      const expectedState = sessionStorage.getItem('oauth_state');
+
+      if (!verifier) {
+        showLoginSection();
+        showErrorWithRetry('Authentication error: PKCE verifier not found.', startLogin);
+        return;
+      }
+
+      // Validate state parameter (CSRF protection)
+      // Both state values must exist AND match
+      if (!state || !expectedState || state !== expectedState) {
+        sessionStorage.removeItem('pkce_verifier');
+        sessionStorage.removeItem('oauth_state');
+        showLoginSection();
+        showError('Authentication error: Invalid state parameter. Possible CSRF attack detected.');
+        return;
+      }
+
+      // Exchange authorization code + verifier for access token
+      fs.oauthToken(code, verifier, function(error, response) {
+        // Clean up the verifier and state - we don't need them anymore
+        sessionStorage.removeItem('pkce_verifier');
+        sessionStorage.removeItem('oauth_state');
+
+        // Clean up URL (remove ?code= and ?state= parameters for cleaner appearance)
+        window.history.replaceState({}, document.title, CONFIG.redirectUri);
+
+        if (error) {
+          showLoginSection();
+          showErrorWithRetry('Network error during authentication: ' + error.message, startLogin);
+        } else if (response.statusCode !== 200) {
+          showLoginSection();
+          showErrorWithRetry('Authentication failed: ' + (response.data?.error_description || response.statusText), startLogin);
+        } else {
+          // Success! The SDK automatically saved the token
+          fetchCurrentUser();
+        }
+      });
+    }
+
+    function logout() {
+      // Clear the access token
+      fs.deleteAccessToken();
+
+      // Clear only our session storage keys (don't remove unrelated keys)
+      sessionStorage.removeItem('pkce_verifier');
+      sessionStorage.removeItem('oauth_state');
+
+      // Reset state
+      currentUser = null;
+      currentPerson = null;
+
+      // Show login screen
+      showLoginSection();
+    }
+
+    // ============================================================================
+    // API CALLS
+    // ============================================================================
+
+    /*
+      TEACHING POINT: Making API Requests
+
+      The SDK uses a simple callback pattern:
+      fs.get(url, options, callback)
+
+      The callback receives (error, response):
+      - error: Network errors (can't reach server, timeout, etc.)
+      - response: The HTTP response (even if status code is 4xx or 5xx)
+
+      Always check BOTH:
+      1. Did we get a network error?
+      2. Is the status code an error (>= 400)?
+    */
+
+    function fetchCurrentUser() {
+      if (isLoading) return;
+      isLoading = true;
+      showLoading('Loading user info...');
+
+      fs.get('/platform/users/current', function(error, response) {
+        isLoading = false;
+        hideLoading();
+
+        if (error) {
+          showErrorWithRetry('Network error: ' + error.message, fetchCurrentUser);
+          return;
+        }
+
+        if (response.statusCode >= 400) {
+          // If unauthorized, token might be expired - don't offer retry
+          if (response.statusCode === 401) {
+            logout();
+            showError('Session expired. Please log in again.');
+          } else {
+            showErrorWithRetry('Failed to fetch user: ' + response.statusCode + ' ' + response.statusText, fetchCurrentUser);
+          }
+          return;
+        }
+
+        // Validate response structure before accessing
+        if (!response.data?.users?.[0]) {
+          logout();
+          showError('Invalid user data returned from API');
+          return;
+        }
+
+        // Success! Parse user data
+        currentUser = response.data.users[0];
+        displayUser(currentUser);
+        showAuthenticatedSections();
+      });
+    }
+
+    function fetchPerson(personId) {
+      if (isLoading) return;
+      isLoading = true;
+      showLoading('Loading person...');
+
+      fs.get('/platform/tree/persons/' + personId, function(error, response) {
+        isLoading = false;
+        hideLoading();
+
+        if (error) {
+          showError('Network error: ' + error.message);
+          return;
+        }
+
+        if (response.statusCode >= 400) {
+          showError('Failed to fetch person: ' + response.statusCode + ' ' + response.statusText);
+          return;
+        }
+
+        // Validate response structure before accessing
+        if (!response.data?.persons?.[0]) {
+          showError('Invalid person data returned from API');
+          return;
+        }
+
+        // Success! Parse person data
+        currentPerson = response.data.persons[0];
+        displayPerson(currentPerson);
+      });
+    }
+
+    function fetchSources(personId) {
+      if (isLoading) return;
+      isLoading = true;
+      showLoading('Loading sources...');
+
+      fs.get('/platform/tree/persons/' + personId + '/sources', function(error, response) {
+        isLoading = false;
+        hideLoading();
+
+        if (error) {
+          showError('Network error: ' + error.message);
+          return;
+        }
+
+        if (response.statusCode >= 400) {
+          showError('Failed to fetch sources: ' + response.statusCode + ' ' + response.statusText);
+          return;
+        }
+
+        // Validate response structure before accessing
+        if (!response.data) {
+          showError('Invalid sources data returned from API');
+          return;
+        }
+
+        // Success! Parse sources data
+        displaySources(response.data);
+      });
+    }
+
+    // ============================================================================
+    // UI DISPLAY FUNCTIONS
+    // ============================================================================
+
+    /*
+      TEACHING POINT: Separating Logic from Display
+      - API functions fetch data
+      - Display functions handle rendering
+      - This makes code easier to test and modify
+    */
+
+    function displayUser(user) {
+      const userInfo = document.getElementById('user-info');
+
+      // Use textContent to prevent XSS from API data
+      const h3 = document.createElement('h3');
+      h3.textContent = user.displayName || 'Unknown User';
+
+      const personIdP = document.createElement('p');
+      const personIdLabel = document.createElement('strong');
+      personIdLabel.textContent = 'User ID:';
+      personIdP.appendChild(personIdLabel);
+      personIdP.appendChild(document.createTextNode(' ' + user.personId));
+
+      const emailP = document.createElement('p');
+      const emailLabel = document.createElement('strong');
+      emailLabel.textContent = 'Email:';
+      emailP.appendChild(emailLabel);
+      emailP.appendChild(document.createTextNode(' ' + (user.email || 'Not provided')));
+
+      const treeUserIdP = document.createElement('p');
+      const treeUserIdLabel = document.createElement('strong');
+      treeUserIdLabel.textContent = 'Tree User ID:';
+      treeUserIdP.appendChild(treeUserIdLabel);
+      treeUserIdP.appendChild(document.createTextNode(' ' + (user.treeUserId || 'N/A')));
+
+      userInfo.innerHTML = '';
+      userInfo.appendChild(h3);
+      userInfo.appendChild(personIdP);
+      userInfo.appendChild(emailP);
+      userInfo.appendChild(treeUserIdP);
+    }
+
+    function displayPerson(person) {
+      const personInfo = document.getElementById('person-info');
+
+      // Extract name (persons API returns name in a complex structure)
+      const name = person.display?.name || 'Unknown';
+      const id = person.id;
+      const gender = person.display?.gender || 'Unknown';
+      const lifespan = person.display?.lifespan || 'Unknown';
+
+      // Use textContent to prevent XSS from API data
+      const h3 = document.createElement('h3');
+      h3.textContent = name;
+
+      const personIdP = document.createElement('p');
+      const personIdLabel = document.createElement('strong');
+      personIdLabel.textContent = 'Person ID:';
+      personIdP.appendChild(personIdLabel);
+      personIdP.appendChild(document.createTextNode(' ' + id));
+
+      const genderP = document.createElement('p');
+      const genderLabel = document.createElement('strong');
+      genderLabel.textContent = 'Gender:';
+      genderP.appendChild(genderLabel);
+      genderP.appendChild(document.createTextNode(' ' + gender));
+
+      const lifespanP = document.createElement('p');
+      const lifespanLabel = document.createElement('strong');
+      lifespanLabel.textContent = 'Lifespan:';
+      lifespanP.appendChild(lifespanLabel);
+      lifespanP.appendChild(document.createTextNode(' ' + lifespan));
+
+      personInfo.innerHTML = '';
+      personInfo.appendChild(h3);
+      personInfo.appendChild(personIdP);
+      personInfo.appendChild(genderP);
+      personInfo.appendChild(lifespanP);
+
+      personInfo.style.display = 'block';
+
+      // Show the sources section
+      document.getElementById('sources-section').style.display = 'block';
+      document.getElementById('sources-info').style.display = 'none'; // Hide previous sources
+    }
+
+    function displaySources(data) {
+      const sourcesInfo = document.getElementById('sources-info');
+
+      // The sources endpoint returns sourceDescriptions
+      const sources = data.sourceDescriptions || [];
+
+      // Clear existing content
+      sourcesInfo.innerHTML = '';
+
+      if (sources.length === 0) {
+        const p = document.createElement('p');
+        p.textContent = 'No sources found for this person.';
+        sourcesInfo.appendChild(p);
+      } else {
+        // Use textContent to prevent XSS from API data
+        const h3 = document.createElement('h3');
+        h3.textContent = 'Sources (' + sources.length + ')';
+        sourcesInfo.appendChild(h3);
+
+        const ul = document.createElement('ul');
+
+        sources.forEach(function(source) {
+          const title = source.titles?.[0]?.value || 'Untitled Source';
+          const citation = source.citations?.[0]?.value || 'No citation';
+
+          const li = document.createElement('li');
+
+          const titleStrong = document.createElement('strong');
+          titleStrong.textContent = title;
+          li.appendChild(titleStrong);
+
+          li.appendChild(document.createElement('br'));
+
+          const citationSmall = document.createElement('small');
+          citationSmall.textContent = citation;
+          li.appendChild(citationSmall);
+
+          ul.appendChild(li);
+        });
+
+        sourcesInfo.appendChild(ul);
+      }
+
+      sourcesInfo.style.display = 'block';
+    }
+
+    // ============================================================================
+    // UI STATE MANAGEMENT
+    // ============================================================================
+
+    function showLoginSection() {
+      document.getElementById('login-section').style.display = 'block';
+      document.getElementById('user-section').style.display = 'none';
+      document.getElementById('person-section').style.display = 'none';
+      hideError();
+      hideLoading();
+    }
+
+    function showAuthenticatedSections() {
+      document.getElementById('login-section').style.display = 'none';
+      document.getElementById('user-section').style.display = 'block';
+      document.getElementById('person-section').style.display = 'block';
+      hideError();
+    }
+
+    function showLoading(message) {
+      const loading = document.getElementById('loading');
+      if (message) {
+        loading.querySelector('p').textContent = message;
+      }
+      loading.style.display = 'flex';
+
+      // Disable environment selector during loading to prevent state corruption
+      const envSelector = document.getElementById('environment');
+      if (envSelector) {
+        envSelector.disabled = true;
+      }
+    }
+
+    function hideLoading() {
+      document.getElementById('loading').style.display = 'none';
+
+      // Re-enable environment selector
+      const envSelector = document.getElementById('environment');
+      if (envSelector) {
+        envSelector.disabled = false;
+      }
+    }
+
+    function showError(message) {
+      const errorBox = document.getElementById('error-box');
+      // Use aria-label for accessibility (screen readers will announce "Error:")
+      errorBox.setAttribute('role', 'alert');
+      errorBox.setAttribute('aria-label', 'Error: ' + message);
+      errorBox.textContent = '❌ ' + message;
+      errorBox.style.display = 'block';
+
+      // Clear any previous auto-hide timer
+      if (errorTimer) {
+        clearTimeout(errorTimer);
+      }
+
+      // Auto-hide after 10 seconds
+      errorTimer = setTimeout(function() {
+        hideError();
+        errorTimer = null;
+      }, 10000);
+    }
+
+    function showErrorWithRetry(message, retryCallback) {
+      const errorBox = document.getElementById('error-box');
+      errorBox.setAttribute('role', 'alert');
+      errorBox.setAttribute('aria-label', 'Error: ' + message);
+      errorBox.innerHTML = '';
+
+      // Add error message
+      const messageSpan = document.createElement('span');
+      messageSpan.textContent = '❌ ' + message;
+      errorBox.appendChild(messageSpan);
+
+      // Add retry button
+      const retryBtn = document.createElement('button');
+      retryBtn.textContent = 'Try Again';
+      retryBtn.className = 'btn btn-secondary';
+      retryBtn.style.marginLeft = '15px';
+      retryBtn.onclick = function() {
+        hideError();
+        retryCallback();
+      };
+      errorBox.appendChild(retryBtn);
+
+      errorBox.style.display = 'block';
+
+      // Clear any previous auto-hide timer
+      if (errorTimer) {
+        clearTimeout(errorTimer);
+      }
+
+      // Auto-hide after 15 seconds (longer than regular errors due to button)
+      errorTimer = setTimeout(function() {
+        hideError();
+        errorTimer = null;
+      }, 15000);
+    }
+
+    function hideError() {
+      // Clear any pending auto-hide timer
+      if (errorTimer) {
+        clearTimeout(errorTimer);
+        errorTimer = null;
+      }
+      document.getElementById('error-box').style.display = 'none';
+    }
+
+    // ============================================================================
+    // EVENT HANDLERS
+    // ============================================================================
+
+    let listenersSetup = false;
+
+    function setupEventListeners() {
+      // Guard against duplicate event listeners
+      // (init() can be called multiple times when environment changes)
+      if (listenersSetup) {
+        return;
+      }
+      listenersSetup = true;
+
+      // Login button
+      document.getElementById('login-btn').addEventListener('click', startLogin);
+
+      // Logout button
+      document.getElementById('logout-btn').addEventListener('click', logout);
+
+      // Get person button
+      document.getElementById('get-person-btn').addEventListener('click', function() {
+        const personId = document.getElementById('person-id').value.trim();
+
+        if (!personId) {
+          showError('Please enter a Person ID');
+          return;
+        }
+
+        fetchPerson(personId);
+      });
+
+      // Use my person ID button
+      document.getElementById('use-my-id-btn').addEventListener('click', function() {
+        if (currentUser && currentUser.personId) {
+          document.getElementById('person-id').value = currentUser.personId;
+          fetchPerson(currentUser.personId);
+        } else {
+          showError('User person ID not available');
+        }
+      });
+
+      // Get sources button
+      document.getElementById('get-sources-btn').addEventListener('click', function() {
+        if (currentPerson && currentPerson.id) {
+          fetchSources(currentPerson.id);
+        } else {
+          showError('Please load a person first');
+        }
+      });
+
+      // Allow Enter key in person ID input
+      document.getElementById('person-id').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+          document.getElementById('get-person-btn').click();
+        }
+      });
+
+      // Environment selector - reinitialize SDK when changed
+      document.getElementById('environment').addEventListener('change', function() {
+        if (fs.getAccessToken()) {
+          // If already logged in, warn user
+          if (confirm('Changing environment will log you out. Continue?')) {
+            logout();
+            init();
+          } else {
+            // Revert selection
+            this.value = fs.environment;
+          }
+        } else {
+          init();
+        }
+      });
+    }
+
+    // ============================================================================
+    // START THE APP
+    // ============================================================================
+
+    // Wait for page to fully load, then initialize
+    window.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>

@@ -460,6 +460,28 @@ FamilySearch.prototype.generateCodeChallenge = function(verifier){
 };
 
 /**
+ * Generate a PKCE code challenge from a code verifier (async version for browsers)
+ *
+ * This is the async version of generateCodeChallenge() that works in browser
+ * environments. Browsers require async crypto operations via the Web Crypto API,
+ * so this method returns a Promise.
+ *
+ * In Node.js environments, this still works but is unnecessary - you can use
+ * the synchronous generateCodeChallenge() instead for simpler code.
+ *
+ * Usage:
+ *   var verifier = client.generateCodeVerifier();
+ *   var challenge = await client.generateCodeChallengeAsync(verifier);
+ *   // Use challenge in oauthRedirectURL()
+ *
+ * @param {String} verifier The code verifier string
+ * @return {Promise<String>} Promise that resolves to the base64url-encoded SHA256 hash
+ */
+FamilySearch.prototype.generateCodeChallengeAsync = function(verifier){
+  return pkce.generateCodeChallengeAsync(verifier);
+};
+
+/**
  * Add request middleware
  * 
  * @param {Function} middleware
