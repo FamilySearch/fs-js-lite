@@ -41,20 +41,24 @@ This application demonstrates:
    This creates `dist/FamilySearch.min.js` that the demo loads.
 
 4. **Run the Demo:**
-   - **Option A - Local File:** Simply open `index.html` in your browser
-   - **Option B - Local Server (Recommended):** 
+   - **Option A - View UI Only (No OAuth):** Simply open `index.html` in your browser
+     - ⚠️ **Note:** OAuth login will NOT work via `file://` - cookies and redirects are blocked
+     - Use this only to preview the UI layout
+   - **Option B - Full Demo with OAuth (Required for Login):** 
      ```bash
      # From the root of fs-js-lite repository
      npx http-server -p 8080
      # Then open: http://localhost:8080/examples/demo-app/index.html
      ```
 
-### Why Use a Local Server?
+### Why OAuth Requires a Local Server
 
-While you CAN open the HTML file directly (`file://`), using a local web server is better because:
-- Cookies work properly (OAuth token storage)
-- Mimics a real production environment
-- Avoids CORS issues with some browsers
+OAuth authentication **requires** an `http://` or `https://` URL because:
+- **Cookies**: OAuth tokens are stored in cookies, which don't work properly on `file://` URLs
+- **Redirects**: The OAuth flow redirects back to your app, which requires a registered HTTP(S) URL
+- **Security**: The `file://` protocol has restricted security policies that block OAuth flows
+
+**TL;DR:** To test authentication, you must use Option B with a local server.
 
 ## How to Use the Demo
 

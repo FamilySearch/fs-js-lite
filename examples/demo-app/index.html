@@ -255,8 +255,8 @@
       const expectedState = sessionStorage.getItem('oauth_state');
 
       if (!verifier) {
-        showErrorWithRetry('Authentication error: PKCE verifier not found.', startLogin);
         showLoginSection();
+        showErrorWithRetry('Authentication error: PKCE verifier not found.', startLogin);
         return;
       }
 
@@ -265,8 +265,8 @@
       if (!state || !expectedState || state !== expectedState) {
         sessionStorage.removeItem('pkce_verifier');
         sessionStorage.removeItem('oauth_state');
-        showError('Authentication error: Invalid state parameter. Possible CSRF attack detected.');
         showLoginSection();
+        showError('Authentication error: Invalid state parameter. Possible CSRF attack detected.');
         return;
       }
 
@@ -280,11 +280,11 @@
         window.history.replaceState({}, document.title, CONFIG.redirectUri);
 
         if (error) {
+          showLoginSection();
           showErrorWithRetry('Network error during authentication: ' + error.message, startLogin);
-          showLoginSection();
         } else if (response.statusCode !== 200) {
-          showErrorWithRetry('Authentication failed: ' + (response.data?.error_description || response.statusText), startLogin);
           showLoginSection();
+          showErrorWithRetry('Authentication failed: ' + (response.data?.error_description || response.statusText), startLogin);
         } else {
           // Success! The SDK automatically saved the token
           fetchCurrentUser();
@@ -344,8 +344,8 @@
         if (response.statusCode >= 400) {
           // If unauthorized, token might be expired - don't offer retry
           if (response.statusCode === 401) {
-            showError('Session expired. Please log in again.');
             logout();
+            showError('Session expired. Please log in again.');
           } else {
             showErrorWithRetry('Failed to fetch user: ' + response.statusCode + ' ' + response.statusText, fetchCurrentUser);
           }
@@ -354,8 +354,8 @@
 
         // Validate response structure before accessing
         if (!response.data?.users?.[0]) {
-          showError('Invalid user data returned from API');
           logout();
+          showError('Invalid user data returned from API');
           return;
         }
 
