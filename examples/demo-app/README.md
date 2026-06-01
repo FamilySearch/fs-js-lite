@@ -32,7 +32,15 @@ This application demonstrates:
    - Replace `YOUR_APP_KEY_HERE` with your actual app key
    - Update the `redirectUri` to match your setup
 
-3. **Run the Demo:**
+3. **Build the SDK:**
+   ```bash
+   # From the root of fs-js-lite repository
+   npm install
+   npm run build
+   ```
+   This creates `dist/FamilySearch.min.js` that the demo loads.
+
+4. **Run the Demo:**
    - **Option A - Local File:** Simply open `index.html` in your browser
    - **Option B - Local Server (Recommended):** 
      ```bash
@@ -68,9 +76,11 @@ examples/demo-app/
 ```
 
 **Why everything is in one HTML file:**
-- Easy to understand - no build process needed
+- Easy to understand - no application bundler or framework needed
 - Copy-paste friendly - users can grab code snippets
 - Quick to modify and experiment with
+
+**Note:** While the demo itself has no build process, the SDK must be built first to generate `dist/FamilySearch.min.js`.
 
 **How to learn from this demo:**
 1. **Run it** - See the features in action

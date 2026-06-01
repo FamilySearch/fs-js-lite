@@ -8,7 +8,7 @@ Lite JavaScript SDK for the [FamilySearch API](https://familysearch.org/develope
 This SDK is designed for use in a web browser and uses XMLHttpRequest.
 
 **Getting Started:**
-- 📖 **[Demo Application](examples/demo-app/)** - Interactive demo showing authentication, tree data, and sources
+- 📖 **[Demo Application](https://github.com/FamilySearch/fs-js-lite/tree/master/examples/demo-app)** - Interactive demo showing authentication, tree data, and sources
 - 🔍 **[API Reference](https://developers.familysearch.org/main/reference/api-reference-guide)** - Explore all FamilySearch API endpoints
 
 - [FamilySearch Lite JavaScript SDK](#familysearch-lite-javascript-sdk)

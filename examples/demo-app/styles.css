@@ -412,7 +412,7 @@ select:focus {
   margin-bottom: 20px;
 }
 
-/* Hide elements (better than display: none for accessibility) */
+/* Hide elements visually and from accessibility tree */
 .hidden {
   visibility: hidden;
   height: 0;
