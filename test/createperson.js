@@ -1,10 +1,10 @@
 /**
  * Create a person.
- * 
+ *
  * @param {FamilySearch} client
  * @param {Function} callback - is given the new person's ID on success, nothing on error
  */
-module.exports = function createPerson(client, callback){
+export default function createPerson(client, callback){
   client.post('/platform/tree/persons', {
     body: {
       "persons": [
@@ -33,7 +33,7 @@ module.exports = function createPerson(client, callback){
         }
       ]
     }
-  }, function(error, response){
+  }, (error, response) => {
     if(response && response.statusCode === 201){
       callback(response.headers['x-entity-id']);
     } else {

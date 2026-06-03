@@ -7,7 +7,7 @@
  * Note: sandbox.js is gitignored to protect your credentials
  */
 
-module.exports = {
+export default {
   // Get your app key from: https://www.familysearch.org/developers/
   // Beta environment app key (integration uses a02j000000JBxOxAAL)
   appkey: process.env.FS_APPKEY || 'a02j000000KRNxqAAH',

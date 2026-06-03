@@ -1,6 +1,11 @@
-const path = require('path');
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
 
-module.exports = (env, argv) => {
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+export default (env, argv) => {
   const isMinified = argv.mode === 'production';
 
   return {
@@ -11,6 +16,7 @@ module.exports = (env, argv) => {
       library: {
         name: 'FamilySearch',
         type: 'umd',
+        export: 'default',
       },
       globalObject: 'this',
     },

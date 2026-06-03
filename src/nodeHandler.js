@@ -2,9 +2,9 @@
  * Request handler used in node.js
  */
 
-var axios = require('axios');
+import axios from 'axios';
 
-module.exports = function(req, callback){
+export default (req, callback) => {
   // Configure axios request
   axios({
     url: req.url,
@@ -14,25 +14,25 @@ module.exports = function(req, callback){
     maxRedirects: 0,
     // Prevent axios from throwing on 4xx/5xx status codes
     // (request library doesn't throw, so we preserve that behavior)
-    validateStatus: function() {
+    validateStatus: () => {
       return true;
     }
   })
-  .then(function(res){
-    var response = createResponse(req, res);
-    setTimeout(function(){
+  .then((res) => {
+    const response = createResponse(req, res);
+    setTimeout(() => {
       callback(null, response);
     });
   })
-  .catch(function(error){
+  .catch((error) => {
     // Handle network errors, timeouts, etc.
     // These are real errors (not just 4xx/5xx status codes)
-    var response;
+    let response;
     if(error.response){
       // Got a response but validateStatus should prevent this
       response = createResponse(req, error.response);
     }
-    setTimeout(function(){
+    setTimeout(() => {
       callback(error, response);
     });
   });

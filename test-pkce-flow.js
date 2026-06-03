@@ -8,20 +8,24 @@
  *   node test-pkce-flow.js
  */
 
-var FamilySearch = require('./src/FamilySearch');
+import FamilySearch from './src/FamilySearch.js';
+import fs from 'fs';
 
 // Load sandbox config
-var sandbox;
+let sandbox;
 try {
-  sandbox = require('./test/sandbox');
+  const sandboxData = fs.readFileSync('./test/sandbox.json', 'utf-8');
+  sandbox = JSON.parse(sandboxData);
 } catch (e) {
-  sandbox = require('./test/sandbox.example');
+  console.error('Could not load sandbox configuration. Please create test/sandbox.json');
+  console.error('You can copy test/sandbox.example.js and save it as test/sandbox.json');
+  process.exit(1);
 }
 
 console.log('\n=== FamilySearch PKCE Flow Test ===\n');
 
 // Create client (change environment as needed: 'production', 'beta', or 'integration')
-var client = new FamilySearch({
+const client = new FamilySearch({
   appKey: sandbox.appkey,
   environment: 'beta',  // Change to 'production' or 'integration' as needed
   redirectUri: 'http://localhost:3000/oauth-callback' // Change this if you have a different callback
@@ -29,8 +33,8 @@ var client = new FamilySearch({
 
 // Step 1: Generate PKCE parameters
 console.log('Step 1: Generating PKCE parameters...');
-var verifier = client.generateCodeVerifier();
-var challenge = client.generateCodeChallenge(verifier);
+const verifier = client.generateCodeVerifier();
+const challenge = client.generateCodeChallenge(verifier);
 
 console.log('  ✓ Code Verifier:', verifier);
 console.log('  ✓ Code Challenge:', challenge);
@@ -38,7 +42,7 @@ console.log('  ✓ Length check:', verifier.length === 43 && challenge.length ==
 
 // Step 2: Build OAuth URL with PKCE
 console.log('\nStep 2: Building OAuth URL with PKCE...');
-var oauthUrl = client.oauthRedirectURL({
+const oauthUrl = client.oauthRedirectURL({
   state: 'test-state-' + Date.now(),
   codeChallenge: challenge
 });
@@ -46,8 +50,8 @@ var oauthUrl = client.oauthRedirectURL({
 console.log('  ✓ OAuth URL:', oauthUrl);
 
 // Verify URL contains PKCE parameters
-var hasChallengeParam = oauthUrl.includes('code_challenge=' + encodeURIComponent(challenge));
-var hasChallengeMethod = oauthUrl.includes('code_challenge_method=S256');
+const hasChallengeParam = oauthUrl.includes('code_challenge=' + encodeURIComponent(challenge));
+const hasChallengeMethod = oauthUrl.includes('code_challenge_method=S256');
 
 console.log('  ✓ Contains code_challenge:', hasChallengeParam ? 'YES' : 'NO');
 console.log('  ✓ Contains code_challenge_method=S256:', hasChallengeMethod ? 'YES' : 'NO');
@@ -60,18 +64,20 @@ console.log('\n   ' + oauthUrl + '\n');
 console.log('2. Sign in with your FamilySearch beta account');
 console.log('3. After redirect, copy the "code" parameter from the URL');
 console.log('4. Run the verification step:\n');
-console.log('   node test-pkce-flow.js verify <CODE>');
+console.log('   node test-pkce-flow.js verify <CODE> <VERIFIER>');
+console.log('\n   Your verifier for this session: ' + verifier);
 console.log('\nNote: This uses the beta environment (https://identbeta.familysearch.org)\n');
 
-// Step 4: Verify token exchange (if code provided)
-if (process.argv[2] === 'verify' && process.argv[3]) {
-  var code = process.argv[3];
+// Step 4: Verify token exchange (if code and verifier provided)
+if (process.argv[2] === 'verify' && process.argv[3] && process.argv[4]) {
+  const code = process.argv[3];
+  const providedVerifier = process.argv[4];
 
   console.log('\n=== Verifying Token Exchange with PKCE ===\n');
   console.log('Using code:', code);
-  console.log('Using verifier:', verifier);
+  console.log('Using verifier:', providedVerifier);
 
-  client.oauthToken(code, verifier, function(error, response) {
+  client.oauthToken(code, providedVerifier, function(error, response) {
     if (error) {
       console.error('\n❌ PKCE VERIFICATION FAILED');
       console.error('Error:', error);
@@ -92,10 +98,9 @@ if (process.argv[2] === 'verify' && process.argv[3]) {
     }
   });
 } else if (process.argv[2] === 'verify') {
-  console.error('❌ Error: Please provide the authorization code');
-  console.error('Usage: node test-pkce-flow.js verify <CODE>');
+  console.error('❌ Error: Please provide both authorization code and verifier');
+  console.error('Usage: node test-pkce-flow.js verify <CODE> <VERIFIER>');
+  console.error('\nThe verifier must be the same one used to generate the authorization URL.');
+  console.error('Copy it from the output above when you generated the OAuth URL.');
   process.exit(1);
-} else {
-  console.log('💡 Tip: Keep this terminal open to reuse the verifier for step 4\n');
-  console.log('Verifier for this session:', verifier, '\n');
 }
