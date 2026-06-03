@@ -12,6 +12,9 @@ test/sandbox.js
 .env
 .env.local
 
+# Local npm config (FS employees using Artifactory)
+.npmrc.local
+
 # IDE files
 .idea/
 .vscode/
