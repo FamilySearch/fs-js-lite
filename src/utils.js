@@ -22,7 +22,9 @@ const utils = {
    * http://stackoverflow.com/a/5158301
    */
   getParameterByName(name) {
-    const match = RegExp(`[?&]${name}=([^&]*)`).exec(window.location.search);
+    // Escape regex special characters to prevent ReDoS attacks
+    const escapedName = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const match = RegExp(`[?&]${escapedName}=([^&]*)`).exec(window.location.search);
     return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
   },
 

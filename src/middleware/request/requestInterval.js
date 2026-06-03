@@ -42,6 +42,7 @@ export default (interval) => {
         sendRequest(next);
       } else if(timer) {
         clearInterval(timer); // No need to leave the timer running if we don't have any requests.
+        timer = null; // Reset timer so it can be started again later
       }
     }
   }

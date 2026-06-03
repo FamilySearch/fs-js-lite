@@ -11,12 +11,13 @@
  * - Manual browser testing
  */
 
-var FamilySearch = require('./src/FamilySearch');
+import FamilySearch from './src/FamilySearch.js';
+import crypto from 'crypto';
 
 console.log('\n=== PKCE Implementation Verification ===\n');
 
 // Create client (environment can be 'production', 'beta', or 'integration')
-var client = new FamilySearch({
+const client = new FamilySearch({
   appKey: 'test-app-key',
   environment: 'beta',
   redirectUri: 'http://localhost:3000/callback'
@@ -26,8 +27,9 @@ console.log('✓ Client created\n');
 
 // Test 1: Generate Code Verifier
 console.log('Test 1: Generate PKCE Code Verifier');
+let verifier, challenge;
 try {
-  var verifier = client.generateCodeVerifier();
+  verifier = client.generateCodeVerifier();
   console.log('  ✓ Verifier generated:', verifier);
   console.log('  ✓ Length:', verifier.length, '(expected: 43)');
   console.log('  ✓ Format check:', /^[A-Za-z0-9\-_]+$/.test(verifier) ? 'PASS' : 'FAIL');
@@ -43,7 +45,7 @@ try {
 // Test 2: Generate Code Challenge
 console.log('\nTest 2: Generate PKCE Code Challenge');
 try {
-  var challenge = client.generateCodeChallenge(verifier);
+  challenge = client.generateCodeChallenge(verifier);
   console.log('  ✓ Challenge generated:', challenge);
   console.log('  ✓ Length:', challenge.length, '(expected: 43)');
   console.log('  ✓ Format check:', /^[A-Za-z0-9\-_]+$/.test(challenge) ? 'PASS' : 'FAIL');
@@ -60,16 +62,16 @@ try {
 // Test 3: OAuth URL includes PKCE parameters
 console.log('\nTest 3: OAuth URL with PKCE Parameters');
 try {
-  var url = client.oauthRedirectURL({
+  const url = client.oauthRedirectURL({
     state: 'test-state',
     codeChallenge: challenge
   });
 
   console.log('  ✓ URL generated');
 
-  var hasChallengeParam = url.includes('code_challenge=' + encodeURIComponent(challenge));
-  var hasMethodParam = url.includes('code_challenge_method=S256');
-  var hasStateParam = url.includes('state=test-state');
+  const hasChallengeParam = url.includes('code_challenge=' + encodeURIComponent(challenge));
+  const hasMethodParam = url.includes('code_challenge_method=S256');
+  const hasStateParam = url.includes('state=test-state');
 
   console.log('  ✓ Contains code_challenge:', hasChallengeParam ? 'YES' : 'NO');
   console.log('  ✓ Contains code_challenge_method=S256:', hasMethodParam ? 'YES' : 'NO');
@@ -86,10 +88,10 @@ try {
 // Test 4: Legacy OAuth URL (backward compatibility)
 console.log('\nTest 4: Legacy OAuth URL (Backward Compatibility)');
 try {
-  var legacyUrl = client.oauthRedirectURL('test-state');
+  const legacyUrl = client.oauthRedirectURL('test-state');
   console.log('  ✓ Legacy URL generated (string state)');
 
-  var hasNoChallengeParam = !legacyUrl.includes('code_challenge=');
+  const hasNoChallengeParam = !legacyUrl.includes('code_challenge=');
   console.log('  ✓ No code_challenge (legacy mode):', hasNoChallengeParam ? 'YES' : 'NO');
 
   if (!hasNoChallengeParam) {
@@ -103,10 +105,8 @@ try {
 // Test 5: Crypto verification (independently verify hash)
 console.log('\nTest 5: Cryptographic Verification');
 try {
-  var crypto = require('crypto');
-
   // Independently compute what the challenge should be
-  var expectedChallenge = crypto.createHash('sha256')
+  const expectedChallenge = crypto.createHash('sha256')
     .update(verifier)
     .digest('base64')
     .replace(/\+/g, '-')

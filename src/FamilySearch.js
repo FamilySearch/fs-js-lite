@@ -15,7 +15,7 @@ class FamilySearch {
    *
    * @param {Object} options See a description of the possible options in the docs for config().
    */
-  constructor(options){
+  constructor(options = {}){
 
     // Set the default options
     this.appKey = '';
@@ -29,6 +29,15 @@ class FamilySearch {
     this.saveAccessToken = false;
     this.accessToken = '';
     this.jwt = '';
+    this.allowedRedirectDomains = [
+      'familysearch.org',
+      'api.familysearch.org',
+      'apibeta.familysearch.org',
+      'api-integ.familysearch.org',
+      'ident.familysearch.org',
+      'identbeta.familysearch.org',
+      'identint.familysearch.org'
+    ];
     this.middleware = {
       request: [
         requestMiddleware.url,
@@ -76,6 +85,10 @@ class FamilySearch {
    * When this option is set then requests are queued to ensure there is at least
    * {requestInterval} ms between them. This is useful for smoothing out bursts
    * of requests and thus playing nice with the API servers.
+   * @param {Array} options.allowedRedirectDomains List of domain names that automatic
+   * redirects are allowed to follow (when followRedirect option is used). Defaults to
+   * FamilySearch domains. Use this if your integration needs to follow redirects to
+   * other trusted domains. Set to null to allow any HTTPS redirect (not recommended).
    */
   config(options){
     this.appKey = options.appKey || this.appKey;
@@ -84,15 +97,23 @@ class FamilySearch {
     this.tokenCookie = options.tokenCookie || this.tokenCookie;
     this.tokenCookiePath = options.tokenCookiePath || this.tokenCookiePath;
     this.secureCookies = (options.secureCookies !== undefined) ? options.secureCookies : this.secureCookies;
-    this.sameSite = options.sameSite || this.sameSite;
-    this.maxThrottledRetries = options.maxThrottledRetries || this.maxThrottledRetries;
 
-    // Validate sameSite value
+    // Validate sameSite value before assignment
     const validSameSiteValues = ['strict', 'lax', 'none'];
-    if (validSameSiteValues.indexOf(this.sameSite) === -1) {
-      throw new Error(`Invalid sameSite value: ${this.sameSite}. Must be one of: ${validSameSiteValues.join(', ')}`);
+    const sameSiteValue = options.sameSite || this.sameSite;
+    if (validSameSiteValues.indexOf(sameSiteValue) === -1) {
+      throw new Error(`Invalid sameSite value: ${sameSiteValue}. Must be one of: ${validSameSiteValues.join(', ')}`);
     }
+    this.sameSite = sameSiteValue;
+
+    this.maxThrottledRetries = options.maxThrottledRetries || this.maxThrottledRetries;
     this.saveAccessToken = (options.saveAccessToken === true) || this.saveAccessToken;
+
+    // Allow customization of redirect domain whitelist
+    // null = allow any HTTPS redirect, array = specific domains only
+    if (options.allowedRedirectDomains !== undefined) {
+      this.allowedRedirectDomains = options.allowedRedirectDomains;
+    }
 
     if(options.accessToken){
       this.setAccessToken(options.accessToken);
@@ -101,9 +122,10 @@ class FamilySearch {
     if(Array.isArray(options.pendingModifications) && options.pendingModifications.length > 0){
       this.addRequestMiddleware(requestMiddleware.pendingModifications(options.pendingModifications));
     }
-  
-    if(parseInt(options.requestInterval, 10)) {
-      this.addRequestMiddleware(requestMiddleware.requestInterval(parseInt(options.requestInterval, 10)));
+
+    const requestInterval = parseInt(options.requestInterval, 10);
+    if(requestInterval && !isNaN(requestInterval) && requestInterval > 0) {
+      this.addRequestMiddleware(requestMiddleware.requestInterval(requestInterval));
     }
 
     // When the SDK is configured to save the access token in a cookie and we don't
@@ -656,6 +678,8 @@ class FamilySearch {
         } else if(typeof cancel === 'undefined') {
           next();
         }
+        // When cancel is truthy, the middleware is handling the callback itself
+        // (e.g., redirect or throttling), so we don't call next() or callback()
       });
     }, callback);
   }

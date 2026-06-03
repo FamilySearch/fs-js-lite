@@ -9,7 +9,7 @@ class Request {
    */
   constructor(url, options, callback){
 
-    // Inititialize and set defaults
+    // Initialize and set defaults
     this.url = url;
     this.callback = callback || (() => {});
     this.method = 'GET';
@@ -18,7 +18,7 @@ class Request {
     this.options = {};
 
     // Process request options. We use a for loop so that we can stuff all
-    // non-standard options into the options object on the reuqest.
+    // non-standard options into the options object on the request.
     for(const opt of Object.keys(options)){
       switch(opt){
 

@@ -7,9 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [3.0.0] - 2026-06-01
 
-### Changed
+### Breaking Changes
 
 #### ES6 Module Syntax
+
+**Package now uses ES6 modules (`"type": "module"` in package.json):**
+
+- **CommonJS consumers (Node.js `require()`):** Breaking change - `require('fs-js-lite')` will fail. You must migrate to ESM imports (`import FamilySearch from 'fs-js-lite'`) or use dynamic imports (`await import('fs-js-lite')`).
+- **Browser UMD bundle:** No breaking changes - continues to work as before
+- **ES6 module consumers:** No breaking changes - improved compatibility
 
 **Codebase upgraded from ES5 to ES6** for modern JavaScript standards:
 
@@ -21,8 +27,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Destructuring** and other modern JavaScript features
 
 **Impact:**
-- ✅ **SDK users:** No breaking changes - UMD bundle still works in browsers and Node.js
-- ✅ **Node.js:** Requires Node.js 20+ (already required by v3.0.0)
+- ⚠️ **Node.js CommonJS users:** Must migrate to ESM or use dynamic imports
+- ✅ **Browser users:** No changes needed - UMD bundle still works
+- ✅ **Node.js ESM users:** Improved compatibility
+- ✅ **Node.js:** Requires Node.js 20+ (already required)
 - ✅ **Build:** Webpack configuration updated for ES6 modules
 - ✅ **Tests:** All 55 tests passing (42 Node.js + 13 browser)
 
@@ -31,10 +39,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `package.json` includes `"type": "module"` for ES6 modules
 - Switched from `nyc` to `c8` for code coverage (ES6 module support)
 - Better compatibility with modern tooling and linting standards
-
-## [3.0.0] - 2026-05-28
-
-### Breaking Changes
+- Helper scripts (test-server.js, test-pkce-*.js) converted to ESM
 
 #### Secure Cookie Defaults
 
@@ -71,6 +76,7 @@ var client = new FamilySearch({
 - **`secureCookies`** (Boolean) - Control whether cookies require HTTPS. Defaults to `true`. Set to `false` only for local development over HTTP.
 - **`sameSite`** (String) - SameSite cookie attribute for CSRF protection. Defaults to `'strict'`. Options: `'strict'`, `'lax'`, or `'none'`.
 - **`tokenCookiePath`** - Now explicitly defaults to `'/'` instead of current path (improved behavior for most applications).
+- **`allowedRedirectDomains`** (Array) - Configure which domains automatic redirects can follow (when `followRedirect` option is used). Defaults to FamilySearch domains. Customize for integrations that need redirects to other trusted domains. Set to `null` to disable validation.
 
 #### PKCE Support
 
@@ -104,6 +110,10 @@ PKCE is recommended for all OAuth flows, especially public clients. See [TEST-PK
   - Fixed uncontrolled data used in path expression
   - Fixed exception text reinterpreted as HTML
 - **httpOnly cookies** - When combined with secure defaults, provides comprehensive protection against token theft
+- **Protected against ReDoS attacks** - Query parameter parsing now escapes regex special characters
+- **Open redirect protection** - Configurable domain whitelist for automatic redirects (defaults to FamilySearch domains)
+- **HTTPS downgrade prevention** - Blocks redirects from HTTPS to HTTP
+- **Better error handling** - JSON parse errors now reported instead of silently ignored
 
 ### Changed
 

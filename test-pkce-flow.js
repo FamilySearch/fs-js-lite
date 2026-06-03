@@ -8,20 +8,28 @@
  *   node test-pkce-flow.js
  */
 
-var FamilySearch = require('./src/FamilySearch');
+import FamilySearch from './src/FamilySearch.js';
+import fs from 'fs';
 
 // Load sandbox config
-var sandbox;
+let sandbox;
 try {
-  sandbox = require('./test/sandbox');
+  const sandboxData = fs.readFileSync('./test/sandbox.json', 'utf-8');
+  sandbox = JSON.parse(sandboxData);
 } catch (e) {
-  sandbox = require('./test/sandbox.example');
+  try {
+    const sandboxData = fs.readFileSync('./test/sandbox.example.json', 'utf-8');
+    sandbox = JSON.parse(sandboxData);
+  } catch (err) {
+    console.error('Could not load sandbox configuration. Please create test/sandbox.json');
+    process.exit(1);
+  }
 }
 
 console.log('\n=== FamilySearch PKCE Flow Test ===\n');
 
 // Create client (change environment as needed: 'production', 'beta', or 'integration')
-var client = new FamilySearch({
+const client = new FamilySearch({
   appKey: sandbox.appkey,
   environment: 'beta',  // Change to 'production' or 'integration' as needed
   redirectUri: 'http://localhost:3000/oauth-callback' // Change this if you have a different callback
@@ -29,8 +37,8 @@ var client = new FamilySearch({
 
 // Step 1: Generate PKCE parameters
 console.log('Step 1: Generating PKCE parameters...');
-var verifier = client.generateCodeVerifier();
-var challenge = client.generateCodeChallenge(verifier);
+const verifier = client.generateCodeVerifier();
+const challenge = client.generateCodeChallenge(verifier);
 
 console.log('  ✓ Code Verifier:', verifier);
 console.log('  ✓ Code Challenge:', challenge);
@@ -38,7 +46,7 @@ console.log('  ✓ Length check:', verifier.length === 43 && challenge.length ==
 
 // Step 2: Build OAuth URL with PKCE
 console.log('\nStep 2: Building OAuth URL with PKCE...');
-var oauthUrl = client.oauthRedirectURL({
+const oauthUrl = client.oauthRedirectURL({
   state: 'test-state-' + Date.now(),
   codeChallenge: challenge
 });
@@ -46,8 +54,8 @@ var oauthUrl = client.oauthRedirectURL({
 console.log('  ✓ OAuth URL:', oauthUrl);
 
 // Verify URL contains PKCE parameters
-var hasChallengeParam = oauthUrl.includes('code_challenge=' + encodeURIComponent(challenge));
-var hasChallengeMethod = oauthUrl.includes('code_challenge_method=S256');
+const hasChallengeParam = oauthUrl.includes('code_challenge=' + encodeURIComponent(challenge));
+const hasChallengeMethod = oauthUrl.includes('code_challenge_method=S256');
 
 console.log('  ✓ Contains code_challenge:', hasChallengeParam ? 'YES' : 'NO');
 console.log('  ✓ Contains code_challenge_method=S256:', hasChallengeMethod ? 'YES' : 'NO');
@@ -65,7 +73,7 @@ console.log('\nNote: This uses the beta environment (https://identbeta.familysea
 
 // Step 4: Verify token exchange (if code provided)
 if (process.argv[2] === 'verify' && process.argv[3]) {
-  var code = process.argv[3];
+  const code = process.argv[3];
 
   console.log('\n=== Verifying Token Exchange with PKCE ===\n');
   console.log('Using code:', code);
