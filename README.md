@@ -594,6 +594,15 @@ request option to have the SDK automatically follow a redirect response.
 
 <a name="testing"></a>
 
+## Building & Registries
+
+This repo defaults to the public npm registry so anyone can clone, build,
+and test it without FamilySearch credentials. FamilySearch employees
+building or publishing internally should go through FamilySearch's
+Artifactory instead, per FS Information Security standards - see
+[ARTIFACTORY_BUILD_PROCESS.md](./ARTIFACTORY_BUILD_PROCESS.md) for why both
+paths exist and how each is configured.
+
 ## Testing
 
 The SDK includes a comprehensive test suite covering both Node.js and browser environments.

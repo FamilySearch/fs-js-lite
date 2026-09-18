@@ -1,5 +1,10 @@
 # Security Policy
 
+This document covers the SDK's *runtime* security (cookies, PKCE). For the
+security of the *build/dependency supply chain* - the public npm registry
+vs. FamilySearch's Artifactory, and how dependency vulnerabilities are
+audited and fixed - see [ARTIFACTORY_BUILD_PROCESS.md](./ARTIFACTORY_BUILD_PROCESS.md).
+
 ## Secure Cookie Defaults (v3.0.0+)
 
 Starting with version 3.0.0, fs-js-lite sets secure cookie defaults to protect against common web vulnerabilities:

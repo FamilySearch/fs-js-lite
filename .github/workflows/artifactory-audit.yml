@@ -1,0 +1,40 @@
+name: Artifactory Dependency Audit
+
+# This workflow checks dependencies against FamilySearch's JFrog Artifactory
+# Curation and Xray policies (see ARTIFACTORY_BUILD_PROCESS.md). It requires
+# a repo secret (JF_ACCESS_TOKEN) that only FamilySearch can provision, so it
+# only runs in contexts where that secret is available:
+#   - push to master (post-merge), never on pull_request - fork PRs don't
+#     get repo secrets, and external contributors have no Artifactory access
+#   - a weekly schedule, to catch newly-disclosed CVEs in unchanged deps
+#   - manual dispatch
+on:
+  push:
+    branches: [ master, main ]
+  schedule:
+    - cron: '0 13 * * 1'  # Mondays 13:00 UTC
+  workflow_dispatch:
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+
+      - name: Set up JFrog CLI
+        uses: jfrog/setup-jfrog-cli@v4
+        env:
+          JF_URL: https://familysearch.jfrog.io
+          JF_ACCESS_TOKEN: ${{ secrets.JF_ACCESS_TOKEN }}
+
+      - name: Curation audit (active enforcement policies)
+        run: jf ca
+
+      - name: Xray audit (dry-run + watch-based policies)
+        run: jf audit --watches="remote-all"

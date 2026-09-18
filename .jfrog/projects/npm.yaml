@@ -1,0 +1,8 @@
+version: 1
+type: npm
+resolver:
+    repo: fs-npm-prod-virtual
+    serverId: familysearch
+deployer:
+    repo: fs-npm-prod-virtual
+    serverId: familysearch
